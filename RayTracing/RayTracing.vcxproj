@@ -89,12 +89,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>Dependence\OpenGL\GLHead;Dependence\fbx\include;Dependence\jsoncpp\include;Core;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Dependence\OpenGL\GLHead;Dependence\fbx\include;Dependence\jsoncpp\include;Core;Math;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32.lib;libfbxsdk-md.lib;lib_json.lib;GLAUX.LIB;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;libfbxsdk-md.lib;GLAUX.LIB;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>Dependence\fbx\lib\vs2015\x86\debug;Dependence\OpenGL\GLlIB&amp;DLL;Dependence\jsoncpp\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -152,26 +152,28 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\BWElement.cpp" />
     <ClCompile Include="Math\BWPrimitive.cpp" />
-    <ClCompile Include="Math\Math.cpp" />
+    <ClCompile Include="Math\RTMath.cpp" />
     <ClCompile Include="MeshLoad\FBXAttributeTypeData.cpp" />
     <ClCompile Include="MeshLoad\FBXImporterImp.cpp" />
+    <ClCompile Include="OfflineRenderer\Film.cpp" />
     <ClCompile Include="OfflineRenderer\Parallel.cpp" />
     <ClCompile Include="OfflineRenderer\Spectrum.cpp" />
     <ClCompile Include="RealTimeRenderer\ShaderRead.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\Object.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
-    <ClCompile Include="Test\SSLightmapInfo.cpp" />
     <ClCompile Include="Test\TestFBXDrawObj.cpp" />
     <ClCompile Include="Test\TestFBXLoad.cpp" />
+    <ClCompile Include="Test\TestOfflineRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Core\Error.h" />
     <ClInclude Include="Math\BWElement.h" />
     <ClInclude Include="Math\BWPrimitive.h" />
-    <ClInclude Include="Math\Math.h" />
+    <ClInclude Include="Math\RTMath.h" />
     <ClInclude Include="MeshLoad\FBXAttributeTypeData.h" />
     <ClInclude Include="MeshLoad\FBXImporterImp.h" />
+    <ClInclude Include="OfflineRenderer\Film.h" />
     <ClInclude Include="OfflineRenderer\Integrator.h" />
     <ClInclude Include="OfflineRenderer\OfflineRenderer.h" />
     <ClInclude Include="OfflineRenderer\Parallel.h" />
@@ -184,14 +186,15 @@
     <ClInclude Include="Scene\Object.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="Test\HelpFunc.h" />
-    <ClInclude Include="Test\SSLightmapInfo.h" />
     <ClInclude Include="Test\TestFBXDrawObj.h" />
     <ClInclude Include="Test\TestFBXLoad.h" />
     <ClInclude Include="Test\TestOfflineRenderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="OfflineRenderer\Film.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderable.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderer.inl" />
+    <None Include="Test\TestOfflineRenderer.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

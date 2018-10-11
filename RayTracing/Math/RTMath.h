@@ -21,10 +21,12 @@ public:
 };
 void Swap(double& d1, double& d2);
 void Swap(float& f1, float& f2);
+float Clamp(float Value, float Min, float Max);
 int  Rand_int();
 float Rand_float();
 BWPoint4DD TriangleCentroid(const BWPoint4DD& p1, const BWPoint4DD& p2,  const BWPoint4DD & p3);
 BWPoint4DD TriangleCentroid(const BWTriangle& triangle);
+float Lerp(float T, float V1, float V2);
 double  TriangleArea(const BWTriangle& triangle);
 double  TriangleArea(const BWPoint4DD& p1, const BWPoint4DD& p2, const BWPoint4DD & p3) ;
 double  Dot(const BWVector3DD& a, const BWVector3DD& b);

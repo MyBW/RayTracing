@@ -13,7 +13,9 @@ Camera CameraForRender;
 Scene Sceen;
 
 
+
 TestFBXLoad FBXload;
+std::vector<BWVector3D> Lines;
 //TestFBXDrawObj TestFBXObj;
 
 bool IsContorllCamera = false;
@@ -57,6 +59,20 @@ void ProcessKeyboard(unsigned char key, int x, int y)
 	case 'i':
 	case 'I':
 		Sceen.GetObjectByName("elephant")->SetScale(a , a , a);
+	case 'C':
+	case 'c':
+	{
+		
+		Lines.clear();
+		BWVector4  Test;
+		Test = CameraForRender.GetViewMatrix().inverse() * BWVector4(0.0, 0.0, 0.0, 1.0);
+		Lines.push_back(BWVector3D(Test.x, Test.y, Test.z));
+
+		Test = CameraForRender.GetViewMatrix().inverse() * BWVector4(-100.0, 0.0, 0.0, 1.0);
+		Lines.push_back(BWVector3D(Test.x, Test.y, Test.z));
+		
+	}
+		break;
 	default:
 		break;
 	}
@@ -81,12 +97,11 @@ void display()
 	//Ray._start = BWVector4DD(0, 0, 0, 0.0 );
 	//Ray._vector = BWVector3D(100, 10, 0);
 
-	//RTRenderer.SetLineWidth(1);
-	//RTRenderer.SetLineColor(0.0, 1.0, 1.0);/**/
-	//std::vector<BWVector3D> Lines;
-	//Lines.push_back(BWVector3D(0.0, 0.0, 0.0));
-	//Lines.push_back(BWVector3D(100.0, 10.0, 0.0));
-	//RTRenderer.DrawLine(Lines);
+	RTRenderer.SetLineWidth(5);
+	RTRenderer.SetLineColor(0.0, 1.0, 1.0);/**/
+	
+	RTRenderer.DrawLine(Lines);
+
 
 	//IntersectionInfo Reslut;
 	//if (Sceen.GetIntersectionInfo(Ray, Reslut))
@@ -168,8 +183,8 @@ int main(int argc, char **argv)
 	RTRenderer.Init(Width, Height);
 	CameraForRender.Init();
 	//Sceen.InitScene(&RTRenderer);
-	Sceen.AddObject("elephant.obj", std::string("elephant"));
-	RTRenderer.AddDrawable(Sceen.GetObjectByName("elephant"));
+	Sceen.AddObject("cube.obj", std::string("elephant"));
+	//RTRenderer.AddDrawable(Sceen.GetObjectByName("elephant"));
 
 	//Test Code start
 	//FBXload.ImportFBX("1M_Cube.FBX");

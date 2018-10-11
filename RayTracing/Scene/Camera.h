@@ -1,12 +1,13 @@
 #pragma once
-#include "../Math/Math.h"
+#include "RTMath.h"
 class Camera
 {
 public:
 	void Init();
 	void InitProjectMatrix();
 
-	
+	BWVector3D GetViewportPositionInCameraSpace(float X, float Y);
+	BWVector3D GetViewportPositionInWorldSpace(float X, float Y);
 	BWVector3D GetDirection() const;
 	BWVector3D GetUp() const;
 	BWVector3D GetRight() const;
@@ -28,6 +29,7 @@ private:
 	BWVector3D YawFixedAxis;
 	BWQuaternion CameraOrientation;
 	BWVector3D CameraPosition;
+
 	float FarDist;
 	float NearDist;
 	float INFINITE_FAR_PLANE_ADJUST = 0.00001;

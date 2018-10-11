@@ -1,5 +1,5 @@
 #pragma once
-#include "Math.h"
+#include "RTMath.h"
 #include "Error.h"
 
 
@@ -68,7 +68,7 @@ public:
 			C[i] = V.C[i];
 		}
 	}
-	bool HasNaNs()
+	bool HasNaNs() const 
 	{
 		for (auto &i : C)
 		{
@@ -103,7 +103,7 @@ public:
 			C[i] += CS.C[i];
 		}
 		Error(HasNaNs());
-		return this;
+		return *this;
 	}
 	CoefficientSpectrum& operator-=(const CoefficientSpectrum &CS)
 	{
@@ -118,13 +118,13 @@ public:
 	{
 		CoefficientSpectrum ret = *this;
 		for (int i = 0; i < Samples; ++i)
-			ret.c[i] *= a;
+			ret.C[i] *= a;
 		Error(!ret.HasNaNs());
 		return ret;
 	}
 	CoefficientSpectrum &operator*=(float a) {
 		for (int i = 0; i < Samples; ++i)
-			c[i] *= a;
+			C[i] *= a;
 		Error(!HasNaNs());
 		return *this;
 	}
@@ -135,15 +135,37 @@ public:
 	}
 	CoefficientSpectrum Clamp(float low = 0, float high = INFINITY) const 
 	{
-		CoefficientSpectrum ret;
-		for (int i = 0; i < nSamples; ++i)
-			ret.c[i] = ::Clamp(c[i], low, high);
+		CoefficientSpectrum ret(Samples);
+		for (int i = 0; i < Samples; ++i)
+			ret.C[i] = ::Clamp(C[i], low, high);
 		Error(!ret.HasNaNs());
 		return ret;
 	}
 protected:
 	float C[Samples];
 };
+
+class RGBSpectrum :public CoefficientSpectrum<3>
+{
+public:
+	RGBSpectrum(float V = 0.0f) :CoefficientSpectrum(V) { }
+	void ToRGB(float *RGB)
+	{
+		RGB[0] = C[0];
+		RGB[1] = C[1];
+		RGB[2] = C[2];
+	}
+	static RGBSpectrum FromRGB(const float rgb[3], SpectrumType type = SPECTRUM_REFLECTANCE)
+	{
+		RGBSpectrum s;
+		s.C[0] = rgb[0];
+		s.C[1] = rgb[1];
+		s.C[2] = rgb[2];
+		Error(!s.HasNaNs());
+		return s;
+	}
+};
+
 
 class SampledSpectrum : public CoefficientSpectrum<SpectralSamples>
 {
@@ -160,11 +182,11 @@ public:
 	{
 		for (int i  = 0 ; i < SpectralSamples ; i++)
 		{
-			float wl0 = Lerp(float(i) / float(SpectralSamples), SampledLambdaStart, SampledLambdaEnd);
-			float wl0 = Lerp(float(i + 1) / float(SpectralSamples), SampledLambdaStart, SampledLambdaEnd);
-			X.C[i] = AverageSpectrumSamples(CIE_Lambda, CIE_X, i, SampledLambdaStart, SampledLambdaEnd);
-			Y.C[i] = AverageSpectrumSamples(CIE_Lambda, CIE_Y, i, SampledLambdaStart, SampledLambdaEnd);
-			X.C[i] = AverageSpectrumSamples(CIE_Lambda, CIE_Z, i, SampledLambdaStart, SampledLambdaEnd);
+			float wl0 = Lerp(float(i) / float(SpectralSamples), float(SampledLambdaStart), float(SampledLambdaEnd));
+			float wl1 = Lerp(float(i + 1) / float(SpectralSamples), SampledLambdaStart, SampledLambdaEnd);
+			X.C[i] = AverageSpectrumSamples(CIE_Lambda, CIE_X, i, wl0, wl1);
+			Y.C[i] = AverageSpectrumSamples(CIE_Lambda, CIE_Y, i, wl0, wl1);
+			X.C[i] = AverageSpectrumSamples(CIE_Lambda, CIE_Z, i, wl0, wl1);
 		}
 
 		// Compute RGB to spectrum functions for _SampledSpectrum_
@@ -250,24 +272,4 @@ private:
 	static SampledSpectrum rgbIllum2SpectBlue;
 };
 
-class RGBSpectrum :public CoefficientSpectrum<3>
-{
-public:
-	RGBSpectrum(float V = 0.0f):CoefficientSpectrum(V){ }
-	void ToRGB(float *RGB)
-	{
-		RGB[0] = C[0];
-		RGB[1] = C[1];
-		RGB[2] = C[2];
-	}
-	static RGBSpectrum FromRGB(const float rgb[3], SpectrumType type = SPECTRUM_REFLECTANCE) 
-	{
-		RGBSpectrum s;
-		s.C[0] = rgb[0];
-		s.C[1] = rgb[1];
-		s.C[2] = rgb[2];
-		Error(!s.HasNaNs());
-		return s;
-	}
-};
 

@@ -1,7 +1,7 @@
 #pragma once
 #include "glew.h"
 #include "TestFBXLoad.h"
-#include "SSLightmapInfo.h"
+//#include "SSLightmapInfo.h"
 //
 //class TestFBXDrawObj
 //{

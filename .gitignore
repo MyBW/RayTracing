@@ -1,7 +1,5 @@
-vim.exe.stackdump
-Thumbs.db
+Debug/
+RayTracing/Dependence/fbx/
+*.db
 
-glodon_ThirdParty/Cesium-1.48/node_modules/
-
-data/
 

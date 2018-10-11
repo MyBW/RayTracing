@@ -1,6 +1,6 @@
 #include "BWElement.h"
 #include "BWPrimitive.h"
-#include "Math.h"
+#include "RTMath.h"
 BWEle3DD BWEle3DD::ZERO;
 BWEle3DD BWEle3DD::UNIT_SCALE(1.0, 1.0, 1.0);
 BWEle3DD BWEle3DD::NEGATIVE_UNIT_Z(0.0, 0.0,-1.0);
@@ -89,6 +89,14 @@ void BWQuaternion::fromAngleAxis(const Radian& rfAngle, const BWEle3DD& rkAxis)
 	x = fSin*rkAxis.x;
 	y = fSin*rkAxis.y;
 	z = fSin*rkAxis.z;
+}
+
+float BWQuaternion::normalize()
+{
+	float fNorm = Norm();
+	float factor = 1.0f / sqrt(fNorm);
+	*this = (*this) * factor;
+	return fNorm;
 }
 void BWQuaternion::ToRotationMatrix(BWMatrix4& matrix) const
 {
@@ -185,6 +193,11 @@ void BWQuaternion::fromAxes(const BWVector3D* akAxis)
 		kRot[2][iCol] = akAxis[iCol].z;
 	}
 	fromRotationMatrix(kRot);
+}
+
+float BWEle3DD::lenth() const
+{
+	return sqrt(x*x + y*y + z*z);
 }
 
 BWQuaternion BWEle3DD::getRotationTo(const BWEle3DD& dest, const BWVector3D& fallbackAxis /* = BWVector3D::ZERO */)

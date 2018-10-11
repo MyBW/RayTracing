@@ -68,6 +68,20 @@ void Camera::InitProjectMatrix()
 	UpateProjectMatrix();
 }
 
+BWVector3D Camera::GetViewportPositionInCameraSpace(float X, float Y)
+{
+	float Left, Right, Bottom, Top;
+	CalcProjectionParameters(Left, Right, Bottom, Top);
+	return BWVector3D((Right - Left) * X + Left , (Top - Bottom) * Y + Bottom, -NearDist);
+}
+
+BWVector3D Camera::GetViewportPositionInWorldSpace(float X, float Y)
+{
+	float Left, Right, Bottom, Top;
+	CalcProjectionParameters(Left, Right, Bottom, Top);
+	return GetViewMatrix().inverse() * BWVector3D((Right - Left) * X + Left, (Top - Bottom) * Y + Bottom, -NearDist);
+}
+
 void Camera::UpateProjectMatrix()
 {
 	float Left, Right, Bottom, Top;

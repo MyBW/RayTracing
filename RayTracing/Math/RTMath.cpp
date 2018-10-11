@@ -1,4 +1,4 @@
-#include "Math.h"
+#include "RTMath.h"
 #include <random>
 int Jacobi(double a[], int n, double v[], double eps, int jt)
 {
@@ -106,6 +106,13 @@ void Swap(double& d1, double& d2)
 	double tmp = d1;
 	d1 = d2;
 	d2 = tmp;
+}
+
+float Clamp(float Value, float Min, float Max)
+{
+	if (Value > Max) return Max;
+	if (Value < Min) return Min;
+	return Value;
 }
 
 float Lerp(float T, float V1, float V2)

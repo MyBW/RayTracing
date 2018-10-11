@@ -1,7 +1,23 @@
 #include "Spectrum.h"
 
 
-
+SampledSpectrum SampledSpectrum::X;
+SampledSpectrum SampledSpectrum::Y;
+SampledSpectrum SampledSpectrum::Z;
+SampledSpectrum SampledSpectrum::rgbRefl2SpectWhite;
+SampledSpectrum SampledSpectrum::rgbRefl2SpectCyan;
+SampledSpectrum SampledSpectrum::rgbRefl2SpectMagenta;
+SampledSpectrum SampledSpectrum::rgbRefl2SpectYellow;
+SampledSpectrum SampledSpectrum::rgbRefl2SpectRed;
+SampledSpectrum SampledSpectrum::rgbRefl2SpectGreen;
+SampledSpectrum SampledSpectrum::rgbRefl2SpectBlue;
+SampledSpectrum SampledSpectrum::rgbIllum2SpectWhite;
+SampledSpectrum SampledSpectrum::rgbIllum2SpectCyan;
+SampledSpectrum SampledSpectrum::rgbIllum2SpectMagenta; 
+SampledSpectrum SampledSpectrum::rgbIllum2SpectYellow;
+SampledSpectrum SampledSpectrum::rgbIllum2SpectRed;
+SampledSpectrum SampledSpectrum::rgbIllum2SpectGreen;
+SampledSpectrum SampledSpectrum::rgbIllum2SpectBlue;
 const float CIE_X[CIESamples] = {
 	// CIE X function values
 	0.0001299000f, 0.0001458470f, 0.0001638021f, 0.0001840037f,
@@ -688,14 +704,14 @@ extern float AverageSpectrumSamples(const float *Lambda, const float *Val, int N
 	// Advance to first relevant wavelength segment
 	int i = 0;
 	while (LambdaStart > Lambda[i + 1]) ++i;
-	Error(i + 1 < n);
+	Error(i + 1 < N);
 
 	// Loop over wavelength sample segments and add contributions
 #define INTERP(w, i) \
         Lerp(((w) - Lambda[i]) / (Lambda[(i)+1] - Lambda[i]), \
              Val[i], Val[(i)+1])
 #define SEG_AVG(wl0, wl1, i) (0.5f * (INTERP(wl0, i) + INTERP(wl1, i)))
-	for (; i + 1 < n && LambdaEnd >= Lambda[i]; ++i) {
+	for (; i + 1 < N && LambdaEnd >= Lambda[i]; ++i) {
 		float segStart = TMax(LambdaStart, Lambda[i]);
 		float segEnd = TMin(LambdaEnd, Lambda[i + 1]);
 		sum += SEG_AVG(segStart, segEnd, i) * (segEnd - segStart);
@@ -797,4 +813,6 @@ SampledSpectrum SampledSpectrum::FromRGB(const float rgb[3], SpectrumType type /
 	}
 	return r.Clamp();
 }
+
+
 

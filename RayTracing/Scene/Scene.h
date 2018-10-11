@@ -12,6 +12,7 @@ struct IntersectionInfo
 class Scene
 {
 public:
+	typedef IntersectionInfo IntersectionType;
 	Scene();
 	~Scene();
 	void AddObject(const char *ObjFileName, const std::string &ObjName);

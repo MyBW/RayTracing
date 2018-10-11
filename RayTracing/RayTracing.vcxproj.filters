@@ -45,9 +45,6 @@
     <ClCompile Include="Math\BWPrimitive.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="Math\Math.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
     <ClCompile Include="Scene\Camera.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -69,9 +66,6 @@
     <ClCompile Include="Test\TestFBXDrawObj.cpp">
       <Filter>Test</Filter>
     </ClCompile>
-    <ClCompile Include="Test\SSLightmapInfo.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
     <ClCompile Include="Scene\Scene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
@@ -81,15 +75,21 @@
     <ClCompile Include="OfflineRenderer\Spectrum.cpp">
       <Filter>OfflineRenderer</Filter>
     </ClCompile>
+    <ClCompile Include="OfflineRenderer\Film.cpp">
+      <Filter>OfflineRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\TestOfflineRenderer.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\RTMath.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Math\BWPrimitive.h">
-      <Filter>Math</Filter>
-    </ClInclude>
-    <ClInclude Include="Math\Math.h">
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="Scene\Camera.h">
@@ -114,9 +114,6 @@
       <Filter>Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\TestFBXDrawObj.h">
-      <Filter>Test</Filter>
-    </ClInclude>
-    <ClInclude Include="Test\SSLightmapInfo.h">
       <Filter>Test</Filter>
     </ClInclude>
     <ClInclude Include="Test\HelpFunc.h">
@@ -149,6 +146,12 @@
     <ClInclude Include="Core\Error.h">
       <Filter>Core</Filter>
     </ClInclude>
+    <ClInclude Include="OfflineRenderer\Film.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\RTMath.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="RealTimeRenderer\RealTimeRenderer.inl">
@@ -156,6 +159,12 @@
     </None>
     <None Include="RealTimeRenderer\RealTimeRenderable.inl">
       <Filter>RealTimeRenderer</Filter>
+    </None>
+    <None Include="Test\TestOfflineRenderer.inl">
+      <Filter>Test</Filter>
+    </None>
+    <None Include="OfflineRenderer\Film.inl">
+      <Filter>OfflineRenderer</Filter>
     </None>
   </ItemGroup>
 </Project>

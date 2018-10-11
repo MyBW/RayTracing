@@ -1,5 +1,6 @@
 #pragma once
 #include <math.h>
+
 struct BWEle4DD ;
 struct Radian;
 class BWMatrix4;
@@ -184,10 +185,7 @@ struct BWEle3DD
 			x * rkVector.y - y * rkVector.x
 			);
 	}
-	inline float lenth() const
-	{
-		return sqrt(x*x + y*y + z*z);
-	}
+	float lenth() const;
 	bool isZeroLength()
 	{
 		float sqlen = (x*x) + (y*y) + (z*z);
@@ -608,13 +606,8 @@ public:
 	{
 		return w*w + x*x + y*y + z*z;
 	}
-	float normalize()
-	{
-		float fNorm = Norm();
-		float factor = 1.0f / sqrt(fNorm);
-		*this = (*this) * factor;
-		return fNorm;
-	}
+	float normalize();
+	
 	void set(float fw, float fx, float fy, float fz)
 	{
 		w = fw; y = fy; z = fz; x = fx;

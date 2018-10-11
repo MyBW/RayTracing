@@ -1,8 +1,9 @@
 #pragma once
-#include "BWElement.h"
 #include <memory.h>
 #include <assert.h>
-#include <math.h>
+#include "BWElement.h"
+
+
 
 typedef BWEle2DD BWPoint2DD;
 typedef BWPoint2DD * BWPPoint2DD;
@@ -440,6 +441,7 @@ struct Radian
 		return mRad;
 	}
 };
+
 struct  BWRay
 {
 	BWRay();

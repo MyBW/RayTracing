@@ -1,6 +1,6 @@
 #include "Object.h"
 #include "Scene.h"
-#include "..\Math\Math.h"
+#include "RTMath.h"
 Scene::Scene()
 {
 
