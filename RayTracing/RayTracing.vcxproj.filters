@@ -1,0 +1,161 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{fdd70031-df5a-4eb4-94ea-b3cec369e0f6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{9683e457-e20c-4e47-9c08-16a469930db9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="RealTimeRenderer">
+      <UniqueIdentifier>{f8b075fc-f4fe-45d5-8216-d70604230612}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MeshLoad">
+      <UniqueIdentifier>{c62e0777-55fe-4b00-bbcc-3708323c15eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{668ab44e-e8e6-4ef2-93a5-f12c83e7ba72}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OfflineRenderer">
+      <UniqueIdentifier>{d7ea0cb7-4c0c-401b-9864-37682cf67131}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{c01bb680-2644-4a1a-8995-5c469a925d4d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\BWElement.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\BWPrimitive.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Math\Math.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Camera.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="RealTimeRenderer\ShaderRead.cpp">
+      <Filter>RealTimeRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Object.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshLoad\FBXAttributeTypeData.cpp">
+      <Filter>MeshLoad</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshLoad\FBXImporterImp.cpp">
+      <Filter>MeshLoad</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\TestFBXLoad.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\TestFBXDrawObj.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\SSLightmapInfo.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="OfflineRenderer\Parallel.cpp">
+      <Filter>OfflineRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="OfflineRenderer\Spectrum.cpp">
+      <Filter>OfflineRenderer</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Math\BWElement.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\BWPrimitive.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Math\Math.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Camera.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Object.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="RealTimeRenderer\RealTimeRenderer.h">
+      <Filter>RealTimeRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="RealTimeRenderer\ShaderRead.h">
+      <Filter>RealTimeRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshLoad\FBXAttributeTypeData.h">
+      <Filter>MeshLoad</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshLoad\FBXImporterImp.h">
+      <Filter>MeshLoad</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\TestFBXLoad.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\TestFBXDrawObj.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\SSLightmapInfo.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\HelpFunc.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="RealTimeRenderer\RealTimeRenderable.h">
+      <Filter>RealTimeRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\Spectrum.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\Renderer.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\Parallel.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\OfflineRenderer.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\Integrator.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\TestOfflineRenderer.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\Error.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="RealTimeRenderer\RealTimeRenderer.inl">
+      <Filter>RealTimeRenderer</Filter>
+    </None>
+    <None Include="RealTimeRenderer\RealTimeRenderable.inl">
+      <Filter>RealTimeRenderer</Filter>
+    </None>
+  </ItemGroup>
+</Project>
