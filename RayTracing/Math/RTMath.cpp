@@ -162,6 +162,14 @@ double Lenth(const BWVector3DD& a)
 {
 	return sqrt(a.x * a.x + a.y*a.y + a.z*a.z);
 }
+
+BWVector3D GetDirection(const BWVector3D &From, const BWVector3D &To)
+{
+	BWVector3D Dir = To - From;
+	Dir.normalize();
+	return Dir;
+}
+
 double Dot(const BWVector3DD& a, const BWVector3DD& b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z;

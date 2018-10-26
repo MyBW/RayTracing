@@ -33,6 +33,7 @@ double  Dot(const BWVector3DD& a, const BWVector3DD& b);
 BWVector3DD Cross(const BWVector3DD& a, const BWVector3DD& b);
 void    Normalize( BWPoint3DD& vec);
 double  Lenth(const BWVector3DD& a);
+BWVector3D GetDirection(const BWVector3D &From, const BWVector3D &To);
 const BWVector3DD GetRotatedZ(const BWVector3DD vec, double angle);
 const BWVector3DD GetRotatedAxis(const BWVector3DD vec, double angle, const BWVector3DD & axis);
 BWPoint4DD MatrixMultPoint(const float* matrix, const BWPoint4DD& point);

@@ -149,6 +149,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="App\App.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\BWElement.cpp" />
     <ClCompile Include="Math\BWPrimitive.cpp" />
@@ -160,13 +161,16 @@
     <ClCompile Include="OfflineRenderer\Spectrum.cpp" />
     <ClCompile Include="RealTimeRenderer\ShaderRead.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
+    <ClCompile Include="Scene\Light.cpp" />
     <ClCompile Include="Scene\Object.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
+    <ClCompile Include="Test\AppTest.cpp" />
     <ClCompile Include="Test\TestFBXDrawObj.cpp" />
     <ClCompile Include="Test\TestFBXLoad.cpp" />
     <ClCompile Include="Test\TestOfflineRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="App\App.h" />
     <ClInclude Include="Core\Error.h" />
     <ClInclude Include="Math\BWElement.h" />
     <ClInclude Include="Math\BWPrimitive.h" />
@@ -175,6 +179,7 @@
     <ClInclude Include="MeshLoad\FBXImporterImp.h" />
     <ClInclude Include="OfflineRenderer\Film.h" />
     <ClInclude Include="OfflineRenderer\Integrator.h" />
+    <ClInclude Include="OfflineRenderer\LightSampler.h" />
     <ClInclude Include="OfflineRenderer\OfflineRenderer.h" />
     <ClInclude Include="OfflineRenderer\Parallel.h" />
     <ClInclude Include="OfflineRenderer\Renderer.h" />
@@ -183,8 +188,10 @@
     <ClInclude Include="RealTimeRenderer\RealTimeRenderer.h" />
     <ClInclude Include="RealTimeRenderer\ShaderRead.h" />
     <ClInclude Include="Scene\Camera.h" />
+    <ClInclude Include="Scene\Light.h" />
     <ClInclude Include="Scene\Object.h" />
     <ClInclude Include="Scene\Scene.h" />
+    <ClInclude Include="Test\AppTest.h" />
     <ClInclude Include="Test\HelpFunc.h" />
     <ClInclude Include="Test\TestFBXDrawObj.h" />
     <ClInclude Include="Test\TestFBXLoad.h" />
@@ -192,6 +199,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="OfflineRenderer\Film.inl" />
+    <None Include="OfflineRenderer\LightSampler.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderable.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderer.inl" />
     <None Include="Test\TestOfflineRenderer.inl" />

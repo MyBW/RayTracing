@@ -72,7 +72,7 @@ public:
 	{
 		for (auto &i : C)
 		{
-			if (isnan(i)) return true;
+			if (!isnan(i)) return true;
 		}
 		return false;
 	}
@@ -140,6 +140,11 @@ public:
 			ret.C[i] = ::Clamp(C[i], low, high);
 		Error(!ret.HasNaNs());
 		return ret;
+	}
+	void SetValue(int Index, float Value)
+	{
+		if (Index < Samples && Index >= 0)
+			C[Index] = Value;
 	}
 protected:
 	float C[Samples];

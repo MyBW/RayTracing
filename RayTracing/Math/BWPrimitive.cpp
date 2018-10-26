@@ -222,7 +222,3 @@ void BWBOX::Draw()
 }
 
 
-void BWRay::Draw()
-{
-	BWPoint3DD vect = _start + _vector*10.0;
-}

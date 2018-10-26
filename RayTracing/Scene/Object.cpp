@@ -212,9 +212,12 @@ bool Object::GetTriangleInfoByIndex(int Index, TriangleInfo &Reslut)
 	for (int i = 0 ;i < 3; i++)
 	{
 		Reslut.P.push_back(ModelMatrix * PosData[Index * 3 + i]);
-		Reslut.N.push_back(ModelMatrix *NormalData[Index * 3 + i]);
+		Reslut.N.push_back(ModelMatrix * NormalData[Index * 3 + i]);
+		Reslut.N[Reslut.N.size() - 1] = Reslut.N[Reslut.N.size() - 1] - Position;
+		Reslut.N[Reslut.N.size() - 1].normalize();
 		Reslut.UV.push_back(UVData[Index * 3 + i]);
 	}
+	return true;
 }
 
 bool Object::GetTriangleVertexIndex(int Index, int &P1, int &P2, int &P3)

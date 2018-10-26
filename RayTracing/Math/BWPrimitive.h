@@ -250,6 +250,62 @@ struct BWMatrix4
 			M10 * vector.x + M11 * vector.y + M12 * vector.z ,
 			M20 * vector.x + M21 * vector.y + M22 * vector.z);
 	}
+	//const BWMatrix4 inverse() const
+	//{
+	//	float Coef00 = _M[2][2] * _M[3][3] - _M[3][2] * _M[2][3];
+	//	float Coef02 = _M[1][2] * _M[3][3] - _M[3][2] * _M[1][3];
+	//	float Coef03 = _M[1][2] * _M[2][3] - _M[2][2] * _M[1][3];
+
+	//	float Coef04 = _M[2][1] * _M[3][3] - _M[3][1] * _M[2][3];
+	//	float Coef06 = _M[1][1] * _M[3][3] - _M[3][1] * _M[1][3];
+	//	float Coef07 = _M[1][1] * _M[2][3] - _M[2][1] * _M[1][3];
+
+	//	float Coef08 = _M[2][1] * _M[3][2] - _M[3][1] * _M[2][2];
+	//	float Coef10 = _M[1][1] * _M[3][2] - _M[3][1] * _M[1][2];
+	//	float Coef11 = _M[1][1] * _M[2][2] - _M[2][1] * _M[1][2];
+
+	//	float Coef12 = _M[2][0] * _M[3][3] - _M[3][0] * _M[2][3];
+	//	float Coef14 = _M[1][0] * _M[3][3] - _M[3][0] * _M[1][3];
+	//	float Coef15 = _M[1][0] * _M[2][3] - _M[2][0] * _M[1][3];
+
+	//	float Coef16 = _M[2][0] * _M[3][2] - _M[3][0] * _M[2][2];
+	//	float Coef18 = _M[1][0] * _M[3][2] - _M[3][0] * _M[1][2];
+	//	float Coef19 = _M[1][0] * _M[2][2] - _M[2][0] * _M[1][2];
+
+	//	float Coef20 = _M[2][0] * _M[3][1] - _M[3][0] * _M[2][1];
+	//	float Coef22 = _M[1][0] * _M[3][1] - _M[3][0] * _M[1][1];
+	//	float Coef23 = _M[1][0] * _M[2][1] - _M[2][0] * _M[1][1];
+
+	//	const BWVector4 SignA = BWVector4(1.0, -1.0, 1.0, -1.0);
+	//	const BWVector4 SignB = BWVector4(-1.0, 1.0, -1.0, 1.0);
+
+	//	BWVector4 Fac0 = BWVector4(Coef00, Coef00, Coef02, Coef03);
+	//	BWVector4 Fac1 = BWVector4(Coef04, Coef04, Coef06, Coef07);
+	//	BWVector4 Fac2 = BWVector4(Coef08, Coef08, Coef10, Coef11);
+	//	BWVector4 Fac3 = BWVector4(Coef12, Coef12, Coef14, Coef15);
+	//	BWVector4 Fac4 = BWVector4(Coef16, Coef16, Coef18, Coef19);
+	//	BWVector4 Fac5 = BWVector4(Coef20, Coef20, Coef22, Coef23);
+	//	
+	//	BWVector4 Vec0 = BWVector4(_M[1][0], _M[0][0], _M[0][0], _M[0][0]);
+	//	BWVector4 Vec1 = BWVector4(_M[1][1], _M[0][1], _M[0][1], _M[0][1]);
+	//	BWVector4 Vec2 = BWVector4(_M[1][2], _M[0][2], _M[0][2], _M[0][2]);
+	//	BWVector4 Vec3 = BWVector4(_M[1][3], _M[0][3], _M[0][3], _M[0][3]);
+	//	
+	//	BWVector4 Inv0 = SignA * (Vec1 * Fac0 - Vec2 * Fac1 + Vec3 * Fac2);
+	//	BWVector4 Inv1 = SignB * (Vec0 * Fac0 - Vec2 * Fac3 + Vec3 * Fac4);
+	//	BWVector4 Inv2 = SignA * (Vec0 * Fac1 - Vec1 * Fac3 + Vec3 * Fac5);
+	//	BWVector4 Inv3 = SignB * (Vec0 * Fac2 - Vec1 * Fac4 + Vec2 * Fac5);
+
+	//	BWVector4 Inverse = BWVector4(Inv0, Inv1, Inv2, Inv3);
+
+	//	BWVector4 Row0 = BWVector4(Inverse[0][0], Inverse[1][0], Inverse[2][0], Inverse[3][0]);
+
+	//	float Determinant = dot(_M[0], Row0);
+
+	//	Inverse /= Determinant;
+
+	//	return Inverse;
+	//}
 	//ÇóÄæ¾ØÕó
 	const BWMatrix4 inverse() const
 	{
@@ -446,7 +502,13 @@ struct  BWRay
 {
 	BWRay();
 	~BWRay();
-	void Draw();
+	BWRay operator-()
+	{
+		BWRay Result;
+		Result._start = _start;
+		Result._vector = _vector * -1;
+		return Result;
+	}
 	BWPoint4DD _start;
 	BWPoint3DD _vector;
 };

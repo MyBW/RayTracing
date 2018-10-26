@@ -53,16 +53,23 @@ BWMatrix4& Camera::GetProjectMatrix()
 	return ProjectMatrix;
 }
 
-void Camera::Init()
+BWVector3D& Camera::GetPosition()
+{
+	return CameraPosition;
+}
+
+void Camera::Init(int Width, int Height)
 {
 	ViewMatrix = BWMatrix4::IDENTITY;
+	ScreenWidth = Width;
+	ScreenHeight = Height;
 	InitProjectMatrix();
 }
 
 void Camera::InitProjectMatrix()
 {
 	mFOVy.mRad = (3.1415 / 2);
-	mAspect = (2 / 1.0);
+	mAspect = ScreenWidth / ScreenHeight;
 	NearDist = 1.0;
 	FarDist = 1000;
 	UpateProjectMatrix();

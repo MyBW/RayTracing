@@ -34,6 +34,9 @@
     <Filter Include="Core">
       <UniqueIdentifier>{c01bb680-2644-4a1a-8995-5c469a925d4d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{3c3a763f-cb18-4e47-8ad9-3be7fc50a1a4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -83,6 +86,15 @@
     </ClCompile>
     <ClCompile Include="Math\RTMath.cpp">
       <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="App\App.cpp">
+      <Filter>App</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\AppTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Light.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +164,18 @@
     <ClInclude Include="Math\RTMath.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="App\App.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\AppTest.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene\Light.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\LightSampler.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="RealTimeRenderer\RealTimeRenderer.inl">
@@ -164,6 +188,9 @@
       <Filter>Test</Filter>
     </None>
     <None Include="OfflineRenderer\Film.inl">
+      <Filter>OfflineRenderer</Filter>
+    </None>
+    <None Include="OfflineRenderer\LightSampler.inl">
       <Filter>OfflineRenderer</Filter>
     </None>
   </ItemGroup>

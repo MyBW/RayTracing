@@ -22,6 +22,7 @@ public:
 	void SetProjectMatrix(const BWMatrix4 &ProjectMatrix);
 	void SetDrawMode(GLenum Enum);
 	void DrawLine(const std::vector<BWVector3D> &Lines);
+	void DrawImage(int Width, int Height, void *Data);
 	void Draw();
 	void AddDrawable(const ObjectType* InObject);
 	
@@ -35,6 +36,18 @@ public:
 	GLint ViewMatrixLoc;
 	GLint ProjectMatrixLoc;
 	GLint LineColorLoc;
+
+	GLuint DrawImageShader;
+	GLint ImageTextureLoc;
+	GLint DrawImagePosLoc;
+	GLint DrawImageUVLoc;
+	GLint OrthographicLoc;
+	GLuint ImageTex;
+	GLuint DrawImageVAO;
+	GLuint DrawImageTex;
+
+	std::vector<BWVector3D> Square;
+
 	std::vector<RealTimeRenderable<ObjectType>*> DrawList;
 private:
 	void InitShaderProgram();

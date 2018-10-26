@@ -3,11 +3,11 @@
 class Camera
 {
 public:
-	void Init();
+	void Init(int Width, int Height);
 	void InitProjectMatrix();
 
 	BWVector3D GetViewportPositionInCameraSpace(float X, float Y);
-	BWVector3D GetViewportPositionInWorldSpace(float X, float Y);
+	BWVector3D GetViewportPositionInWorldSpace(float X, float Y) ;
 	BWVector3D GetDirection() const;
 	BWVector3D GetUp() const;
 	BWVector3D GetRight() const;
@@ -20,8 +20,11 @@ public:
 	void UpdateViewMatrix();
 	void UpateProjectMatrix();
 	void CalcProjectionParameters(float &left, float &right, float &bottom, float &top);
+	float GetScreenWidth() const { return ScreenWidth; }
+	float GetScreenHeight() const { return ScreenHeight; }
 	BWMatrix4& GetViewMatrix();
 	BWMatrix4& GetProjectMatrix();
+	BWVector3D& GetPosition();
 private:
 	BWMatrix4 ProjectMatrix;
 	BWMatrix4 ViewMatrix;
@@ -32,6 +35,8 @@ private:
 
 	float FarDist;
 	float NearDist;
+	float ScreenWidth;
+	float ScreenHeight;
 	float INFINITE_FAR_PLANE_ADJUST = 0.00001;
 	Radian mFOVy;
 	float mAspect; // ¿í¸ß±È
