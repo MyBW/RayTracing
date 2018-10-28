@@ -2,4 +2,5 @@ Debug/
 RayTracing/Dependence/fbx/
 *.db
 *.bmp
-
+*.opensdf
+*.sdf

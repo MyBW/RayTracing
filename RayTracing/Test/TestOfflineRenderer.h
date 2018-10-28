@@ -6,17 +6,19 @@ template<typename SceneType, typename CameraType>
 class TestOfflineRenderer : public Renderer<SceneType>
 {
 public:
-	TestOfflineRenderer(CameraType* Camera = nullptr);
+	TestOfflineRenderer(CameraType* Camera = nullptr, Sampler *MainSampler);
 	void RenderScene(SceneType* Scene) override;
 	void SetCamera(CameraType* Camera);
 	CameraType* GetCamera() const { return Camera; }
 	SceneType* GetScene() const { return Scene; }
 	Film<CameraType>* GetFilm() { return &ScreenFilm; }
+	Sampler* GetMainSampler() { return MainSampler; }
 	Spectrum Li() override { return Spectrum(); }
 private:
 	Film<CameraType> ScreenFilm;
 	SceneType *Scene;
     CameraType *Camera;
+	Sampler *MainSampler
 };
 
 

@@ -3,6 +3,7 @@
 #include "..\Math\BWPrimitive.h"
 #include "..\RealTimeRenderer\RealTimeRenderer.h"
 #include "..\Test\HelpFunc.h"
+#include "RTMath.h"
 
 Object::Object():Position(0.0 , 0.0, 0.0), Scale(1.0, 1.0, 1.0)
 {
@@ -137,6 +138,8 @@ bool Object::LoadObjModel(const char* FileName,const std::string &Name)
 		}
 	}
 	ModelMatrix = BWMatrix4::IDENTITY;
+	ComputeBoundingBox();
+	UpdateAABB();
 	GetLightMapData("uvs1-export.buf", LightmapUV);
 	return true;
 
@@ -167,18 +170,26 @@ const std::vector<BWPoint2DD>& Object::GetLightmapUVData() const
 	return LightmapUV;
 }
 
+void Object::GetAABB(BWVector3D &Min, BWVector3D &Max) const
+{
+	Min = AABBMin;
+	Max = AABBMax;
+}
+
 void Object::SetPosition(float X, float Y, float Z)
 {
 	Position.x = X;
 	Position.y = Y;
 	Position.z = Z;
 	UpdateModelMatrix();
+	UpdateAABB();
 }
 
 void Object::SetRotation(float w, float x, float y, float z)
 {
 	Orientation.set(w, x, y, z);
 	UpdateModelMatrix();
+	UpdateAABB();
 }
 
 void Object::SetRoataion(const BWVector3D& axis, const Radian &angle)
@@ -188,6 +199,7 @@ void Object::SetRoataion(const BWVector3D& axis, const Radian &angle)
 	q.normalize();
 	Orientation = Orientation * q;
 	UpdateModelMatrix();
+	UpdateAABB();
 }
 
 void Object::SetScale(float x, float y, float z)
@@ -196,6 +208,7 @@ void Object::SetScale(float x, float y, float z)
 	Scale.y = y;
 	Scale.z = z;
 	UpdateModelMatrix();
+	UpdateAABB();
 }
 
 int Object::GetTriangleNum()
@@ -240,4 +253,41 @@ const BWMatrix4& Object::GetModelMatrix() const
 void Object::UpdateModelMatrix()
 {
 	ModelMatrix.makeTransform(Position, Scale, Orientation);
+}
+
+void Object::ComputeBoundingBox()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		BoundingBoxMax[i] = FLT_MIN;
+		BoundingBoxMin[i] = FLT_MAX;
+	}
+	for (auto &Vec : PosData )
+	{
+		BoundingBoxMin.x = TMin(BoundingBoxMin.x, Vec.x);
+		BoundingBoxMin.y = TMin(BoundingBoxMin.y, Vec.y);
+		BoundingBoxMin.z = TMin(BoundingBoxMin.z, Vec.z);
+
+		BoundingBoxMax.x = TMax(BoundingBoxMax.x, Vec.x);
+		BoundingBoxMax.y = TMax(BoundingBoxMax.y, Vec.y);
+		BoundingBoxMax.z = TMax(BoundingBoxMax.z, Vec.z);
+	}
+}
+
+void Object::UpdateAABB()
+{
+	for (int i = 0; i < 3; i++)
+	{
+		AABBMax[i] = FLT_MIN;
+		AABBMin[i] = FLT_MAX;
+	}
+	for (auto &Vec : PosData)
+	{
+		BWVector3D TempVec = ModelMatrix * Vec;
+		for (int i = 0; i < 3; i++)
+		{
+			AABBMin[i] = TMin(AABBMin[i], TempVec[i]);
+			AABBMax[i] = TMax(AABBMax[i], TempVec[i]);
+		}
+	}
 }

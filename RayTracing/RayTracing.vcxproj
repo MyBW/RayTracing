@@ -158,6 +158,8 @@
     <ClCompile Include="MeshLoad\FBXImporterImp.cpp" />
     <ClCompile Include="OfflineRenderer\Film.cpp" />
     <ClCompile Include="OfflineRenderer\Parallel.cpp" />
+    <ClCompile Include="OfflineRenderer\Sample.cpp" />
+    <ClCompile Include="OfflineRenderer\Sampler.cpp" />
     <ClCompile Include="OfflineRenderer\Spectrum.cpp" />
     <ClCompile Include="RealTimeRenderer\ShaderRead.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
@@ -172,6 +174,7 @@
   <ItemGroup>
     <ClInclude Include="App\App.h" />
     <ClInclude Include="Core\Error.h" />
+    <ClInclude Include="Core\RNG.h" />
     <ClInclude Include="Math\BWElement.h" />
     <ClInclude Include="Math\BWPrimitive.h" />
     <ClInclude Include="Math\RTMath.h" />
@@ -179,10 +182,13 @@
     <ClInclude Include="MeshLoad\FBXImporterImp.h" />
     <ClInclude Include="OfflineRenderer\Film.h" />
     <ClInclude Include="OfflineRenderer\Integrator.h" />
-    <ClInclude Include="OfflineRenderer\LightSampler.h" />
+    <ClInclude Include="OfflineRenderer\OfflineDirectionLight.h" />
+    <ClInclude Include="OfflineRenderer\OfflineLight.h" />
     <ClInclude Include="OfflineRenderer\OfflineRenderer.h" />
     <ClInclude Include="OfflineRenderer\Parallel.h" />
     <ClInclude Include="OfflineRenderer\Renderer.h" />
+    <ClInclude Include="OfflineRenderer\Sample.h" />
+    <ClInclude Include="OfflineRenderer\Sampler.h" />
     <ClInclude Include="OfflineRenderer\Spectrum.h" />
     <ClInclude Include="RealTimeRenderer\RealTimeRenderable.h" />
     <ClInclude Include="RealTimeRenderer\RealTimeRenderer.h" />
@@ -199,7 +205,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="OfflineRenderer\Film.inl" />
-    <None Include="OfflineRenderer\LightSampler.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderable.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderer.inl" />
     <None Include="Test\TestOfflineRenderer.inl" />

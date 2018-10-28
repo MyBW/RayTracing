@@ -96,6 +96,12 @@
     <ClCompile Include="Scene\Light.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="OfflineRenderer\Sample.cpp">
+      <Filter>OfflineRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="OfflineRenderer\Sampler.cpp">
+      <Filter>OfflineRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">
@@ -173,7 +179,19 @@
     <ClInclude Include="Scene\Light.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="OfflineRenderer\LightSampler.h">
+    <ClInclude Include="OfflineRenderer\Sample.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\Sampler.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Core\RNG.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\OfflineLight.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\OfflineDirectionLight.h">
       <Filter>OfflineRenderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -188,9 +206,6 @@
       <Filter>Test</Filter>
     </None>
     <None Include="OfflineRenderer\Film.inl">
-      <Filter>OfflineRenderer</Filter>
-    </None>
-    <None Include="OfflineRenderer\LightSampler.inl">
       <Filter>OfflineRenderer</Filter>
     </None>
   </ItemGroup>

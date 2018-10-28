@@ -17,6 +17,7 @@ public:
 	void UpdataSceneWithRealTimeRenderer();
 	void UpdateSceneWithOfflineRenderer();
 	void ShowAllNormal();
+	void ShowAllAABB();
 private:
 	RealTimeRenderer<Object> RTRenderer;
 	TestOfflineRenderer<Scene, Camera> OfflineRenderer;

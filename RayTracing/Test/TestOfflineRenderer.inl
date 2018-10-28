@@ -1,5 +1,4 @@
 #pragma once
-#include "..\OfflineRenderer\LightSampler.h"
 #include "..\Scene\Light.h"
 template<typename SceneType, typename CameraType>
 void TestOfflineRenderer<SceneType, CameraType>::RenderScene(SceneType* Scene)
@@ -25,9 +24,10 @@ void TestOfflineRenderer<SceneType, CameraType>::RenderScene(SceneType* Scene)
 }
 
 template<typename SceneType, typename CameraType>
-TestOfflineRenderer<SceneType, CameraType>::TestOfflineRenderer(CameraType* Camera)
+TestOfflineRenderer<SceneType, CameraType>::TestOfflineRenderer(CameraType* Camera ,Sampler *MainSampler)
 {
 	SetCamera(Camera);
+	this->MianSampler = MainSampler;
 }
 
 template<typename SceneType, typename CameraType>
@@ -48,16 +48,38 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 	Color.SetValue(0, 1.0f);
 	SceneType *Scene = Render->GetScene();
 	Film<CameraType> *CameraFilm = Render->GetFilm();
-	for (int i = StarPixelIndex ; i< EndPiexlIndex; i++)
+	Sampler *MainSampelr = Render->GetMainSampler();
+	Sampler *SubSampler = MainSampelr->GetSubSampler(StarPixelIndex, EndPiexlIndex);
+	int MaxSampleCount = SubSampler->GetMaxSampleCount();
+	Sample *Samples = new Sample[MaxSampleCount];
+	RNG Rng;
+	int SampleNum = 0;
+	OfflineDirectionLight<Light> DirectionLight;
+	while ((SampleNum = SubSampler->GetMoreSamples(Samples, Rng)))
+	{
+		for (int i = 0; i < SampleNum; i++)
+		{
+			SceneType::IntersectionType Intersection;
+			BWRay Ray = CameraFilm->GetRayFromCamera(i);
+			if (Scene->GetIntersectionInfo(Ray, Intersection))
+			{
+				DirectionLight.SetLightSource(Scene->GetLightByName(std::string("DirectionalLight")));
+				Color = DirectionLight.Sample_L(Intersection);
+				CameraFilm->SetSpectrum(i, &Color);
+			}
+		}
+
+	}
+	/*for (int i = StarPixelIndex ; i< EndPiexlIndex; i++)
 	{
 		SceneType::IntersectionType Intersection;
 		BWRay Ray = CameraFilm->GetRayFromCamera(i);
 		if (Scene->GetIntersectionInfo(Ray, Intersection))
 		{
-			Color = LightSampler::GetDirectionalLightLighting<Light , SceneType::IntersectionType>(Scene->GetLightByName(std::string("DirectionalLight")), &Intersection);
+			Color = LightSampler::GetDirectionalLightLighting<Light, SceneType::IntersectionType>(Scene->GetLightByName(std::string("DirectionalLight")), &Intersection);
 			CameraFilm->SetSpectrum(i, &Color);
 		}
-	}
+	}*/
 }
 
 template<typename SceneType, typename CameraType>

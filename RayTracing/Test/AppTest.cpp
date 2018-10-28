@@ -263,3 +263,36 @@ void AppTest::ShowAllNormal()
 	RTRenderer.DrawLine(Lines);
 }
 
+void AppTest::ShowAllAABB()
+{
+	std::vector<BWVector3D> Lines;
+	for (int i = 0; i < Sceen.GetObjects().size(); i++)
+	{
+		Object *Obj = Sceen.GetObjects()[i];
+		BWVector3D Min;
+		BWVector3D Max;
+		BWVector3D Ext;
+		Obj->GetAABB(Min, Max);
+		for (int i = 0; i < 3;i++)
+		{
+			Ext[i] = Max[i] - Min[i];
+		}
+		for (int i = 0; i < 3;i ++)
+		{
+			BWVector3D Temp = Min;
+			Temp[i] += Ext[i];
+			Lines.push_back(Min);
+			Lines.push_back(Temp);
+		}
+		for (int i = 0; i < 3; i++)
+		{
+			BWVector3D Temp = Max;
+			Temp[i] -= Ext[i];
+			Lines.push_back(Max);
+			Lines.push_back(Temp);
+		}
+	}
+	RTRenderer.SetLineColor(0.0, 0.0, 1.0);
+	RTRenderer.DrawLine(Lines);
+}
+

@@ -686,3 +686,88 @@ void Normalize( BWPoint3DD& vec)
  {
 	 return (end - start) * k + start;
  }
+
+ bool AABBIntersctRay(const BWRay& Ray, const BWVector3D &Min, const BWVector3D &Max)
+ {
+	 double ox = Ray._start.x; double oy = Ray._start.y; double oz = Ray._start.z;
+	 double dx = Ray._vector.x; double dy = Ray._vector.y; double dz = Ray._vector.z;
+	 double tx_min, ty_min, tz_min;
+	 double tx_max, ty_max, tz_max;
+
+	 //x0,y0,z0为包围体的最小顶点
+	 //x1,y1,z1为包围体的最大顶点
+	 if (abs(dx) < 0.000001f)
+	 {
+		 //若射线方向矢量的x轴分量为0且原点不在盒体内
+		 if (ox < Max.x || ox > Min.x)
+			 return false;
+	 }
+	 else
+	 {
+		 if (dx >= 0)
+		 {
+			 tx_min = (Min.x - ox) / dx;
+			 tx_max = (Max.x - ox) / dx;
+		 }
+		 else
+		 {
+			 tx_min = (Max.x - ox) / dx;
+			 tx_max = (Min.x - ox) / dx;
+		 }
+
+	 }
+
+
+	 if (abs(dy) < 0.000001f)
+	 {
+		 //若射线方向矢量的x轴分量为0且原点不在盒体内
+		 if (oy < Max.y || oy > Min.y)
+			 return false;
+	 }
+	 else
+	 {
+		 if (dy >= 0)
+		 {
+			 ty_min = (Min.y - oy) / dy;
+			 ty_max = (Max.y - oy) / dy;
+		 }
+		 else
+		 {
+			 ty_min = (Max.y - oy) / dy;
+			 ty_max = (Min.y - oy) / dy;
+		 }
+
+	 }
+
+
+	 if (abs(dz) < 0.000001f)
+	 {
+		 //若射线方向矢量的x轴分量为0且原点不在盒体内
+		 if (oz < Max.z || oz > Min.z)
+			 return false;
+	 }
+	 else
+	 {
+		 if (dz >= 0)
+		 {
+			 tz_min = (Min.z - oz) / dz;
+			 tz_max = (Max.z - oz) / dz;
+		 }
+		 else
+		 {
+			 tz_min = (Max.z - oz) / dz;
+			 tz_max = (Min.z - oz) / dz;
+		 }
+
+	 }
+
+	 double t0, t1;
+
+	 //光线进入平面处（最靠近的平面）的最大t值 
+	 t0 = TMax(tz_min, TMax(tx_min, ty_min));
+
+	 //光线离开平面处（最远离的平面）的最小t值
+	 t1 = TMin(tz_max, TMin(tx_max, ty_max));
+
+	 return t0 < t1;
+ }

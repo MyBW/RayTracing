@@ -34,8 +34,15 @@ public:
 	const std::vector<BWVector3D>& GetNormalData() const;
 	const std::vector<unsigned int>& GetIndexData() const;
 	const std::vector<BWPoint2DD>& GetLightmapUVData() const;
+	void GetAABB(BWVector3D &Min, BWVector3D &Max) const;
 private:
 	void UpdateModelMatrix();
+	void ComputeBoundingBox();
+	void UpdateAABB();
+	BWVector3D BoundingBoxMin;
+	BWVector3D BoundingBoxMax;
+	BWVector3D AABBMin;
+	BWVector3D AABBMax;
 	std::string Name;
 	BWMatrix4 ModelMatrix;
 	BWVector3D Position;
