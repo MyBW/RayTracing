@@ -18,7 +18,8 @@ private:
 	Film<CameraType> ScreenFilm;
 	SceneType *Scene;
     CameraType *Camera;
-	Sampler *MainSampler
+	Sampler *MainSampler;
+	Integrator *RendererIntegrator;
 };
 
 

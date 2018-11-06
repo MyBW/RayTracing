@@ -54,7 +54,6 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 	Sample *Samples = new Sample[MaxSampleCount];
 	RNG Rng;
 	int SampleNum = 0;
-	OfflineDirectionLight<Light> DirectionLight;
 	while ((SampleNum = SubSampler->GetMoreSamples(Samples, Rng)))
 	{
 		for (int i = 0; i < SampleNum; i++)
@@ -63,8 +62,7 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 			BWRay Ray = CameraFilm->GetRayFromCamera(i);
 			if (Scene->GetIntersectionInfo(Ray, Intersection))
 			{
-				DirectionLight.SetLightSource(Scene->GetLightByName(std::string("DirectionalLight")));
-				Color = DirectionLight.Sample_L(Intersection);
+			 	Spectrum Color = Render->RendererIntegrator->Li(Scene, Intersection);
 				CameraFilm->SetSpectrum(i, &Color);
 			}
 		}

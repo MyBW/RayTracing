@@ -102,6 +102,12 @@
     <ClCompile Include="OfflineRenderer\Sampler.cpp">
       <Filter>OfflineRenderer</Filter>
     </ClCompile>
+    <ClCompile Include="OfflineRenderer\BSDF.cpp">
+      <Filter>OfflineRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="OfflineRenderer\Montecarlo.cpp">
+      <Filter>OfflineRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">
@@ -152,9 +158,6 @@
     <ClInclude Include="OfflineRenderer\Parallel.h">
       <Filter>OfflineRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="OfflineRenderer\OfflineRenderer.h">
-      <Filter>OfflineRenderer</Filter>
-    </ClInclude>
     <ClInclude Include="OfflineRenderer\Integrator.h">
       <Filter>OfflineRenderer</Filter>
     </ClInclude>
@@ -188,10 +191,25 @@
     <ClInclude Include="Core\RNG.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="OfflineRenderer\OfflineLight.h">
+    <ClInclude Include="OfflineRenderer\DirectLightingIntegrator.h">
       <Filter>OfflineRenderer</Filter>
     </ClInclude>
-    <ClInclude Include="OfflineRenderer\OfflineDirectionLight.h">
+    <ClInclude Include="OfflineRenderer\BSDF.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\Montecarlo.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\RTMaterial.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\RTRenderer.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\RTLight.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\RTDirectionLight.h">
       <Filter>OfflineRenderer</Filter>
     </ClInclude>
   </ItemGroup>
