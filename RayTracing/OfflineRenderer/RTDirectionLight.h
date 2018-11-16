@@ -1,15 +1,15 @@
 #pragma once
+#include "RTLight.h"
 
-template<typename DirectionLightType>
-class OfflineDirectionLight : public OfflineLight
+template<typename DirectionLightType, typename IntersectionType>
+class OfflineDirectionLight : public OfflineLight<IntersectionType>
 {
 public:
 	OfflineDirectionLight():LightSource(nullptr){ }
 	DirectionLightType* GetLightSource() { return LightSource; }
 	DirectionLightType* SetLightSource(DirectionLightType *InLightSource) { LightSource = InLightSource; }
 
-	template<typename InterseciontType>
-	Spectrum Sample_L(const IntersectionType &Intersection) override
+	Spectrum Sample_L(const IntersectionType *Intersection)
 	{
 		if (!LightSource) return Spectrum(0.0);
 		BWVector3D LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());

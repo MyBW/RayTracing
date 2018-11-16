@@ -22,7 +22,7 @@ public:
 	void SetProjectMatrix(const BWMatrix4 &ProjectMatrix);
 	void SetDrawMode(GLenum Enum);
 	void DrawLine(const std::vector<BWVector3D> &Lines);
-	void DrawImage(int Width, int Height, void *Data);
+	void DrawImage(int Width, int Height, void *Data, GLenum SrcPF = GL_RGB, GLenum DestPF = GL_RGB, GLenum PixelEleType = GL_UNSIGNED_BYTE);
 	void Draw();
 	void AddDrawable(const ObjectType* InObject);
 	

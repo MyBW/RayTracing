@@ -231,7 +231,7 @@ void RealTimeRenderer<ObjectType>::AddDrawable(const ObjectType* InObject)
 
 
 template<typename ObjectType>
-void RealTimeRenderer<ObjectType>::DrawImage(int Width, int Height, void *Data)
+void RealTimeRenderer<ObjectType>::DrawImage(int Width, int Height, void *Data, GLenum SrcPF = GL_RGB, GLenum DestPF = GL_RGB, GLenum PixelEleType = GL_UNSIGNED_BYTE)
 {
 	
 	glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
@@ -241,7 +241,7 @@ void RealTimeRenderer<ObjectType>::DrawImage(int Width, int Height, void *Data)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0,GL_RGB, GL_UNSIGNED_BYTE, Data);
+	glTexImage2D(GL_TEXTURE_2D, 0, SrcPF, Width, Height, 0, DestPF, PixelEleType, Data);
 
 
 	glActiveTexture(GL_TEXTURE0);

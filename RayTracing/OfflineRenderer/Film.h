@@ -1,6 +1,6 @@
 #pragma once
 #include "BWPrimitive.h"
-#include "OfflineRenderer.h"
+#include "RTRenderer.h"
 template<typename CameraType>
 class Film
 {

@@ -160,6 +160,10 @@ public:
 		RGB[1] = C[1];
 		RGB[2] = C[2];
 	}
+	RGBSpectrum(const CoefficientSpectrum<3>& Data):CoefficientSpectrum(Data)
+	{
+
+	}
 	static RGBSpectrum FromRGB(const float rgb[3], SpectrumType type = SPECTRUM_REFLECTANCE)
 	{
 		RGBSpectrum s;

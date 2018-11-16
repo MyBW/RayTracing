@@ -207,14 +207,6 @@ void AppTest::UpdataSceneWithRealTimeRenderer()
 void AppTest::UpdateSceneWithOfflineRenderer()
 {
 
-	/*static AUX_RGBImageRec * imageRec = nullptr;
-	if (!imageRec)
-	{
-		imageRec = CreateTextureFromBmp();
-		if (!imageRec)
-			exit(EXIT_FAILURE);
-	}*/
-	
 	static unsigned char *Data = nullptr;
 	int width = OfflineRenderer.GetFilm()->GetWidth();
 	int height = OfflineRenderer.GetFilm()->GetHeight();

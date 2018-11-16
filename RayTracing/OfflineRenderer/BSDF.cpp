@@ -1,4 +1,5 @@
 #include "BSDF.h"
+#include "Montecarlo.h"
 
 Spectrum BXDF::Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float u1, float u2, float &pdf) const
 {
@@ -10,7 +11,7 @@ Spectrum BXDF::Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float u1, float u2
 
 float BXDF::Pdf(const BWVector3D &Wo, BWVector3D &Wi) const
 {
-	SameHemisphere(Wi, Wo) ? AbsCosTheta(Wi) / 3.1415 : 0.0f;
+	return SameHemisphere(Wi, Wo) ? AbsCosTheta(Wi) / 3.1415 : 0.0f;
 }
 
 Spectrum Lambertian::F(const BWVector3D &Wi, const BWVector3D &Wo) const

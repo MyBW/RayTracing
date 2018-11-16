@@ -1,5 +1,5 @@
 #pragma once
-#include "OfflineRenderer.h"
+#include "RTRenderer.h"
 template<typename ScenenType>
 class Renderer
 {

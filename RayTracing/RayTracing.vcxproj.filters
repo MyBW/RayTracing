@@ -108,6 +108,9 @@
     <ClCompile Include="OfflineRenderer\Montecarlo.cpp">
       <Filter>OfflineRenderer</Filter>
     </ClCompile>
+    <ClCompile Include="Core\RNG.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">

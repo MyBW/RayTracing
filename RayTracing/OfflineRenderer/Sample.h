@@ -41,16 +41,16 @@ public:
 		{
 			TotSampleDataSize += N2D[i] * 2;
 		}
-		float *Data = new float[TotSampleDataSize];
+		DataMem = new float[TotSampleDataSize];
 		int OffSet = 0;
 		for (int i = 0; i < N1D.size();i++)
 		{
-			N1Data[i] = Data + OffSet;
+			N1Data[i] = DataMem + OffSet;
 			OffSet += N1D[i];
 		}
 		for (int i = 0; i < N2D.size();i++)
 		{
-			N2Data[i] = Data + OffSet;
+			N2Data[i] = DataMem + OffSet;
 			OffSet += N2D[i] * 2;
 		}
 	}

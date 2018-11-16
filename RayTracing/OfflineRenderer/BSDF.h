@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
 #include "BWPrimitive.h"
-#include "OfflineRenderer.h"
+#include "RTRenderer.h"
+#include "RNG.h"
 
 float AbsCosTheta(const BWVector3D &W)
 {

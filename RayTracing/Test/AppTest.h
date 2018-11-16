@@ -5,6 +5,7 @@
 #include "../Scene/Scene.h"
 #include "../Scene/Camera.h"
 #include "TestOfflineRenderer.h"
+#include "../OfflineRenderer/DirectLightingIntegrator.h"
 
 class AppTest : public App
 {
@@ -20,7 +21,7 @@ public:
 	void ShowAllAABB();
 private:
 	RealTimeRenderer<Object> RTRenderer;
-	TestOfflineRenderer<Scene, Camera> OfflineRenderer;
+	TestOfflineRenderer<Scene, Camera , DirectLightingIntegrator<Scene, Scene::IntersectionType>> OfflineRenderer;
 
 	Scene Sceen;
 	Camera CameraForRender;
