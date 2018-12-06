@@ -190,6 +190,7 @@
     <ClInclude Include="OfflineRenderer\Montecarlo.h" />
     <ClInclude Include="OfflineRenderer\RTDirectionLight.h" />
     <ClInclude Include="OfflineRenderer\RTLight.h" />
+    <ClInclude Include="OfflineRenderer\RTPointLight.h" />
     <ClInclude Include="OfflineRenderer\RTRenderer.h" />
     <ClInclude Include="OfflineRenderer\Parallel.h" />
     <ClInclude Include="OfflineRenderer\Renderer.h" />

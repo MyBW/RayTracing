@@ -65,6 +65,16 @@ void Scene::AddLight(Light* L)
 	}
 }
 
+std::vector<Scene::DirectionLightType*>& Scene::GetAllDireciontLight()
+{
+	return DireciontLights;
+}
+
+std::vector<Scene::PointLightType*>& Scene::GetAllPointLight()
+{
+	return PointLights;
+}
+
 Light* Scene::GetLightByName(std::string &Name)
 {
 	for (auto L:Lights )

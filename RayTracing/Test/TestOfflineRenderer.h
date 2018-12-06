@@ -4,13 +4,14 @@
 #include "../OfflineRenderer/Film.h"
 #include "../OfflineRenderer/Integrator.h"
 class Sampler;
-template<typename SceneType, typename CameraType , typename IntegratorType>
+template<typename SceneType, typename CameraType>
 class TestOfflineRenderer : public Renderer<SceneType>
 {
 public:
 	TestOfflineRenderer(CameraType* Camera = nullptr, Sampler *MainSampler = nullptr);
 	void RenderScene(SceneType* Scene) override;
 	void SetCamera(CameraType* Camera);
+	void SetIntegrator(Integrator<typename SceneType, typename SceneType::IntersectionType> *InIntergrator);
 	CameraType* GetCamera() const { return Camera; }
 	SceneType* GetScene() const { return Scene; }
 	Film<CameraType>* GetFilm() { return &ScreenFilm; }
@@ -21,19 +22,20 @@ public:
 	SceneType *Scene;
     CameraType *Camera;
 	Sampler *MainSampler;
-	IntegratorType *RendererIntegrator;
+	Integrator<typename SceneType , typename SceneType::IntersectionType> *RendererIntegrator;
 };
 
 
-template<typename SceneType, typename CameraType, typename IntegratorType>
+
+template<typename SceneType, typename CameraType>
 class TestOfflineRendererTask :public Task
 {
 public:
-	TestOfflineRendererTask(TestOfflineRenderer<SceneType, CameraType, IntegratorType> *Render , int StarPixelIndex, int EndPiexlIndex);
+	TestOfflineRendererTask(TestOfflineRenderer<SceneType, CameraType> *Render , int StarPixelIndex, int EndPiexlIndex);
 	~TestOfflineRendererTask();
 	void Run() override;
 private:
-	TestOfflineRenderer<SceneType, CameraType, IntegratorType> *Render;
+	TestOfflineRenderer<SceneType, CameraType> *Render;
 	int StarPixelIndex;
 	int EndPiexlIndex;
 };

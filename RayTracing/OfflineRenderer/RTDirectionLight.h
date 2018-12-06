@@ -2,10 +2,10 @@
 #include "RTLight.h"
 
 template<typename DirectionLightType, typename IntersectionType>
-class OfflineDirectionLight : public OfflineLight<IntersectionType>
+class RTDirectionLight : public RTLight<IntersectionType>
 {
 public:
-	OfflineDirectionLight():LightSource(nullptr){ }
+	RTDirectionLight():LightSource(nullptr){ }
 	DirectionLightType* GetLightSource() { return LightSource; }
 	DirectionLightType* SetLightSource(DirectionLightType *InLightSource) { LightSource = InLightSource; }
 

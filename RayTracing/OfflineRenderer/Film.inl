@@ -1,5 +1,14 @@
 #pragma once
 template<typename CameraType>
+BWRay Film<CameraType> ::GetRayFromCamera(float Y, float Y)
+{
+	BWRay Ray;
+	Ray._start = Camera->GetPosition();
+	Ray._vector = Camera->GetViewportPositionInWorldSpace(X, Y) - Ray._start;
+	Ray._vector.normalize();
+	return Ray;
+}
+template<typename CameraType>
 BWRay Film<CameraType>::GetRayFromCamera(int WIndex, int HIndex)
 {
 	if (WIndex < 0 || WIndex >= Width || HIndex < 0 || HIndex >= Height)
@@ -8,11 +17,7 @@ BWRay Film<CameraType>::GetRayFromCamera(int WIndex, int HIndex)
 	}
 	float X = float(WIndex) / Width;
 	float Y = float(HIndex) / Height;
-	BWRay Ray;
-	Ray._start = Camera->GetPosition();
-	Ray._vector = Camera->GetViewportPositionInWorldSpace(X, Y) - Ray._start;
-	Ray._vector.normalize();
-	return Ray;
+	return GetRayFromCamera(X, Y);
 }
 template<typename CameraType>
 BWRay Film<CameraType>::GetRayFromCamera(int PixelIndex)

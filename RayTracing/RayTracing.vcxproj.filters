@@ -215,6 +215,9 @@
     <ClInclude Include="OfflineRenderer\RTDirectionLight.h">
       <Filter>OfflineRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="OfflineRenderer\RTPointLight.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="RealTimeRenderer\RealTimeRenderer.inl">

@@ -1,6 +1,6 @@
 #pragma once
 template<typename IntersectionType>
-class OfflineLight
+class RTLight
 {
 public:
 	virtual Spectrum Sample_L(const IntersectionType *Intersection) = 0;

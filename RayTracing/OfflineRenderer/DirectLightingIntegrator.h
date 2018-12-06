@@ -8,9 +8,14 @@ class DirectLightingIntegrator : public Integrator<SceneType, IntersectionType>
 public:
 	Spectrum Li(SceneType *InScene, IntersectionType *Intersction)
 	{
-		OfflineDirectionLight<Light, IntersectionType> DirectionLight;
+		Spectrum Color;
+		for (int i = 0;i< AllLights.size() ;i++)
+		{
+			Color += AllLights[i].Sample_L(Intersction);
+		}
+		/*RTDirectionLight<Light, IntersectionType> DirectionLight;
 		DirectionLight.SetLightSource(InScene->GetLightByName(std::string("DirectionalLight")));
 		Spectrum Color = DirectionLight.Sample_L(Intersction);
-		return Color;
+		return Color;*/
 	}
 };
