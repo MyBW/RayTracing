@@ -1,4 +1,7 @@
 #pragma once
+#include "RTDirectionLight.h"
+#include "RTPointLight.h"
+#include "RTLight.h"
 template<typename SceneType, typename IntersectionType>
 class Integrator
 {
@@ -20,13 +23,13 @@ Spectrum Integrator<SceneType, IntersectionType>::Init(SceneType *InScene)
 	{
 		DirectionLights.push_back(new RTDirectionLight<SceneType::DirectionLightType, IntersectionType>());
 		AllLights.push_back(DirectionLights[i]);
-		DirectionLights[i].SetLightSource(SceneDirectionLights[i]);
+		DirectionLights[i]->SetLightSource(SceneDirectionLights[i]);
 	}
 	std::vector<SceneType::PointLightType*>& ScenePointLights = InScene->GetAllPointLight();
 	for (int i = 0; i < ScenePointLights.size(); i++)
 	{
 		PointLights.push_back(new RTPointLight<SceneType::PointLightType, IntersectionType>());
 		AllLights.push_back(PointLights[i]);
-		PointLights[i].SetLightSource(ScenePointLights[i]);
+		PointLights[i]->SetLightSource(ScenePointLights[i]);
 	}
 }

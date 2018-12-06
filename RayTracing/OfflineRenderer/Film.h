@@ -12,6 +12,7 @@ public:
 	Spectrum* GetSpectrum(int PixelIndxe);
 	int GetWidth() const { return Width; }
 	int GetHeight() const { return Height; }
+	BWRay GetRayFromCamera(float X, float Y);
 	BWRay GetRayFromCamera(int WIndex, int HIndex);
 	BWRay GetRayFromCamera(int PixelIndex);
 	void *GetData() { return FinalColor; }

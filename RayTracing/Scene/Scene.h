@@ -1,10 +1,10 @@
 #pragma once
 #include <vector>
 #include <string>
+#include "Light.h"
+#include "DirectionLight.h"
+#include "PointLight.h"
 class Object;
-class Light;
-class DirectionLight;
-class PointLight;
 
 struct IntersectionInfo 
 {

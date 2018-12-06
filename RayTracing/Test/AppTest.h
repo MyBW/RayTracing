@@ -21,7 +21,7 @@ public:
 	void ShowAllAABB();
 private:
 	RealTimeRenderer<Object> RTRenderer;
-	TestOfflineRenderer<Scene, Camera , DirectLightingIntegrator<Scene, Scene::IntersectionType>> OfflineRenderer;
+	TestOfflineRenderer<Scene, Camera> OfflineRenderer;
 
 	Scene Sceen;
 	Camera CameraForRender;

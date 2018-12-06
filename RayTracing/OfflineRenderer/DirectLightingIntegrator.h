@@ -1,6 +1,5 @@
 #pragma once
 #include "Integrator.h"
-#include "RTDirectionLight.h"
 
 template<typename SceneType, typename IntersectionType>
 class DirectLightingIntegrator : public Integrator<SceneType, IntersectionType>

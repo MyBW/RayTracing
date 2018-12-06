@@ -1,6 +1,6 @@
 #pragma once
 template<typename CameraType>
-BWRay Film<CameraType> ::GetRayFromCamera(float Y, float Y)
+BWRay Film<CameraType> ::GetRayFromCamera(float X, float Y)
 {
 	BWRay Ray;
 	Ray._start = Camera->GetPosition();
