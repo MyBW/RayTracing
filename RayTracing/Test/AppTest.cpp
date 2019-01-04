@@ -31,13 +31,15 @@ void AppTest::Init(int Width, int Height)
 	Object *TestObj = Sceen.GetObjectByName("obj1");
 	TestObj->SetPosition(0, -1, -20);
 	TestObj->SetScale(10, 1, 10);
+	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj1"));
 
 	TestObj = Sceen.GetObjectByName("obj2");
 	TestObj->SetPosition(0, 0, -20);
 	TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
-
-	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj1"));
 	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj2"));
+
+	
+	
 
 	DirectionLight *L = new DirectionLight();
 	L->SetName(std::string("DirectionalLight"));

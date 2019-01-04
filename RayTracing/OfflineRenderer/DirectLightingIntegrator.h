@@ -20,7 +20,7 @@ public:
 			//采样灯光
 			LightColor = AllLights[i]->Le(Intersction);
 			//采样材质
-			Color +=  LightColor * Bsdf.F(Intersction->InputRay._vector, LightDir);
+			Color += LightColor * Bsdf.F(Intersction->InputRay._vector, LightDir);
 			/*BWVector3D ViewDir = Intersection->InputRay._vector;
 			BWVector3D Normal = Intersection->IntersectionNormal;
 			double LDotN = Dot(LightDir, Normal);

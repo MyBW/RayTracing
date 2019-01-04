@@ -24,7 +24,7 @@ Spectrum BSDF::F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag /*= 
 	Spectrum Color;
 	for (int i = 0; i < BXDFs.size(); i++)
 	{
-		 Color = BXDFs[i]->F(Wi, Wo);
+		Color = BXDFs[i]->F(Wi, Wo);
 	}
 	return Color;
 }
