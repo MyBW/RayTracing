@@ -15,7 +15,6 @@ void BSDF::AddBXDF(BXDF *NewBxDF)
 	if (NewBxDF)
 	{
 		BXDFs.push_back(NewBxDF);
-		NewBxDF->SetMaterial(Material);
 	}
 }
 
@@ -45,5 +44,5 @@ float BXDF::Pdf(const BWVector3D &Wo, BWVector3D &Wi) const
 
 Spectrum Lambertian::F(const BWVector3D &Wi, const BWVector3D &Wo) const
 {
-	return Material->GetBaseColor() * INV_PI;
+	return R * INV_PI;
 }

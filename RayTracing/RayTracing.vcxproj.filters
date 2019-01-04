@@ -111,6 +111,9 @@
     <ClCompile Include="Core\RNG.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="OfflineRenderer\RTMaterial.cpp">
+      <Filter>OfflineRenderer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">

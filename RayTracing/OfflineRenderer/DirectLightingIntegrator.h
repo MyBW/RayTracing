@@ -12,10 +12,15 @@ public:
 		BWVector3D LightDir;
 		for (int i = 0;i< AllLights.size() ;i++)
 		{
+			Spectrum LightColor;
+			BSDF Bsdf;
+
+			Intersction->Material->CreateBSDF(*Intersction, Bsdf);
+
 			//采样灯光
-			Color = AllLights[i]->Sample_L(Intersction, LightDir);
+			LightColor = AllLights[i]->Le(Intersction);
 			//采样材质
-			Color = Color * Intersction->Material.GetLightingModel().F(Intersction->InputRay._vector, LightDir);
+			Color +=  LightColor * Bsdf.F(Intersction->InputRay._vector, LightDir);
 			/*BWVector3D ViewDir = Intersection->InputRay._vector;
 			BWVector3D Normal = Intersection->IntersectionNormal;
 			double LDotN = Dot(LightDir, Normal);

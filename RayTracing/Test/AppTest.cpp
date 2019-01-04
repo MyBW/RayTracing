@@ -25,11 +25,20 @@ void AppTest::Init(int Width, int Height)
 {
 	RTRenderer.Init(Width, Height);
 	CameraForRender.Init(Width, Height);
-	Sceen.AddObject("planet.obj", std::string("elephant"));
-	Object *TestObj = Sceen.GetObjectByName("elephant");
+	Sceen.AddObject("cube.obj", std::string("obj1"));
+	Sceen.AddObject("planet.obj", std::string("obj2"));
+
+	Object *TestObj = Sceen.GetObjectByName("obj1");
+	TestObj->SetPosition(0, -1, -20);
+	TestObj->SetScale(10, 1, 10);
+
+	TestObj = Sceen.GetObjectByName("obj2");
 	TestObj->SetPosition(0, 0, -20);
-	TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15/4));
-	RTRenderer.AddDrawable(Sceen.GetObjectByName("elephant"));
+	TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
+
+	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj1"));
+	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj2"));
+
 	DirectionLight *L = new DirectionLight();
 	L->SetName(std::string("DirectionalLight"));
 	L->SetPosition(BWVector3D(0.0, 0.0, 5.0));
@@ -116,7 +125,7 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 	CameraForRender.Move(Direction);
 	if (ShowOfflineRender)
 	{
-		DirectLightingIntegrator<Scene, Scene::IntersectionType> LightingIntegrator;
+		DirectLightingIntegrator<Scene, IntersectionInfo> LightingIntegrator;
 		OfflineRenderer.SetCamera(&CameraForRender);
 		OfflineRenderer.SetIntegrator(&LightingIntegrator);
 

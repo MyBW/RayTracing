@@ -4,6 +4,7 @@
 #include "..\RealTimeRenderer\RealTimeRenderer.h"
 #include "..\Test\HelpFunc.h"
 #include "RTMath.h"
+#include "..\OfflineRenderer\RTMaterial.h"
 
 Object::Object():Position(0.0 , 0.0, 0.0), Scale(1.0, 1.0, 1.0)
 {
@@ -11,6 +12,7 @@ Object::Object():Position(0.0 , 0.0, 0.0), Scale(1.0, 1.0, 1.0)
 	Orientation.x = 0;
 	Orientation.y = 0;
 	Orientation.z = 0;
+	Material = new RTMaterial();
 }
 
 bool Object::LoadObjModel(const char* FileName,const std::string &Name)
@@ -282,6 +284,7 @@ void Object::UpdateWorldInfor()
 		WorldNormalData[i].normalize();
 	}
 }
+
 
 const BWMatrix4& Object::GetModelMatrix() const
 {

@@ -3,7 +3,6 @@
 #include "BWPrimitive.h"
 #include "RTRenderer.h"
 #include "RNG.h"
-class RTMaterial;
 float AbsCosTheta(const BWVector3D &W);
 bool SameHemisphere(const BWVector3D &Wi, const BWVector3D &Wo);
 class BXDF;
@@ -33,9 +32,8 @@ public:
 	Spectrum RHO(const BWVector3D &Wo, RNG &Rng, BXDF_TYPE Flag = BXDF_TYPE::BXDF_ALL) const;
 	Spectrum RHO(RNG &Rng, BXDF_TYPE Flag = BXDF_TYPE::BXDF_ALL) const;
 	std::vector<BXDF*> BXDFs;
-	void SetMaterial(RTMaterial *Material) { this->Material = Material; }
+	
 protected:
-	RTMaterial *Material;
 };
 
 class BXDF
@@ -44,14 +42,14 @@ public:
    virtual Spectrum F(const BWVector3D &Wi, const BWVector3D &Wo) const = 0;
    virtual Spectrum Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float u1, float u2, float &pdf) const;
    virtual float Pdf(const BWVector3D &Wo, BWVector3D &Wi) const;
-   void SetMaterial(RTMaterial *Material) { this->Material = Material; }
 protected:
-   RTMaterial *Material;
 };
 
 class Lambertian : public BXDF
 {
 public:
 	Spectrum F(const BWVector3D &Wi, const BWVector3D &Wo) const override;
+	inline void SetColor(const Spectrum &R) { this->R = R; }
 private:
+	Spectrum R;
 };

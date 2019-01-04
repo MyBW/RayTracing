@@ -11,7 +11,7 @@ public:
 	TestOfflineRenderer(CameraType* Camera = nullptr, Sampler *MainSampler = nullptr);
 	void RenderScene(SceneType* Scene) override;
 	void SetCamera(CameraType* Camera);
-	void SetIntegrator(Integrator<typename SceneType, typename SceneType::IntersectionType> *InIntergrator);
+	void SetIntegrator(Integrator<typename SceneType, IntersectionInfo> *InIntergrator);
 	void SetSampler(Sampler* InSampler) { MainSampler = InSampler; }
 	CameraType* GetCamera() const { return Camera; }
 	SceneType* GetScene() const { return Scene; }
@@ -23,7 +23,7 @@ public:
 	SceneType *Scene;
     CameraType *Camera;
 	Sampler *MainSampler;
-	Integrator<typename SceneType , typename SceneType::IntersectionType> *RendererIntegrator;
+	Integrator<typename SceneType , IntersectionInfo> *RendererIntegrator;
 };
 
 

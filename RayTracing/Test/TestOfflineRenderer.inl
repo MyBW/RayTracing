@@ -46,7 +46,7 @@ void TestOfflineRenderer<SceneType, CameraType>::SetCamera(CameraType* Camera)
 }
 
 template<typename SceneType, typename CameraType>
-void TestOfflineRenderer<SceneType, CameraType>::SetIntegrator(Integrator<typename SceneType, typename SceneType::IntersectionType> *InIntergrator)
+void TestOfflineRenderer<SceneType, CameraType>::SetIntegrator(Integrator<typename SceneType, IntersectionInfo> *InIntergrator)
 {
 	RendererIntegrator = InIntergrator;
 }
@@ -65,9 +65,21 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 	int SampleNum = 0;
 	for (int i  = StarPixelIndex; i < EndPiexlIndex;i++)
 	{
-		SceneType::IntersectionType Intersection;
+		IntersectionInfo Intersection;
 		BWRay Ray = CameraFilm->GetRayFromCamera(i);
-		if (Scene->GetIntersectionInfo(Ray, Intersection))
+		auto GetIntersectionInfo = [&Intersection](std::vector<BWPoint3DD>& P, std::vector<BWPoint3DD>& N, std::vector<BWPoint2DD>& UV, float t, float u, float v, BWRay &Ray, const RTMaterial* Material)
+		{
+			Intersection.IntersectionPoint = Ray._start + Ray._vector * t;
+			Intersection.InputRay = -Ray;
+			Intersection.TriangleP = P;
+			Intersection.TriangleN = N;
+			Intersection.TriangleUV = UV;
+			Intersection.IntersectionNormal = LinearInterpolation(Intersection.TriangleN[0], Intersection.TriangleN[1], u);
+			Intersection.IntersectionNormal = LinearInterpolation(Intersection.IntersectionNormal, Intersection.TriangleN[2], v);
+			Intersection.IntersectionNormal.normalize();
+			Intersection.Material = Material;
+		};
+		if (Scene->GetIntersectionInfo(Ray, GetIntersectionInfo))
 		{
 			Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection);
 			CameraFilm->SetSpectrum(i, &Color);

@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "..\Math\BWPrimitive.h"
+class RTMaterial;
 struct TriangleInfo
 {
 	std::vector<BWVector3D> P;
@@ -43,6 +44,9 @@ public:
 	const std::vector<BWPoint2DD>& GetLightmapUVData() const;
 	void GetAABB(BWVector3D &Min, BWVector3D &Max) const;
 	void UpdateWorldInfor();
+	const RTMaterial *GetMaterial() const  { return Material; } 
+
+	RTMaterial *Material;
 private:
 	void UpdateModelMatrix();
 	void ComputeBoundingBox();
