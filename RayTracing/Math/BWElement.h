@@ -1,6 +1,6 @@
 #pragma once
 #include <math.h>
-
+#include <memory.h>
 struct BWEle4DD ;
 struct Radian;
 class BWMatrix4;
@@ -23,8 +23,7 @@ struct BWEle2DD
 		{
 			return;
 		}
-		x = ele.x;
-		y = ele.y;
+		memcpy(this, &ele, sizeof(BWEle2DD));
 	}
 	const BWEle2DD& operator=(const BWEle2DD& ele)
 	{
@@ -32,8 +31,7 @@ struct BWEle2DD
 		{
 			return *this;
 		}
-		x = ele.x;
-		y = ele.y;
+		memcpy(this, &ele, sizeof(BWEle2DD));
 		return *this;
 	}
 	const BWEle2DD operator-(const BWEle2DD& ele)
@@ -66,8 +64,7 @@ struct BWEle2I
 		{
 			return;
 		}
-		x = ele.x;
-		y = ele.y;
+		memcpy(this, &ele, sizeof(BWEle2I));
 	}
 	const BWEle2I& operator=(const BWEle2I& ele)
 	{
@@ -75,8 +72,7 @@ struct BWEle2I
 		{
 			return *this;
 		}
-		x = ele.x;
-		y = ele.y;
+		memcpy(this, &ele, sizeof(BWEle2I));
 		return *this;
 	}
 }  ;
@@ -111,9 +107,7 @@ struct BWEle3DD
 		{
 			return;
 		}
-		x = ele.x;
-		y = ele.y;
-		z = ele.z;
+		memcpy(this, &ele, sizeof(BWEle3DD));
 		return;
 	}
 	const BWEle3DD& operator= (const BWEle3DD & ele)
@@ -122,9 +116,7 @@ struct BWEle3DD
 		{
 			return *this;
 		}
-		x = ele.x;
-		y = ele.y;
-		z = ele.z;
+		memcpy(this, &ele, sizeof(BWEle3DD));
 		return *this;
 	}
 	bool operator != (const BWEle3DD& ele) const

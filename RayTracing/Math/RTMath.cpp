@@ -681,12 +681,6 @@ void Normalize( BWPoint3DD& vec)
 		 float(radius*sin(theta)*sin(phi)),
 		 float(radius*cos(theta)), 1.0);
  }
-
- BWVector3DD LinearInterpolation(const BWVector3DD& start, const BWVector3DD& end, double k)
- {
-	 return (end - start) * k + start;
- }
-
  bool AABBIntersctRay(const BWRay& Ray, const BWVector3D &Min, const BWVector3D &Max)
  {
 	 double ox = Ray._start.x; double oy = Ray._start.y; double oz = Ray._start.z;

@@ -7,18 +7,16 @@ class RTDirectionLight : public RTLight<IntersectionType>
 public:
 	RTDirectionLight():LightSource(nullptr){ }
 	DirectionLightType* GetLightSource() { return LightSource; }
-	DirectionLightType* SetLightSource(DirectionLightType *InLightSource) { LightSource = InLightSource; }
+	void SetLightSource(DirectionLightType *InLightSource) { LightSource = InLightSource; }
 
-	Spectrum Sample_L(const IntersectionType *Intersection)
+	Spectrum Sample_L(const IntersectionType *Intersection , BWVector3D& LightDir)
 	{
 		if (!LightSource) return Spectrum(0.0);
-		BWVector3D LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
-		BWVector3D ViewDir = Intersection->InputRay._vector;
-		BWVector3D Normal = Intersection->IntersectionNormal;
-		double LDotN = Dot(LightDir, Normal);
+		LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
 		Spectrum Color;
-		if (LDotN < 0) LDotN = 0;
-		Color.SetValue(0, LDotN);
+		Color.SetValue(0, 1.0);
+		Color.SetValue(1, 0);
+		Color.SetValue(2, 0);
 		return Color;
 	}
 private:

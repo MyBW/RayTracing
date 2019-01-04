@@ -7,11 +7,17 @@ struct TriangleInfo
 	std::vector<BWVector3D> P;
 	std::vector<BWVector3D> N;
 	std::vector<BWPoint2DD> UV;
-	void ClearData()
+	inline void Resize(int Size)
+	{
+		P.resize(Size);
+		N.resize(Size);
+		UV.resize(Size);
+	}
+	inline void ClearData()
 	{
 		P.clear();
 		N.clear();
-		UV.clear();
+		UV.clear();	
 	}
 };
 class Object
@@ -27,6 +33,7 @@ public:
 	void SetScale(float x, float y, float z);
 	int GetTriangleNum();
 	bool GetTriangleInfoByIndex(int Index , TriangleInfo &Reslut);
+	bool GetTriangleWorldInfoByIndex(int Index, TriangleInfo &Reslut);
 	bool GetTriangleVertexIndex(int Index, int &P1, int &P2, int &P3);
 	const BWMatrix4& GetModelMatrix() const;
 	const std::vector<BWVector3D>& GetPosData() const;
@@ -35,6 +42,7 @@ public:
 	const std::vector<unsigned int>& GetIndexData() const;
 	const std::vector<BWPoint2DD>& GetLightmapUVData() const;
 	void GetAABB(BWVector3D &Min, BWVector3D &Max) const;
+	void UpdateWorldInfor();
 private:
 	void UpdateModelMatrix();
 	void ComputeBoundingBox();
@@ -54,4 +62,6 @@ private:
 	std::vector<BWVector3D> NormalData;
 	std::vector<unsigned int> IndexData;
 	std::vector<BWPoint2DD> LightmapUV;
+	std::vector<BWVector3D> WorldPosData;
+	std::vector<BWVector3D> WorldNormalData;
 };

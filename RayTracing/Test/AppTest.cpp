@@ -3,34 +3,37 @@
 #include "glew.h"
 #include "glut.h"
 #include "..\Scene\Light.h"
+#include "..\OfflineRenderer\Sampler.h"
 
-AUX_RGBImageRec * CreateTextureFromBmp()
-{
-	FILE *File = NULL;
-	const char *Filename = "Stucco2.bmp";
-	File = fopen(Filename, "r");
-	if (!File)
-		return 0;
-	fclose(File);
-	return auxDIBImageLoad(Filename);
-
-}
+//AUX_RGBImageRec * CreateTextureFromBmp()
+//{
+//	FILE *File = NULL;
+//	const char *Filename = "Stucco2.bmp";
+//	File = fopen(Filename, "r");
+//	if (!File)
+//		return 0;
+//	fclose(File);
+//	return auxDIBImageLoad(Filename);
+//
+//}
 
 TestFBXLoad FBXload;
 std::vector<BWVector3D> Lines;
+
+
 void AppTest::Init(int Width, int Height)
 {
 	RTRenderer.Init(Width, Height);
 	CameraForRender.Init(Width, Height);
-	Sceen.AddObject("cube.obj", std::string("elephant"));
+	Sceen.AddObject("planet.obj", std::string("elephant"));
 	Object *TestObj = Sceen.GetObjectByName("elephant");
 	TestObj->SetPosition(0, 0, -20);
 	TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15/4));
 	RTRenderer.AddDrawable(Sceen.GetObjectByName("elephant"));
-	Light *L = new Light();
+	DirectionLight *L = new DirectionLight();
 	L->SetName(std::string("DirectionalLight"));
 	L->SetPosition(BWVector3D(0.0, 0.0, 5.0));
-	Sceen.AddLight(L);
+	Sceen.AddDirectionLight(L);
 
 	//Test Code start
 	//FBXload.ImportFBX("1M_Cube.FBX");
@@ -113,8 +116,14 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 	CameraForRender.Move(Direction);
 	if (ShowOfflineRender)
 	{
+		DirectLightingIntegrator<Scene, Scene::IntersectionType> LightingIntegrator;
 		OfflineRenderer.SetCamera(&CameraForRender);
+		OfflineRenderer.SetIntegrator(&LightingIntegrator);
+
+		Random RandomSampler(0, CameraForRender.GetScreenWidth() * CameraForRender.GetScreenHeight(), 1,CameraForRender.GetScreenWidth() , CameraForRender.GetScreenHeight());
+		OfflineRenderer.SetSampler(&RandomSampler);
 		OfflineRenderer.RenderScene(&Sceen);
+		
 		//int width = OfflineRenderer.GetFilm()->GetWidth();
 		//int height = OfflineRenderer.GetFilm()->GetHeight();
 		//Lines.clear();
@@ -197,7 +206,6 @@ void AppTest::UpdataSceneWithRealTimeRenderer()
 	RTRenderer.SetLineColor(0.0, 0.0, 1.0);
 	RTRenderer.DrawLine(Lines);
 	RTRenderer.SetLineColor(1.0, 0.0, 0.0);
-
 
 	RTRenderer.Draw();
 

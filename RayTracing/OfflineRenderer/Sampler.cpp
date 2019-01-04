@@ -5,6 +5,15 @@
 
 int Random::GetMoreSamples(Sample *InSample, RNG *InRNG)
 {
+	if (ImageSamplePos == nullptr)
+	{
+		ImageSamplePos = new float[SamplesPerPixel * 2];
+		for (int i = 0; i < SamplesPerPixel * 2; i += 2)
+		{
+			ImageSamplePos[i * 2] = InRNG->GetRandomFloat();
+			ImageSamplePos[i * 2 + 1] = InRNG->GetRandomFloat();
+		}
+	}
 	if (CurrPixelSampleNum == SamplesPerPixel)
 	{
 		CurrSamplePos++;

@@ -26,7 +26,8 @@ public:
 	Random(int StartPixelIndex, int EndPixelIndex, int SPP , int InFilmWidth, int InFilmHeight) :Sampler(StartPixelIndex, EndPixelIndex, SPP, InFilmWidth, InFilmHeight)
 		,CurrSamplePos(StartPixelIndex),CurrPixelSampleNum(0)
 	{
-		ImageSamplePos = new float[SamplesPerPixel * 2];
+		ImageSamplePos = nullptr;
+		ResetSamplePosition(CurrSamplePos);
 	}
 	~Random()
 	{
@@ -35,7 +36,7 @@ public:
 	int GetMaxSampleCount() override { return SamplesPerPixel; }
 	Sampler* GetSubSampler(int SubStartPixelIndex, int SubEndPixelIndex)
 	{
-		return new Random(SubEndPixelIndex, SubEndPixelIndex, SamplesPerPixel, FilmWidth, FilmHeight);
+		return new Random(SubStartPixelIndex, SubEndPixelIndex, SamplesPerPixel, FilmWidth, FilmHeight);
 	}
 	int GetMoreSamples(Sample *InSample, RNG *InRNG);
 	void ResetSamplePosition(int SamplePos)

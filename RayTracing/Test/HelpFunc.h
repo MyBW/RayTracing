@@ -7,32 +7,32 @@
 #include <stdio.h>
 #include <fstream>
 
-AUX_RGBImageRec * CreateTextureFromBmp(char *FileName)
-{
-	FILE *File = NULL;
-	File = fopen(FileName, "r");
-	if (!File)
-		return 0;
-	fclose(File);
-	return auxDIBImageLoad(FileName);
-}
-
-GLuint CreateTextrue(char *FileName)
-{
-	AUX_RGBImageRec * imageRec = CreateTextureFromBmp(FileName);
-	if (!imageRec)
-		exit(EXIT_FAILURE);
-	GLuint texName;
-	glGenTextures(1, &texName);
-	glBindTexture(GL_TEXTURE_2D, texName);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageRec->sizeX, imageRec->sizeY,
-		0, GL_RGB, GL_UNSIGNED_BYTE, imageRec->data);
-	return texName;
-}
+//AUX_RGBImageRec * CreateTextureFromBmp(char *FileName)
+//{
+//	FILE *File = NULL;
+//	File = fopen(FileName, "r");
+//	if (!File)
+//		return 0;
+//	fclose(File);
+//	return auxDIBImageLoad(FileName);
+//}
+//
+//GLuint CreateTextrue(char *FileName)
+//{
+//	AUX_RGBImageRec * imageRec = CreateTextureFromBmp(FileName);
+//	if (!imageRec)
+//		exit(EXIT_FAILURE);
+//	GLuint texName;
+//	glGenTextures(1, &texName);
+//	glBindTexture(GL_TEXTURE_2D, texName);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageRec->sizeX, imageRec->sizeY,
+//		0, GL_RGB, GL_UNSIGNED_BYTE, imageRec->data);
+//	return texName;
+//}
 
 void GetLightMapData(const char *LightMapFileUVFileName, std::vector<BWPoint2DD> &LightmapUV)
 {

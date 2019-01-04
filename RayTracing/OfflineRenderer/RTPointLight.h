@@ -7,8 +7,8 @@ class RTPointLight :public RTLight<IntersectionType>
 public:
 	RTPointLight() :LightSource(nullptr) { }
 	PointLightType* GetLightSource() { return LightSource; }
-	PointLightType* SetLightSource(PointLightType *InLightSource) { LightSource = InLightSource; }
-	Spectrum Sample_L(const IntersectionType *Intersection)
+	void SetLightSource(PointLightType *InLightSource) { LightSource = InLightSource; }
+	Spectrum Sample_L(const IntersectionType *Intersection, BWVector3D &LightDir)
 	{
 		Spectrum Color;
 		return Color;

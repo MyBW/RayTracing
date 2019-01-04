@@ -176,6 +176,7 @@ void Object::GetAABB(BWVector3D &Min, BWVector3D &Max) const
 	Max = AABBMax;
 }
 
+
 void Object::SetPosition(float X, float Y, float Z)
 {
 	Position.x = X;
@@ -224,12 +225,33 @@ bool Object::GetTriangleInfoByIndex(int Index, TriangleInfo &Reslut)
 	}
 	for (int i = 0 ;i < 3; i++)
 	{
-		Reslut.P.push_back(ModelMatrix * PosData[Index * 3 + i]);
-		Reslut.N.push_back(ModelMatrix * NormalData[Index * 3 + i]);
-		Reslut.N[Reslut.N.size() - 1] = Reslut.N[Reslut.N.size() - 1] - Position;
-		Reslut.N[Reslut.N.size() - 1].normalize();
-		Reslut.UV.push_back(UVData[Index * 3 + i]);
+		Reslut.P[i] = ModelMatrix * PosData[Index * 3 + i];
+		Reslut.N[i] = ModelMatrix * NormalData[Index * 3 + i];
+		Reslut.N[i] = Reslut.N[i] - Position;
+		Reslut.N[i].normalize();
+		Reslut.UV[i] = UVData[Index * 3 + i];
 	}
+	return true;
+}
+
+bool Object::GetTriangleWorldInfoByIndex(int Index, TriangleInfo &Reslut)
+{
+	if (Index >= GetTriangleNum())
+	{
+		return false;
+	}
+
+	memcpy(&Reslut.P[0], &WorldPosData[Index * 3 + 0], sizeof(BWVector3D));
+	memcpy(&Reslut.N[0], &WorldNormalData[Index * 3 + 0], sizeof(BWVector3D));
+	memcpy(&Reslut.UV[0], &UVData[Index * 3 + 0], sizeof(BWPoint2DD));
+
+	memcpy(&Reslut.P[1], &WorldPosData[Index * 3 + 1], sizeof(BWVector3D));
+	memcpy(&Reslut.N[1], &WorldNormalData[Index * 3 + 1], sizeof(BWVector3D));
+	memcpy(&Reslut.UV[1], &UVData[Index * 3 + 1], sizeof(BWPoint2DD));
+
+	memcpy(&Reslut.P[2], &WorldPosData[Index * 3 + 2], sizeof(BWVector3D));
+	memcpy(&Reslut.N[2], &WorldNormalData[Index * 3 + 2], sizeof(BWVector3D));
+	memcpy(&Reslut.UV[2], &UVData[Index * 3 + 2], sizeof(BWPoint2DD));
 	return true;
 }
 
@@ -242,6 +264,23 @@ bool Object::GetTriangleVertexIndex(int Index, int &P1, int &P2, int &P3)
 	P1 = IndexData[Index];
 	P2 = IndexData[Index + 1];
 	P3 = IndexData[Index + 2];
+}
+void Object::UpdateWorldInfor()
+{
+	WorldNormalData.clear();
+	WorldPosData.clear();
+	int PosNum = PosData.size();
+	int NormalNum = NormalData.size();
+	for (int i = 0; i < PosNum; i++)
+	{
+		WorldPosData.push_back(ModelMatrix * PosData[i]);
+	}
+	for (int i = 0; i < NormalNum; i++)
+	{
+		WorldNormalData.push_back(ModelMatrix * NormalData[i]);
+		WorldNormalData[i] = WorldNormalData[i] - Position;
+		WorldNormalData[i].normalize();
+	}
 }
 
 const BWMatrix4& Object::GetModelMatrix() const

@@ -4,6 +4,7 @@
 #include "Light.h"
 #include "DirectionLight.h"
 #include "PointLight.h"
+#include "..\OfflineRenderer\RTMaterial.h"
 class Object;
 
 struct IntersectionInfo 
@@ -13,6 +14,7 @@ struct IntersectionInfo
 	BWVector3DD IntersectionNormal;
 	BWRay InputRay;
 	BWPoint2DD IntersectionUV;
+	RTMaterial Material;
 };
 class Scene
 {
@@ -27,10 +29,13 @@ public:
 	bool GetIntersectionInfo(BWRay& ray, IntersectionInfo &Result);
 	Object* GetObjectByName(const std::string &Name);
 	void AddLight(Light* L);
+	void AddDirectionLight(DirectionLightType* L);
+	void AddPointLight(PointLightType *L);
 	std::vector<DirectionLightType*>& GetAllDireciontLight();
 	std::vector<PointLightType*>& GetAllPointLight();
 	Light* GetLightByName(std::string &Name);
 	std::vector<Object*>& GetObjects() { return Objects; }
+	void UpdateSceneInfo();
 private:
 	std::vector<Object*> Objects;
 	std::vector<Light*> Lights;

@@ -41,6 +41,8 @@ public:
 		{
 			TotSampleDataSize += N2D[i] * 2;
 		}
+		if (TotSampleDataSize == 0) return;
+
 		DataMem = new float[TotSampleDataSize];
 		int OffSet = 0;
 		for (int i = 0; i < N1D.size();i++)

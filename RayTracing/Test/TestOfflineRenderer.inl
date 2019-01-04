@@ -10,9 +10,10 @@ void TestOfflineRenderer<SceneType, CameraType>::RenderScene(SceneType* Scene)
 	if (!Camera)  return;
 	
 	this->Scene = Scene;
+	this->Scene->UpdateSceneInfo();
 	RendererIntegrator->Init(this->Scene);
 
-	const int SplitScreenNum = 16;
+	const int SplitScreenNum = 64;
 	std::vector<Task*> OfflineRendererTasks;
 	int AllPixelNum = ScreenFilm.GetWidth() * ScreenFilm.GetHeight();
 	int PixelNumForTask = AllPixelNum / SplitScreenNum;
@@ -62,20 +63,18 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 	Sample *Samples = new Sample[MaxSampleCount];
 	RNG Rng;
 	int SampleNum = 0;
-	while ((SampleNum = SubSampler->GetMoreSamples(Samples, &Rng)))
+	for (int i  = StarPixelIndex; i < EndPiexlIndex;i++)
 	{
-		for (int i = 0; i < SampleNum; i++)
+		SceneType::IntersectionType Intersection;
+		BWRay Ray = CameraFilm->GetRayFromCamera(i);
+		if (Scene->GetIntersectionInfo(Ray, Intersection))
 		{
-			SceneType::IntersectionType Intersection;
-			BWRay Ray = CameraFilm->GetRayFromCamera(Samples[i].ImageX, Samples[i].ImageY);
-			if (Scene->GetIntersectionInfo(Ray, Intersection))
-			{
-			 	Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection);
-				CameraFilm->SetSpectrum(i, &Color);
-			}
+			Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection);
+			CameraFilm->SetSpectrum(i, &Color);
 		}
-
 	}
+	delete SubSampler;
+	delete [] Samples;
 }
 
 template<typename SceneType, typename CameraType>

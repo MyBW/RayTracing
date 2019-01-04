@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "RTMath.h"
 #include "Light.h"
+#include "..\OfflineRenderer\BSDF.h"
 Scene::Scene()
 {
 
@@ -22,14 +23,15 @@ bool Scene::GetIntersectionInfo(BWRay& ray , IntersectionInfo &Result)
 {
 	Result.IntersetionTriangleInfo.ClearData();
 	TriangleInfo TempRes;
-	float t, u, v;
+	TempRes.Resize(3);
+	float t = 0, u = 0, v = 0;
 	float Mint = FLT_MAX;
 	for (auto Obj : Objects)
 	{
-		for (int i = 0 ; i < Obj->GetTriangleNum() ; i++)
+		int TriangleNum = Obj->GetTriangleNum();
+		for (int i = 0 ; i < TriangleNum ; i++)
 		{
-			TempRes.ClearData();
-			Obj->GetTriangleInfoByIndex(i, TempRes);
+			Obj->GetTriangleWorldInfoByIndex(i, TempRes);
 			if (RayIntersectTriangle(ray, TempRes.P[0], TempRes.P[1], TempRes.P[2], t, u, v) && t  < Mint)
 			{
 				Mint = t;
@@ -39,6 +41,10 @@ bool Scene::GetIntersectionInfo(BWRay& ray , IntersectionInfo &Result)
 				Result.IntersectionNormal = LinearInterpolation(Result.IntersetionTriangleInfo.N[0], Result.IntersetionTriangleInfo.N[1], u);
 				Result.IntersectionNormal = LinearInterpolation(Result.IntersectionNormal, Result.IntersetionTriangleInfo.N[2], v);
 				Result.IntersectionNormal.normalize();
+
+				Result.Material.InitRTMaterial(Result);
+				Result.Material.GetLightingModel().AddBXDF(new Lambertian());
+
 			}
 		}
 	}
@@ -65,6 +71,22 @@ void Scene::AddLight(Light* L)
 	}
 }
 
+void Scene::AddDirectionLight(Scene::DirectionLightType* L)
+{
+	if (L)
+	{
+		DireciontLights.push_back(L);
+	}
+}
+
+void Scene::AddPointLight(Scene::PointLightType *L)
+{
+	if (L)
+	{
+		PointLights.push_back(L);
+	}
+}
+
 std::vector<Scene::DirectionLightType*>& Scene::GetAllDireciontLight()
 {
 	return DireciontLights;
@@ -82,5 +104,13 @@ Light* Scene::GetLightByName(std::string &Name)
 		if (L->GetName() == Name) return L;
 	}
 	return NULL;
+}
+
+void Scene::UpdateSceneInfo()
+{
+	for (auto Obj : Objects)
+	{
+		Obj->UpdateWorldInfor();
+	}
 }
 

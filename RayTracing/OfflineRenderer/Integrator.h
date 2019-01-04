@@ -6,8 +6,19 @@ template<typename SceneType, typename IntersectionType>
 class Integrator
 {
 public:
-	virtual Spectrum Init(SceneType *InScene);
-	virtual Spectrum Li(SceneType *InScene, IntersectionType *Intersction) { };
+	virtual void Init(SceneType *InScene);
+	virtual Spectrum Li(SceneType *InScene, IntersectionType *Intersction) { return Spectrum(); };
+	~Integrator()
+	{
+		for (auto Ele : DirectionLights)
+		{
+			delete Ele;
+		}
+		for (auto Ele : PointLights)
+		{
+			delete Ele;
+		}
+	}
 protected:
 	std::vector<RTDirectionLight< typename SceneType::DirectionLightType, IntersectionType>*> DirectionLights;
 	std::vector<RTPointLight< typename SceneType::PointLightType, IntersectionType>*> PointLights;
@@ -16,7 +27,7 @@ private:
 };
 
 template<typename SceneType, typename IntersectionType>
-Spectrum Integrator<SceneType, IntersectionType>::Init(SceneType *InScene)
+void Integrator<SceneType, IntersectionType>::Init(SceneType *InScene)
 {
 	std::vector<SceneType::DirectionLightType*>& SceneDirectionLights = InScene->GetAllDireciontLight();
 	for (int i = 0; i < SceneDirectionLights.size(); i++)

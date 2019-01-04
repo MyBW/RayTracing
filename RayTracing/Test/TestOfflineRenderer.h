@@ -12,6 +12,7 @@ public:
 	void RenderScene(SceneType* Scene) override;
 	void SetCamera(CameraType* Camera);
 	void SetIntegrator(Integrator<typename SceneType, typename SceneType::IntersectionType> *InIntergrator);
+	void SetSampler(Sampler* InSampler) { MainSampler = InSampler; }
 	CameraType* GetCamera() const { return Camera; }
 	SceneType* GetScene() const { return Scene; }
 	Film<CameraType>* GetFilm() { return &ScreenFilm; }

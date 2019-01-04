@@ -55,7 +55,10 @@ bool ReflcteRay(const BWVector3DD& normal, const BWRay& ray, BWPoint3DD& reflect
 //球面坐标系转化到笛卡尔坐标系
 BWPoint4DD SphereCoordToDescartesCoord(float theta, float phi, float radius);
 //计算线性差值
-BWPoint3DD LinearInterpolation(const BWPoint3DD& start, const BWPoint3DD& end , double k);
+inline BWPoint3DD LinearInterpolation(const BWPoint3DD& start, const BWPoint3DD& end, double k)
+{
+	return (end - start) * k + start;
+}
 bool AABBIntersctRay(const BWRay& Ray, const BWVector3D &Min, const BWVector3D &Max);
 //注意 在opengl中使用矩阵调用gl内置函数时，其输入方式是列主序的 
 //得到的最终矩阵和右手系（OpenGL）矩阵时转置的关系
