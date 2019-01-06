@@ -46,3 +46,25 @@ Spectrum Lambertian::F(const BWVector3D &Wi, const BWVector3D &Wo) const
 {
 	return R * INV_PI;
 }
+
+Spectrum TorranceSparrowMicorfacet::F(const BWVector3D &Wi, const BWVector3D &Wo) const
+{
+	BWVector3D Wh;
+	Wh = (Wi + Wo);
+	Wh.normalize();
+	float CosThetaO = AbsCosTheta(Wo);
+	float CosThetaI = AbsCosTheta(Wi);
+	if (CosThetaO == 0.0f || CosThetaI == 0.0f) return Spectrum();
+	float CosTheatH = Dot(Wi, Wh);
+	Spectrum Fvalue = Fr->Evaluate(CosTheatH);
+	return R * D->D(Wh) * Fvalue * G(Wo, Wi, Wh) / (4 * CosThetaO * CosThetaI);
+}
+
+float TorranceSparrowMicorfacet::G(const BWVector3D &Wo, const BWVector3D &Wi, const BWVector3D &Wh)
+{
+	float NdotWh = AbsCosTheta(Wh);
+	float NdotWo = AbsCosTheta(Wo);
+	float NdotWi = AbsCosTheta(Wi);
+	float WodotWh = fabsf(Dot(Wo, Wh));
+	return TMin(1.0f, TMin((2.0f*NdotWh*NdotWo) / WodotWh, (2.0f*NdotWh*NdotWi) / WodotWh));
+}
