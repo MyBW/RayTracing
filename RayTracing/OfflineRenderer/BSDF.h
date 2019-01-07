@@ -5,27 +5,89 @@
 #include "RNG.h"
 float AbsCosTheta(const BWVector3D &W);
 bool SameHemisphere(const BWVector3D &Wi, const BWVector3D &Wo);
-
+/*
+	函数名：FrDiel  绝缘体Fresnel系数  
+	函数参数：Cosi 入射光线Cos值
+			 Cost 折射光线Cos值
+			 Etai 入射介质折射率
+			 Etat 出射介质折射率
+*/
+Spectrum FrDiel(float Cosi, float Cost, const Spectrum &Etai, const Spectrum &Etat);
+/*
+	函数名：FrCond 金属体Fresnel系数
+	函数参数：Cosi 入射光线Cos值
+				N 折射率
+				K 因为金属不折射光线，但是可以将光线吸收一部分 转化为热能 k为吸收因子
+*/
+Spectrum FrCond(float Cosi, const Spectrum &Eta, const Spectrum &K);
+//Fresnel 表示将多少光的能量反射出物体的表面 
+//可以分为绝缘体和导体:  绝缘体将一部分（Fresnel）光的能反射，将另一部分的光（1-Fresnel）折射到物体内部
+//					   导体将一部分（Fresnel）光的能反射，将另一部光能吸收转化为热能，所以使用了参数K
 class Fresnel
 {
 public:
 
-	Spectrum Evaluate(float CosTheta);
+	virtual Spectrum Evaluate(float CosTheta) = 0;
 };
+class FresnelNoOp : public Fresnel
+{
+public:
+	virtual Spectrum Evaluate(float CosTheta) override;
+};
+class ConductorFresnel : public Fresnel
+{
+public: 
+	virtual Spectrum Evaluate(float CosTheta) override;
+	ConductorFresnel(const Spectrum &Eta , const Spectrum &K):E(Eta), k(K) { }
+private:
+	Spectrum E;
+	Spectrum k;
+};
+
+class DielectricFresnel : public Fresnel
+{
+public:
+	virtual Spectrum Evaluate(float CosTheta) override;
+	DielectricFresnel(const float &Ei, const float &Et):Etai(Ei),Etat(Et){ }
+private:
+	float Etai;
+	float Etat;
+};
+
 class MicrofacetDistribution
 {
 public:
-	virtual float D(const BWVector3D &Wh);
+	 virtual ~MicrofacetDistribution() { }
+	virtual float D(const BWVector3D &Wh) = 0;
+	virtual void Sample_f(const BWVector3D &Wo, const BWVector3D &Wi, float u1, float u2, float *pdf) const = 0;
+	virtual float Pdf(const BWVector3D &Wo, const BWVector3D &Wi) const = 0;
 };
 class BlinnDistribution : public MicrofacetDistribution
 {
 public:
+	BlinnDistribution(float E):Exponent(E){ }
 	float D(const BWVector3D &Wh) override;
+	void Sample_f(const BWVector3D &Wo, const BWVector3D &Wi, float u1, float u2, float *pdf) const override;
+	float Pdf(const BWVector3D &Wo, const BWVector3D &Wi) const override;
+private:
+	float Exponent;
 };
 class AnisotropicDistribution : public MicrofacetDistribution
 {
 public:
+	AnisotropicDistribution(float X, float Y)
+	{
+		Ex = X; 
+		Ey = Y;
+		if (Ex > 10000.f || isnan(Ex)) Ex = 10000.f;
+		if (Ey > 10000.f || isnan(Ey)) Ey = 10000.f;
+	}
 	float D(const BWVector3D &Wh) override;
+	void Sample_f(const BWVector3D &Wo, const BWVector3D &Wi, float u1, float u2, float *pdf) const override;
+	float Pdf(const BWVector3D &Wo, const BWVector3D &Wi) const override;
+private: 
+	float Ex;
+	float Ey;
 };
 
 
@@ -80,27 +142,21 @@ private:
 
 class Microfacet : public BXDF
 {
-
-};
-// 一种微表面漫反射模型
-class OrenNayarMicrofacet : public Microfacet
-{
 public:
-private:
-};
-//一种微表面高光反射模型
-class TorranceSparrowMicorfacet : public Microfacet
-{
-public:
-	TorranceSparrowMicorfacet(const Spectrum &Reflection, Fresnel *InFr, MicrofacetDistribution *InD) :
-		R(Reflection), Fr(InFr), D(InD)
+	~Microfacet()
+	{
+		delete NormalD;
+		delete Fr;
+	}
+	Microfacet(const Spectrum &Reflection, Fresnel *InFr, MicrofacetDistribution *InNormalD) :
+		R(Reflection), Fr(InFr), NormalD(InNormalD)
 	{
 
 	}
 	Spectrum F(const BWVector3D &Wi, const BWVector3D &Wo) const override;
-	float G(const BWVector3D &Wo, const BWVector3D &Wi, const BWVector3D &Wh);
+	float G(const BWVector3D &Wo, const BWVector3D &Wi, const BWVector3D &Wh) const;
 private:
 	Spectrum R;
 	Fresnel *Fr;
-	MicrofacetDistribution *D;
+	MicrofacetDistribution *NormalD;
 };

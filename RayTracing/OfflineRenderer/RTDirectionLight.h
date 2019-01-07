@@ -7,13 +7,19 @@ class RTDirectionLight : public RTLight<IntersectionType>
 public:
 	RTDirectionLight():LightSource(nullptr){ }
 	DirectionLightType* GetLightSource() { return LightSource; }
+	BWVector3D GetLightDir(const IntersectionType *Intersection) override
+	{
+		BWVector3D LightDir;
+		LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
+		return LightDir;
+	}
 	void SetLightSource(DirectionLightType *InLightSource) { LightSource = InLightSource; }
 	Spectrum Le(const IntersectionType *Intersection) override
 	{
 		Spectrum Color;
-		Color.SetValue(0, 1.0);
-		Color.SetValue(1, 0);
-		Color.SetValue(2, 0);
+		Color.SetValue(0, 1000.0);
+		Color.SetValue(1, 1000.0);
+		Color.SetValue(2, 1000.0);
 		return Color;
 	}
 	Spectrum Sample_L(const IntersectionType *Intersection, BWVector3D& LightDir) override

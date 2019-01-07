@@ -16,10 +16,10 @@ public:
 			BSDF Bsdf;
 
 			Intersction->Material->CreateBSDF(*Intersction, Bsdf);
-
 			//采样灯光
 			LightColor = AllLights[i]->Le(Intersction);
 			//采样材质
+			LightDir = AllLights[i]->GetLightDir(Intersction);
 			Color += LightColor * Bsdf.F(Intersction->InputRay._vector, LightDir);
 			/*BWVector3D ViewDir = Intersection->InputRay._vector;
 			BWVector3D Normal = Intersection->IntersectionNormal;

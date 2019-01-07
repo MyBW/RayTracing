@@ -9,6 +9,7 @@ const float FLT_MAX_ =  FLT_MAX;
 const float FLT_MIN_ = FLT_MIN;
 const float POS_INFINITY = FLT_MAX;
 const float INV_PI = 1.0 / 3.1415926f;
+const float INV_TWOPI =  0.15915494309189533577f;
 
 
 
@@ -43,6 +44,8 @@ void MatrixTranspose(const double* matrix, double* trans);
 void MatrixTranspose(const float* matrix, float *trans);
 void MatrixMultMatrix(const double *matrix1, const double* matrix2, double* reslut);
 void MatrixMultMatrix(const double*, double*);
+
+void CoordinateSystem(const BWVector3D &v1, BWVector3D *v2, BWVector3D *v3);
 //
 //bool RayIntersectAABB(const BWRay& ray, const Cuboid& AABB , float &t);
 //bool RayIntersectOBB(const BWRay& ray , const Cuboid& OBB , float &t);

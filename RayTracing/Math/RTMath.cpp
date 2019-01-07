@@ -297,6 +297,19 @@ void Normalize( BWPoint3DD& vec)
 	 }
  }
 
+ void CoordinateSystem(const BWVector3D &v1, BWVector3D *v2, BWVector3D *v3)
+ {
+	 if (fabsf(v1.x) > fabsf(v1.y)) {
+		 float invLen = 1.f / sqrtf(v1.x*v1.x + v1.z*v1.z);
+		 *v2 = BWVector3D(-v1.z * invLen, 0.f, v1.x * invLen);
+	 }
+	 else {
+		 float invLen = 1.f / sqrtf(v1.y*v1.y + v1.z*v1.z);
+		 *v2 = BWVector3D(0.f, v1.z * invLen, -v1.y * invLen);
+	 }
+	 *v3 = Cross(v1, *v2);
+ }
+
  //bool CollisionDetecte(const Cuboid& cuboid1, const Cuboid & cuboid2)
  //{
 	// BWVector3DD AToB;

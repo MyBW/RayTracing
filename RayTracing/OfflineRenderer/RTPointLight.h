@@ -8,6 +8,12 @@ public:
 	RTPointLight() :LightSource(nullptr) { }
 	PointLightType* GetLightSource() { return LightSource; }
 	void SetLightSource(PointLightType *InLightSource) { LightSource = InLightSource; }
+	BWVector3D GetLightDir(const IntersectionType *Intersection) override
+	{
+		BWVector3D LightDir;
+		LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
+		return LightDir;
+	}
 	Spectrum Sample_L(const IntersectionType *Intersection, BWVector3D &LightDir) override
 	{
 		Spectrum Color;
