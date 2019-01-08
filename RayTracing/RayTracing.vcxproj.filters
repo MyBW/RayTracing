@@ -227,6 +227,9 @@
     <ClInclude Include="Scene\PointLight.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="OfflineRenderer\AreaLight.h">
+      <Filter>OfflineRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="RealTimeRenderer\RealTimeRenderer.inl">

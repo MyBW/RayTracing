@@ -188,6 +188,7 @@
     <ClInclude Include="Math\RTMath.h" />
     <ClInclude Include="MeshLoad\FBXAttributeTypeData.h" />
     <ClInclude Include="MeshLoad\FBXImporterImp.h" />
+    <ClInclude Include="OfflineRenderer\AreaLight.h" />
     <ClInclude Include="OfflineRenderer\BSDF.h" />
     <ClInclude Include="OfflineRenderer\DirectLightingIntegrator.h" />
     <ClInclude Include="OfflineRenderer\Film.h" />

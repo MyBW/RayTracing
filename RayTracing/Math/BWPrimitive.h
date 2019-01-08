@@ -74,6 +74,7 @@ struct BWMatrix4
 	{
 		memcpy(M, mat, sizeof(BWMatrix4));
 	}
+
 	BWMatrix4& operator=(const BWMatrix4& const mat)
 	{
 		if (this != &mat)

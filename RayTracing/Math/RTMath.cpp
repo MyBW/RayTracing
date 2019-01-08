@@ -174,6 +174,12 @@ double Dot(const BWVector3DD& a, const BWVector3DD& b)
 {
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
+
+float AbsDot(const BWVector3DD &a, const BWVector3DD &b)
+{
+	return fabs(Dot(a, b));
+}
+
 void Normalize( BWPoint3DD& vec)
 {
 	vec = vec / Lenth(vec);

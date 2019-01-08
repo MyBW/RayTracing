@@ -14,7 +14,9 @@ public:
 		LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
 		return LightDir;
 	}
-	Spectrum Sample_L(const IntersectionType *Intersection, BWVector3D &LightDir) override
+
+	bool IsDeltaLight() { return true; }
+	Spectrum Sample_L(const IntersectionType *Intersection, LightSample &InLightSample, BWVector3D &LightDir) override
 	{
 		Spectrum Color;
 		return Color;

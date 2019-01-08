@@ -206,6 +206,14 @@ public:
 		Error(ret.HasNaNs());
 		return ret;
 	}
+	bool IsBlack()
+	{
+		for (int i = 0; i < Samples; i++)
+		{
+			if (C[i] != 0.f) return false;
+		}
+		return true;
+	}
 	void SetValue(int Index, float Value)
 	{
 		if (Index < Samples && Index >= 0)

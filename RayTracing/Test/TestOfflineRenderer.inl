@@ -62,8 +62,35 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 	int MaxSampleCount = SubSampler->GetMaxSampleCount();
 	Sample *Samples = new Sample[MaxSampleCount];
 	RNG Rng;
+	SubSampler->GetMoreSamples(Samples, &Rng);
 	int SampleNum = 0;
-	for (int i  = StarPixelIndex; i < EndPiexlIndex;i++)
+	while ((SampleNum = SubSampler->GetMoreSamples(Samples, &Rng)) != 0)
+	{
+		for (int i = 0 ; i < SampleNum ; i++)
+		{
+			IntersectionInfo Intersection;
+			BWRay Ray = CameraFilm->GetRayFromCamera(Samples[i].ImageX, Samples[i].ImageY);
+			auto GetIntersectionInfo = [&Intersection](std::vector<BWPoint3DD>& P, std::vector<BWPoint3DD>& N, std::vector<BWPoint2DD>& UV, float t, float u, float v, BWRay &Ray, const RTMaterial* Material)
+			{
+				Intersection.IntersectionPoint = Ray._start + Ray._vector * t;
+				Intersection.InputRay = -Ray;
+				Intersection.TriangleP = P;
+				Intersection.TriangleN = N;
+				Intersection.TriangleUV = UV;
+				Intersection.IntersectionNormal = LinearInterpolation(Intersection.TriangleN[0], Intersection.TriangleN[1], u);
+				Intersection.IntersectionNormal = LinearInterpolation(Intersection.IntersectionNormal, Intersection.TriangleN[2], v);
+				Intersection.IntersectionNormal.normalize();
+				Intersection.Material = Material;
+			};
+			if (Scene->GetIntersectionInfo(Ray, GetIntersectionInfo))
+			{
+				Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection, Samples[i]);
+				CameraFilm->SetSpectrum(Samples[i].ImageX, Samples[i].ImageY, &Color);
+			}
+		}
+		
+	}
+	/*for (int i  = StarPixelIndex; i < EndPiexlIndex;i++)
 	{
 		IntersectionInfo Intersection;
 		BWRay Ray = CameraFilm->GetRayFromCamera(i);
@@ -81,10 +108,10 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 		};
 		if (Scene->GetIntersectionInfo(Ray, GetIntersectionInfo))
 		{
-			Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection);
+			Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection , *Samples);
 			CameraFilm->SetSpectrum(i, &Color);
 		}
-	}
+	}*/
 	delete SubSampler;
 	delete [] Samples;
 }

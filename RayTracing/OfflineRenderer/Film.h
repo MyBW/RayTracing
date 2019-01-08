@@ -7,16 +7,17 @@ class Film
 public:
 	Film():Width(0), Height(0),FinalColor(nullptr) { }
 	void InitFilm(CameraType *Camera, int Width, int Height);
-	void SetSpectrum(int WIndex, int HIndex, const Spectrum* Color);
+	void SetSpectrum(float WIndex, float HIndex, const Spectrum* Color);
 	void SetSpectrum(int PixelInex, const Spectrum* Color);
 	Spectrum* GetSpectrum(int PixelIndxe);
 	int GetWidth() const { return Width; }
 	int GetHeight() const { return Height; }
-	BWRay GetRayFromCamera(float X, float Y);
-	BWRay GetRayFromCamera(int WIndex, int HIndex);
+	BWRay GetRayFromCamera(float WIndex, float HIndex);
 	BWRay GetRayFromCamera(int PixelIndex);
 	void *GetData() { return FinalColor; }
 private:
+	// X Y 是[0~1]的数据
+	BWRay GetRayFromCameraWithNormal(float X, float Y);
 	Spectrum *FinalColor;
 	int Width;
 	int Height;
