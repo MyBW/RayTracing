@@ -18,5 +18,7 @@ class Renderer
 {
 public:
 	virtual void RenderScene(ScenenType* Scene) = 0;
+	// 计算两个点之间的遮蔽
+	virtual Spectrum Transmittance() = 0;
 	virtual Spectrum Li() = 0;
 };

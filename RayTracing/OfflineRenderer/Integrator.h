@@ -2,12 +2,13 @@
 #include "RTDirectionLight.h"
 #include "RTPointLight.h"
 #include "RTLight.h"
+class Sample;
 template<typename SceneType, typename IntersectionType>
 class Integrator
 {
 public:
 	virtual void Init(SceneType *InScene);
-	virtual Spectrum Li(SceneType *InScene, IntersectionType *Intersction) { return Spectrum(); };
+	virtual Spectrum Li(SceneType *InScene, IntersectionType *Intersction , Sample &InSample) { return Spectrum(); };
 	~Integrator()
 	{
 		for (auto Ele : DirectionLights)

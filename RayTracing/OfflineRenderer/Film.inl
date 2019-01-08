@@ -1,6 +1,6 @@
 #pragma once
 template<typename CameraType>
-BWRay Film<CameraType> ::GetRayFromCamera(float X, float Y)
+BWRay Film<CameraType> ::GetRayFromCameraWithNormal(float X, float Y)
 {
 	BWRay Ray;
 	Ray._start = Camera->GetPosition();
@@ -9,7 +9,7 @@ BWRay Film<CameraType> ::GetRayFromCamera(float X, float Y)
 	return Ray;
 }
 template<typename CameraType>
-BWRay Film<CameraType>::GetRayFromCamera(int WIndex, int HIndex)
+BWRay Film<CameraType>::GetRayFromCamera(float WIndex, float HIndex)
 {
 	if (WIndex < 0 || WIndex >= Width || HIndex < 0 || HIndex >= Height)
 	{
@@ -17,7 +17,7 @@ BWRay Film<CameraType>::GetRayFromCamera(int WIndex, int HIndex)
 	}
 	float X = float(WIndex) / Width;
 	float Y = float(HIndex) / Height;
-	return GetRayFromCamera(X, Y);
+	return GetRayFromCameraWithNormal(X, Y);
 }
 template<typename CameraType>
 BWRay Film<CameraType>::GetRayFromCamera(int PixelIndex)
@@ -28,13 +28,13 @@ BWRay Film<CameraType>::GetRayFromCamera(int PixelIndex)
 }
 
 template<typename CameraType>
-void Film<CameraType>::SetSpectrum(int WIndex, int HIndex, const Spectrum* Color)
+void Film<CameraType>::SetSpectrum(float WIndex, float HIndex, const Spectrum* Color)
 {
-	if (WIndex < 0 || WIndex >= Width || HIndex < 0 || HIndex >= Height)
+	if (WIndex < 0.0f || WIndex >= Width || HIndex < 0.0f || HIndex >= Height)
 	{
 		return;
 	}
-	FinalColor[WIndex + HIndex * Width ] = *Color;
+	FinalColor[int(WIndex) + int(HIndex) * int(Width) ] = *Color;
 }
 
 template<typename CameraType>

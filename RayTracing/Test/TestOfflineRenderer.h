@@ -17,6 +17,7 @@ public:
 	SceneType* GetScene() const { return Scene; }
 	Film<CameraType>* GetFilm() { return &ScreenFilm; }
 	Sampler* GetMainSampler() { return MainSampler; }
+	Spectrum Transmittance() override { return Spectrum(); }
 	Spectrum Li() override { return Spectrum(); }
 
 	Film<CameraType> ScreenFilm;

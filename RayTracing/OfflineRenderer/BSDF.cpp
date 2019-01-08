@@ -41,6 +41,16 @@ void BSDF::AddBXDF(BXDF *NewBxDF)
 }
 
 
+Spectrum BSDF::Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float &pdf, const BSDFSample& BSDFSampleData, BXDF_TYPE &SampleType, BXDF_TYPE Flags /*= BXDF_TYPE::BXDF_ALL*/) const
+{
+	return Spectrum();
+}
+
+float BSDF::Pdf(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag /*= BXDF_TYPE::BXDF_ALL*/) const
+{
+	return 0;
+}
+
 Spectrum BSDF::F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag /*= BXDF_TYPE::BXDF_ALL*/) const
 {
 	Spectrum Color;
@@ -49,6 +59,16 @@ Spectrum BSDF::F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag /*= 
 		Color += BXDFs[i]->F(Wi, Wo);
 	}
 	return Color;
+}
+
+Spectrum BSDF::RHO(const BWVector3D &Wo, RNG &Rng, BXDF_TYPE Flag /*= BXDF_TYPE::BXDF_ALL*/) const
+{
+	
+}
+
+Spectrum BSDF::RHO(RNG &Rng, BXDF_TYPE Flag /*= BXDF_TYPE::BXDF_ALL*/) const
+{
+
 }
 
 Spectrum BXDF::Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float u1, float u2, float &pdf) const

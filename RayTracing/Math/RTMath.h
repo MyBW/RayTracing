@@ -32,6 +32,7 @@ float Lerp(float T, float V1, float V2);
 double  TriangleArea(const BWTriangle& triangle);
 double  TriangleArea(const BWPoint4DD& p1, const BWPoint4DD& p2, const BWPoint4DD & p3) ;
 double  Dot(const BWVector3DD& a, const BWVector3DD& b);
+float  AbsDot(const BWVector3DD &a, const BWVector3DD &b);
 BWVector3DD Cross(const BWVector3DD& a, const BWVector3DD& b);
 void    Normalize( BWPoint3DD& vec);
 double  Lenth(const BWVector3DD& a);
