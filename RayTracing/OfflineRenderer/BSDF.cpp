@@ -32,6 +32,15 @@ Spectrum FrCond(float Cosi, const Spectrum &Eta, const Spectrum &K)
 	return (Rparl2 + Rperp2) / 2.f;
 }
 
+void BSDF::SetLocalSystem(const BWVector3D & X, const BWVector3D & Y, const BWVector3D & Z)
+{
+	this->X = X;
+	this->Y = Y;
+	this->Z = Z;
+	WorldToLocalMatrix = BWMatrix4(X, Y, Z);
+	WorldToLocalMatrix.transpose();
+}
+
 void BSDF::AddBXDF(BXDF *NewBxDF)
 {
 	if (NewBxDF)
@@ -44,9 +53,11 @@ void BSDF::AddBXDF(BXDF *NewBxDF)
 Spectrum BSDF::F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag /*= BXDF_TYPE::BXDF_ALL*/) const
 {
 	Spectrum Color;
+	BWVector3D LocalWo = WorldToLocal(Wo);
+	BWVector3D LocalWi = WorldToLocal(Wi);
 	for (int i = 0; i < BXDFs.size(); i++)
 	{
-		Color += BXDFs[i]->F(Wi, Wo);
+		Color += BXDFs[i]->F(LocalWi,LocalWo);
 	}
 	return Color;
 }

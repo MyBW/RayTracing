@@ -63,6 +63,13 @@ struct BWMatrix4
 	{
 		memcpy(M, &mat, sizeof(BWMatrix4));
 	}
+	BWMatrix4(const BWVector3D &X, const BWVector3D &Y, const BWVector3D &Z)
+	{
+		M00 = X.x; M01 = Y.x; M02 = Z.x; M03 = 0.f;
+		M10 = X.y; M11 = Y.y; M12 = Z.y; M13 = 0.f;
+		M20 = X.z; M21 = Y.z; M22 = Z.z; M23 = 0.f;
+		M30 = 0.f; M31 = 0.f; M32 = 0.f; M33 = 1.0f;
+	}
 	BWMatrix4(const float* mat)
 	{
 		memcpy(M, mat, sizeof(BWMatrix4));
