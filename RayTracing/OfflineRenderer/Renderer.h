@@ -9,6 +9,8 @@ struct IntersectionInfo
 	std::vector<BWPoint2DD> TriangleUV;
 	BWVector3DD IntersectionPoint;
 	BWVector3DD IntersectionNormal;
+	BWVector3DD IntersectionBiNormal;
+	BWVector3DD IntersectionTangent;
 	BWRay InputRay;
 	BWPoint2DD IntersectionUV;
 	const RTMaterial* Material;

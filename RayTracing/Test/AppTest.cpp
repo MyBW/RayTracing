@@ -26,15 +26,17 @@ void AppTest::Init(int Width, int Height)
 	RTRenderer.Init(Width, Height);
 	CameraForRender.Init(Width, Height);
 	Sceen.AddObject("cube.obj", std::string("obj1"));
-	Sceen.AddObject("planet.obj", std::string("obj2"));
+	
 
 	Object *TestObj = Sceen.GetObjectByName("obj1");
-	TestObj->SetPosition(0, -1, -20);
+	TestObj->SetPosition(0, -3.0, 5);
 	TestObj->SetScale(10, 1, 10);
 	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj1"));
 
+	Sceen.AddObject("planet.obj", std::string("obj2"));
+
 	TestObj = Sceen.GetObjectByName("obj2");
-	TestObj->SetPosition(0, 0, -20);
+	TestObj->SetPosition(0, 0, 5);
 	TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
 	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj2"));
 
@@ -43,7 +45,7 @@ void AppTest::Init(int Width, int Height)
 
 	DirectionLight *L = new DirectionLight();
 	L->SetName(std::string("DirectionalLight"));
-	L->SetPosition(BWVector3D(0.0, 0.0, 5.0));
+	L->SetPosition(BWVector3D(0.0, 10.0, 5.0));
 	Sceen.AddDirectionLight(L);
 
 	//Test Code start
@@ -226,7 +228,7 @@ void AppTest::UpdataSceneWithRealTimeRenderer()
 void AppTest::UpdateSceneWithOfflineRenderer()
 {
 
-	static unsigned char *Data = nullptr;
+	/*static unsigned char *Data = nullptr;
 	int width = OfflineRenderer.GetFilm()->GetWidth();
 	int height = OfflineRenderer.GetFilm()->GetHeight();
 	if (!Data)
@@ -245,6 +247,27 @@ void AppTest::UpdateSceneWithOfflineRenderer()
 
 	RTRenderer.BeginFrame();
 	RTRenderer.DrawImage(OfflineRenderer.GetFilm()->GetWidth(), OfflineRenderer.GetFilm()->GetHeight(), Data);
+	RTRenderer.EndFrame();*/
+
+	static float *Data = nullptr;
+	int width = OfflineRenderer.GetFilm()->GetWidth();
+	int height = OfflineRenderer.GetFilm()->GetHeight();
+	if (!Data)
+	{
+		Data = new float[width*height * 3];
+		for (int i = 0; i < height * width; i++)
+		{
+			Spectrum *Color = OfflineRenderer.GetFilm()->GetSpectrum(i);
+			float RGB[3];
+			Color->ToRGB(RGB);
+			Data[i * 3] = RGB[0];
+			Data[i * 3 + 1] = RGB[1];
+			Data[i * 3 + 2] = RGB[2];
+		}
+	}
+
+	RTRenderer.BeginFrame();
+	RTRenderer.DrawImage(OfflineRenderer.GetFilm()->GetWidth(), OfflineRenderer.GetFilm()->GetHeight(), Data, GL_RGB32F, GL_RGB, GL_FLOAT);
 	RTRenderer.EndFrame();
 }
 

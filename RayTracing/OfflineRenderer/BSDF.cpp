@@ -1,6 +1,8 @@
 #include "BSDF.h"
 #include "Montecarlo.h"
 #include "RTMaterial.h"
+#include "Sample.h"
+#include "RNG.h"
 float AbsCosTheta(const BWVector3D &W)
 {
 	return fabsf(W.z);
@@ -75,6 +77,8 @@ Spectrum BSDF::F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag /*= 
 	Spectrum Color;
 	BWVector3D LocalWo = WorldToLocal(Wo);
 	BWVector3D LocalWi = WorldToLocal(Wi);
+	LocalWo.normalize();
+	LocalWi.normalize();
 	for (int i = 0; i < BXDFs.size(); i++)
 	{
 		Color += BXDFs[i]->F(LocalWi,LocalWo);
@@ -84,12 +88,12 @@ Spectrum BSDF::F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag /*= 
 
 Spectrum BSDF::RHO(const BWVector3D &Wo, RNG &Rng, BXDF_TYPE Flag /*= BXDF_TYPE::BXDF_ALL*/) const
 {
-	
+	return Spectrum();
 }
 
 Spectrum BSDF::RHO(RNG &Rng, BXDF_TYPE Flag /*= BXDF_TYPE::BXDF_ALL*/) const
 {
-
+	return Spectrum();
 }
 
 Spectrum BXDF::Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float u1, float u2, float &pdf) const
@@ -195,3 +199,36 @@ float AnisotropicDistribution::Pdf(const BWVector3D &Wo, const BWVector3D &Wi) c
 }
 
 
+BSDFSampleOffset::BSDFSampleOffset(Sample &InSample, int SampleNum)
+{
+	this->SampleNum = SampleNum;
+	BSDFComponentOffset = InSample.Add1D(SampleNum);
+	DirOffset = InSample.Add2D(SampleNum);
+}
+
+BSDFSample::BSDFSample(Sample &InSample, const BSDFSampleOffset &Offsets, int SampleIndex)
+{
+	assert(SampleIndex < InSample.N1D[Offsets.BSDFComponentOffset]);
+	assert(SampleIndex < InSample.N2D[Offsets.DirOffset]);
+	Component = InSample.N1Data[Offsets.BSDFComponentOffset][SampleIndex];
+	Dir[0] = InSample.N2Data[Offsets.DirOffset][2 * SampleIndex];
+	Dir[1] = InSample.N2Data[Offsets.DirOffset][2 * SampleIndex + 1];
+	assert(Component<1.0f && Component > 0.0f);
+	assert(Dir[0] < 1.0f && Dir[0] >= 0.0f);
+	assert(Dir[1] < 1.0f && Dir[1] >= 0.0f);
+}
+
+BSDFSample::BSDFSample(RNG &Rng)
+{
+	Component = Rng.GetRandomFloat();
+	Dir[0] = Rng.GetRandomFloat();
+	Dir[1] = Rng.GetRandomFloat();
+}
+
+Spectrum TestBSDF::F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag /* = BXDF_TYPE::BXDF_ALL */) const
+{
+	BWVector3D Wh;
+	Wh = (Wi + Wo);
+	Wh.normalize();
+	return Spectrum(1.0) * TMax( Dot(Wh, Normal) , 0);
+}

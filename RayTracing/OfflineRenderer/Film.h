@@ -15,6 +15,7 @@ public:
 	BWRay GetRayFromCamera(float WIndex, float HIndex);
 	BWRay GetRayFromCamera(int PixelIndex);
 	void *GetData() { return FinalColor; }
+	CameraType* GetCamera() { return Camera; }
 private:
 	// X Y 是[0~1]的数据
 	BWRay GetRayFromCameraWithNormal(float X, float Y);

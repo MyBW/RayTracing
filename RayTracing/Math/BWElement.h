@@ -3,7 +3,7 @@
 #include <memory.h>
 struct BWEle4DD ;
 struct Radian;
-class BWMatrix4;
+struct BWMatrix4;
 class BWQuaternion;
 struct BWEle2DD
 {

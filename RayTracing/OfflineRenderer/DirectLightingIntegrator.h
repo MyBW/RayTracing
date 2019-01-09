@@ -5,7 +5,7 @@ template<typename SceneType, typename IntersectionType>
 class DirectLightingIntegrator : public Integrator<SceneType, IntersectionType>
 {
 public:
-	Spectrum TestLi(SceneType *InScene, IntersectionType *Intersction, RTLight *CurLight, BSDF &Bsdf, LightSample &LightSampleData, BSDFSample &BSDFSampleData)
+	Spectrum TestLi(SceneType *InScene, IntersectionType *Intersction, RTLight<IntersectionType> *CurLight, BSDF &Bsdf, LightSample &LightSampleData, BSDFSample &BSDFSampleData)
 	{
 		//多重重要性采样
 		// 对光源采样
@@ -104,11 +104,8 @@ public:
 		{
 			Spectrum LightColor;
 			BSDF Bsdf;
-
 			Intersction->Material->CreateBSDF(*Intersction, Bsdf);
-			//采样灯光
 			LightColor = AllLights[i]->Le(Intersction);
-			//采样材质
 			LightDir = AllLights[i]->GetLightDir(Intersction);
 			Color += LightColor * Bsdf.F(Intersction->InputRay._vector, LightDir);
 		}

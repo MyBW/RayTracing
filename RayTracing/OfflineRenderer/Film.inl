@@ -4,8 +4,7 @@ BWRay Film<CameraType> ::GetRayFromCameraWithNormal(float X, float Y)
 {
 	BWRay Ray;
 	Ray._start = Camera->GetPosition();
-	Ray._vector = Camera->GetViewportPositionInWorldSpace(X, Y) - Ray._start;
-	Ray._vector.normalize();
+	Ray._vector =  GetDirection(Ray._start , Camera->GetViewportPositionInWorldSpace(X, Y));
 	return Ray;
 }
 template<typename CameraType>

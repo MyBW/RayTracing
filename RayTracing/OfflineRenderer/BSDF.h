@@ -2,7 +2,8 @@
 #include <vector>
 #include "BWPrimitive.h"
 #include "RTRenderer.h"
-#include "RNG.h"
+class RNG;
+class Sample;
 float AbsCosTheta(const BWVector3D &W);
 bool SameHemisphere(const BWVector3D &Wi, const BWVector3D &Wo);
 /*
@@ -16,7 +17,7 @@ Spectrum FrDiel(float Cosi, float Cost, const Spectrum &Etai, const Spectrum &Et
 /*
 	函数名：FrCond 金属体Fresnel系数
 	函数参数：Cosi 入射光线Cos值
-				N 折射率
+				Eta 折射率
 				K 因为金属不折射光线，但是可以将光线吸收一部分 转化为热能 k为吸收因子
 */
 Spectrum FrCond(float Cosi, const Spectrum &Eta, const Spectrum &K);
@@ -100,12 +101,7 @@ enum BXDF_TYPE
 class BSDFSampleOffset
 {
 public:
-	BSDFSampleOffset(Sample &InSample, int SampleNum)
-	{
-		this->SampleNum = SampleNum;
-		BSDFComponentOffset = InSample.Add1D(SampleNum);
-		DirOffset = InSample.Add2D(SampleNum);
-	}
+	BSDFSampleOffset(Sample &InSample, int SampleNum);
 	int SampleNum;
 	int BSDFComponentOffset;
 	int DirOffset;
@@ -114,23 +110,8 @@ public:
 class BSDFSample
 {
 public:
-	BSDFSample(Sample &InSample, const BSDFSampleOffset &Offsets, int SampleIndex)
-	{
-		assert(SampleIndex < InSample.N1D[Offsets.BSDFComponentOffset]);
-		assert(SampleIndex < InSample.N2D[Offsets.DirOffset]);
-		Component = InSample.N1Data[Offsets.BSDFComponentOffset][SampleIndex];
-		Dir[0] = InSample.N2Data[Offsets.DirOffset][2 * SampleIndex];
-		Dir[1] = InSample.N2Data[Offsets.DirOffset][2 * SampleIndex + 1];
-		assert(Component<1.0f && Component > 0.0f);
-		assert(Dir[0] < 1.0f && Dir[0] >= 0.0f);
-		assert(Dir[1] < 1.0f && Dir[1] >= 0.0f);
-	}
-	BSDFSample(RNG &Rng)
-	{
-		Component = Rng.GetRandomFloat();
-		Dir[0] = Rng.GetRandomFloat();
-		Dir[1] = Rng.GetRandomFloat();
-	}
+	BSDFSample(Sample &InSample, const BSDFSampleOffset &Offsets, int SampleIndex);
+	BSDFSample(RNG &Rng);
 	float Dir[2];
 	float Component;
 };
@@ -147,7 +128,7 @@ public:
 	void AddBXDF(BXDF *NewBxDF);
 	Spectrum Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float &pdf, const BSDFSample& BSDFSampleData, BXDF_TYPE &SampleType , BXDF_TYPE Flags = BXDF_TYPE::BXDF_ALL) const ;
 	float Pdf(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag = BXDF_TYPE::BXDF_ALL) const;
-	Spectrum F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag = BXDF_TYPE::BXDF_ALL) const;
+	virtual Spectrum F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag = BXDF_TYPE::BXDF_ALL) const;
 	Spectrum RHO(const BWVector3D &Wo, RNG &Rng, BXDF_TYPE Flag = BXDF_TYPE::BXDF_ALL) const;
 	Spectrum RHO(RNG &Rng, BXDF_TYPE Flag = BXDF_TYPE::BXDF_ALL) const;
 	std::vector<BXDF*> BXDFs;
@@ -159,6 +140,13 @@ protected:
 	BWVector3D Y;
 	BWVector3D Z;
 	BWMatrix4 WorldToLocalMatrix;
+};
+
+class TestBSDF : public BSDF
+{
+public:
+	virtual Spectrum F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag  = BXDF_TYPE::BXDF_ALL ) const override;
+	BWVector3D Normal;
 };
 
 class BXDF

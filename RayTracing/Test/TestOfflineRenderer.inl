@@ -70,7 +70,7 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 		{
 			IntersectionInfo Intersection;
 			BWRay Ray = CameraFilm->GetRayFromCamera(Samples[i].ImageX, Samples[i].ImageY);
-			auto GetIntersectionInfo = [&Intersection](std::vector<BWPoint3DD>& P, std::vector<BWPoint3DD>& N, std::vector<BWPoint2DD>& UV, float t, float u, float v, BWRay &Ray, const RTMaterial* Material)
+			auto GetIntersectionInfo = [&Intersection, &CameraFilm](std::vector<BWPoint3DD>& P, std::vector<BWPoint3DD>& N, std::vector<BWPoint2DD>& UV, float t, float u, float v, BWRay &Ray, const RTMaterial* Material)
 			{
 				Intersection.IntersectionPoint = Ray._start + Ray._vector * t;
 				Intersection.InputRay = -Ray;
@@ -80,6 +80,9 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 				Intersection.IntersectionNormal = LinearInterpolation(Intersection.TriangleN[0], Intersection.TriangleN[1], u);
 				Intersection.IntersectionNormal = LinearInterpolation(Intersection.IntersectionNormal, Intersection.TriangleN[2], v);
 				Intersection.IntersectionNormal.normalize();
+				CoordinateSystem(Intersection.IntersectionNormal, &Intersection.IntersectionBiNormal, &Intersection.IntersectionTangent);
+				Intersection.IntersectionBiNormal.normalize();
+				Intersection.IntersectionTangent.normalize();
 				Intersection.Material = Material;
 			};
 			if (Scene->GetIntersectionInfo(Ray, GetIntersectionInfo))

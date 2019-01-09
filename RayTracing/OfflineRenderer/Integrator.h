@@ -1,7 +1,6 @@
 #pragma once
 #include "RTDirectionLight.h"
 #include "RTPointLight.h"
-#include "RTLight.h"
 class Sample;
 template<typename SceneType, typename IntersectionType>
 class Integrator

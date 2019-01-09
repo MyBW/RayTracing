@@ -114,6 +114,9 @@
     <ClCompile Include="OfflineRenderer\RTMaterial.cpp">
       <Filter>OfflineRenderer</Filter>
     </ClCompile>
+    <ClCompile Include="OfflineRenderer\RTLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">
