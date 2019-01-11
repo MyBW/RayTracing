@@ -48,22 +48,24 @@ void Scene::AddObject(const char *ObjFileName, const std::string &ObjName)
 //	return Mint != FLT_MAX;
 //}
 
-bool Scene::GetIntersectionInfo(BWRay& ray, std::function<void(std::vector<BWPoint3DD>& P, std::vector<BWPoint3DD>& N, std::vector<BWPoint2DD>& UV, float t, float u, float v, BWRay &Ray, const RTMaterial*)> IntersectionCallBack)
+bool Scene::GetIntersectionInfo(const BWRay& ray, std::function<void(const std::vector<BWPoint3DD>& P, const std::vector<BWPoint3DD>& N, const std::vector<BWPoint2DD>& UV, float t, float u, float v,const BWRay &Ray, const RTMaterial*, bool &IsBreak)> IntersectionCallBack)
 {
 	TriangleInfo TempRes;
 	TempRes.Resize(3);
 	float t = 0, u = 0, v = 0;
 	float Mint = FLT_MAX;
+	bool IsBreak = false;
 	for (auto Obj : Objects)
 	{
 		int TriangleNum = Obj->GetTriangleNum();
 		for (int i = 0; i < TriangleNum; i++)
 		{
 			Obj->GetTriangleWorldInfoByIndex(i, TempRes);
-			if (RayIntersectTriangle(ray, TempRes.P[0], TempRes.P[1], TempRes.P[2], t, u, v) && t < Mint)
+			if (RayIntersectTriangle(ray, TempRes.P[0], TempRes.P[1], TempRes.P[2], t, u, v))
 			{
 				Mint = t;
-				IntersectionCallBack(TempRes.P, TempRes.N, TempRes.UV, t, u, v, ray, Obj->GetMaterial());
+				IntersectionCallBack(TempRes.P, TempRes.N, TempRes.UV, t, u, v, ray, Obj->GetMaterial() , IsBreak);
+				if (IsBreak) return Mint != FLT_MAX;
 			}
 		}
 	}

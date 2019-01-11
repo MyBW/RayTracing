@@ -189,7 +189,7 @@
     <ClInclude Include="Math\RTMath.h" />
     <ClInclude Include="MeshLoad\FBXAttributeTypeData.h" />
     <ClInclude Include="MeshLoad\FBXImporterImp.h" />
-    <ClInclude Include="OfflineRenderer\AreaLight.h" />
+    <ClInclude Include="OfflineRenderer\RTAreaLight.h" />
     <ClInclude Include="OfflineRenderer\BSDF.h" />
     <ClInclude Include="OfflineRenderer\DirectLightingIntegrator.h" />
     <ClInclude Include="OfflineRenderer\Film.h" />
@@ -218,6 +218,7 @@
     <ClInclude Include="Test\HelpFunc.h" />
     <ClInclude Include="Test\TestFBXDrawObj.h" />
     <ClInclude Include="Test\TestFBXLoad.h" />
+    <ClInclude Include="Test\TestIntergrator.h" />
     <ClInclude Include="Test\TestOfflineRenderer.h" />
   </ItemGroup>
   <ItemGroup>

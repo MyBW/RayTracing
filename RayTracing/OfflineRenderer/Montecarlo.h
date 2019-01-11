@@ -9,3 +9,10 @@ inline float PowerHeuristic(int nf, float fPdf, int ng, float gPdf)
 	float f = nf * fPdf, g = ng * gPdf;
 	return (f*f) / (f*f + g*g);
 }
+
+class Distribution1D
+{
+public:
+	void ResetDistributionData(const std::vector<float> &Data);
+	int SampleDistribute(float u, float &Pdf);
+};

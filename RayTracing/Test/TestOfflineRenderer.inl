@@ -9,9 +9,11 @@ void TestOfflineRenderer<SceneType, CameraType>::RenderScene(SceneType* Scene)
 {
 	if (!Camera)  return;
 	
+	OrigSample = new Sample();
 	this->Scene = Scene;
 	this->Scene->UpdateSceneInfo();
 	RendererIntegrator->Init(this->Scene);
+	RendererIntegrator->RequestSample(*OrigSample);
 
 	const int SplitScreenNum = 64;
 	std::vector<Task*> OfflineRendererTasks;
@@ -60,63 +62,48 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 	Sampler *MainSampelr = Render->GetMainSampler();
 	Sampler *SubSampler = MainSampelr->GetSubSampler(StarPixelIndex, EndPiexlIndex);
 	int MaxSampleCount = SubSampler->GetMaxSampleCount();
-	Sample *Samples = new Sample[MaxSampleCount];
+	std::vector<Sample*> Samples = Render->OrigSample->Duplicate(MaxSampleCount);
 	RNG Rng;
-	SubSampler->GetMoreSamples(Samples, &Rng);
 	int SampleNum = 0;
 	while ((SampleNum = SubSampler->GetMoreSamples(Samples, &Rng)) != 0)
 	{
 		for (int i = 0 ; i < SampleNum ; i++)
 		{
 			IntersectionInfo Intersection;
-			BWRay Ray = CameraFilm->GetRayFromCamera(Samples[i].ImageX, Samples[i].ImageY);
-			auto GetIntersectionInfo = [&Intersection, &CameraFilm](std::vector<BWPoint3DD>& P, std::vector<BWPoint3DD>& N, std::vector<BWPoint2DD>& UV, float t, float u, float v, BWRay &Ray, const RTMaterial* Material)
+			BWRay Ray = CameraFilm->GetRayFromCamera(Samples[i]->ImageX, Samples[i]->ImageY);
+			float Mint = FLT_MAX;
+			auto GetIntersectionInfo = [&Intersection, &Mint](const std::vector<BWPoint3DD>& P, const std::vector<BWPoint3DD>& N, const std::vector<BWPoint2DD>& UV, float t, float u, float v,const BWRay &Ray, const RTMaterial* Material , bool &IsBreak)
 			{
-				Intersection.IntersectionPoint = Ray._start + Ray._vector * t;
-				Intersection.InputRay = -Ray;
-				Intersection.TriangleP = P;
-				Intersection.TriangleN = N;
-				Intersection.TriangleUV = UV;
-				Intersection.IntersectionNormal = LinearInterpolation(Intersection.TriangleN[0], Intersection.TriangleN[1], u);
-				Intersection.IntersectionNormal = LinearInterpolation(Intersection.IntersectionNormal, Intersection.TriangleN[2], v);
-				Intersection.IntersectionNormal.normalize();
-				CoordinateSystem(Intersection.IntersectionNormal, &Intersection.IntersectionBiNormal, &Intersection.IntersectionTangent);
-				Intersection.IntersectionBiNormal.normalize();
-				Intersection.IntersectionTangent.normalize();
-				Intersection.Material = Material;
+				if (t < Mint)
+				{
+					Mint = t;
+					Intersection.IntersectionPoint = Ray._start + Ray._vector * t;
+					Intersection.InputRay = -Ray;
+					Intersection.TriangleP = P;
+					Intersection.TriangleN = N;
+					Intersection.TriangleUV = UV;
+					Intersection.IntersectionNormal = LinearInterpolation(Intersection.TriangleN[0], Intersection.TriangleN[1], u);
+					Intersection.IntersectionNormal = LinearInterpolation(Intersection.IntersectionNormal, Intersection.TriangleN[2], v);
+					Intersection.IntersectionNormal.normalize();
+					CoordinateSystem(Intersection.IntersectionNormal, &Intersection.IntersectionBiNormal, &Intersection.IntersectionTangent);
+					Intersection.IntersectionBiNormal.normalize();
+					Intersection.IntersectionTangent.normalize();
+					Intersection.Material = Material;
+				}
 			};
 			if (Scene->GetIntersectionInfo(Ray, GetIntersectionInfo))
 			{
-				Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection, Samples[i]);
-				CameraFilm->SetSpectrum(Samples[i].ImageX, Samples[i].ImageY, &Color);
+				Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection, *Samples[i], Rng);
+				CameraFilm->SetSpectrum(Samples[i]->ImageX, Samples[i]->ImageY, &Color);
 			}
 		}
 		
 	}
-	/*for (int i  = StarPixelIndex; i < EndPiexlIndex;i++)
-	{
-		IntersectionInfo Intersection;
-		BWRay Ray = CameraFilm->GetRayFromCamera(i);
-		auto GetIntersectionInfo = [&Intersection](std::vector<BWPoint3DD>& P, std::vector<BWPoint3DD>& N, std::vector<BWPoint2DD>& UV, float t, float u, float v, BWRay &Ray, const RTMaterial* Material)
-		{
-			Intersection.IntersectionPoint = Ray._start + Ray._vector * t;
-			Intersection.InputRay = -Ray;
-			Intersection.TriangleP = P;
-			Intersection.TriangleN = N;
-			Intersection.TriangleUV = UV;
-			Intersection.IntersectionNormal = LinearInterpolation(Intersection.TriangleN[0], Intersection.TriangleN[1], u);
-			Intersection.IntersectionNormal = LinearInterpolation(Intersection.IntersectionNormal, Intersection.TriangleN[2], v);
-			Intersection.IntersectionNormal.normalize();
-			Intersection.Material = Material;
-		};
-		if (Scene->GetIntersectionInfo(Ray, GetIntersectionInfo))
-		{
-			Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection , *Samples);
-			CameraFilm->SetSpectrum(i, &Color);
-		}
-	}*/
 	delete SubSampler;
-	delete [] Samples;
+	for (auto SampleData : Samples)
+	{
+		delete SampleData;
+	}
 }
 
 template<typename SceneType, typename CameraType>

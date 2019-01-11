@@ -3,7 +3,7 @@
 #include "Sample.h"
 
 
-int Random::GetMoreSamples(Sample *InSample, RNG *InRNG)
+int Random::GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG)
 {
 	if (ImageSamplePos == nullptr)
 	{
@@ -29,24 +29,28 @@ int Random::GetMoreSamples(Sample *InSample, RNG *InRNG)
 		ResetSamplePosition(CurrSamplePos);
 		CurrPixelSampleNum = 0;
 	}
-	InSample->ImageX = ImageSamplePos[CurrPixelSampleNum * 2] + CurrSamplePosX;
-	InSample->ImageY = ImageSamplePos[CurrPixelSampleNum * 2 + 1] + CurrSamplePosY;
-	InSample->AllocDataMemory();
-	for (int i = 0; i < InSample->N1D.size(); i++)
+	for (size_t i = 0; i < Samples.size(); i++)
 	{
-		for (int j = 0; j < InSample->N1D[i]; j++)
+		Samples[i]->ImageX = ImageSamplePos[CurrPixelSampleNum * 2] + CurrSamplePosX;
+		Samples[i]->ImageY = ImageSamplePos[CurrPixelSampleNum * 2 + 1] + CurrSamplePosY;
+		int OffSet = 0;
+		for (int k = 0; k < Samples[i]->N1D.size(); k++)
 		{
-			*(InSample->N1Data[j]) = InRNG->GetRandomFloat();
+			for (int j = 0; j < Samples[i]->N1D[k]; j++)
+			{
+				*(Samples[i]->N1Data[k] + j) = InRNG->GetRandomFloat();
+			}
+		}
+		for (int k = 0; k < Samples[i]->N2D.size(); k++)
+		{
+			for (int j = 0; j < Samples[i]->N2D[k]; j+=2)
+			{
+				*(Samples[i]->N2Data[k]+ j) = InRNG->GetRandomFloat();
+				*(Samples[i]->N2Data[k]+ j + 1) = InRNG->GetRandomFloat();
+			}
 		}
 	}
-	for (int i = 0; i < InSample->N2D.size(); i++)
-	{
-		for (int j = 0; j < InSample->N2D[i]; j++)
-		{
-			*(InSample->N2Data[j * 2]) = InRNG->GetRandomFloat();
-			*(InSample->N2Data[j * 2 + 1]) = InRNG->GetRandomFloat();
-		}
-	}
+	
 	CurrPixelSampleNum++;
 	return 1;
 }

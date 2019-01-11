@@ -86,6 +86,18 @@ Spectrum BSDF::F(const BWVector3D &Wo, const BWVector3D &Wi, BXDF_TYPE Flag /*= 
 	return Color;
 }
 
+Spectrum BSDF::Le(const BWVector3D &Wo) const
+{
+	Spectrum Color;
+	BWVector3D LocalWo = WorldToLocal(Wo);
+	LocalWo.normalize();
+	for (int i = 0; i < BXDFs.size(); i++)
+	{
+		Color += BXDFs[i]->Le(LocalWo);
+	}
+	return Color;
+}
+
 Spectrum BSDF::RHO(const BWVector3D &Wo, RNG &Rng, BXDF_TYPE Flag /*= BXDF_TYPE::BXDF_ALL*/) const
 {
 	return Spectrum();
@@ -96,6 +108,10 @@ Spectrum BSDF::RHO(RNG &Rng, BXDF_TYPE Flag /*= BXDF_TYPE::BXDF_ALL*/) const
 	return Spectrum();
 }
 
+Spectrum BXDF::Le(const BWVector3D &Wo)
+{
+	return Lemit * AbsCosTheta(Wo);
+}
 Spectrum BXDF::Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float u1, float u2, float &pdf) const
 {
 	Wi = ConsineSampleHemisphere(u1, u2);

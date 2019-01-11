@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 class Sample;
 class RNG;
 class Sampler
@@ -11,7 +12,7 @@ public:
 	}
 	virtual int GetMaxSampleCount() = 0;
 	virtual Sampler* GetSubSampler(int SubStartPixelIndex, int SubEndPixelIndex) = 0;
-	virtual int GetMoreSamples(Sample *InSample, RNG *InRNG) = 0;
+	virtual int GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG) = 0;
 protected:
 	int StartPixelIndex;
 	int EndPixelIndex;
@@ -38,7 +39,7 @@ public:
 	{
 		return new Random(SubStartPixelIndex, SubEndPixelIndex, SamplesPerPixel, FilmWidth, FilmHeight);
 	}
-	int GetMoreSamples(Sample *InSample, RNG *InRNG);
+	int GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG);
 	void ResetSamplePosition(int SamplePos)
 	{
 		CurrSamplePos = SamplePos;

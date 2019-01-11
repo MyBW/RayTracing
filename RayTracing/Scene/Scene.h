@@ -17,7 +17,7 @@ public:
 	Scene();
 	~Scene();
 	void AddObject(const char *ObjFileName, const std::string &ObjName);
-	bool GetIntersectionInfo(BWRay& ray, std::function<void(std::vector<BWPoint3DD>& P, std::vector<BWPoint3DD>& N, std::vector<BWPoint2DD>& UV , float t, float u , float v, BWRay &Ray , const RTMaterial*)> IntersectionCallBack);
+	bool GetIntersectionInfo(const BWRay& ray, std::function<void( const std::vector<BWPoint3DD>& P, const std::vector<BWPoint3DD>& N, const std::vector<BWPoint2DD>& UV , float t, float u , float v,const BWRay &Ray , const RTMaterial* , bool &IsBreak)> IntersectionCallBack);
 	Object* GetObjectByName(const std::string &Name);
 	void AddLight(Light* L);
 	void AddDirectionLight(DirectionLightType* L);

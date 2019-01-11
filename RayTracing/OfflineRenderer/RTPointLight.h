@@ -6,31 +6,32 @@ class RTPointLight :public RTLight<IntersectionType>
 {
 public:
 	RTPointLight() :LightSource(nullptr) { }
+
+	void SetIndtensity(const Spectrum& Intensity) { Lo = Intensity; }
 	PointLightType* GetLightSource() { return LightSource; }
 	void SetLightSource(PointLightType *InLightSource) { LightSource = InLightSource; }
-	BWVector3D GetLightDir(const IntersectionType *Intersection) 
-	{
-		BWVector3D LightDir;
-		LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
-		return LightDir;
-	}
-
 	bool IsDeltaLight() { return true; }
-	Spectrum Sample_L(const IntersectionType *Intersection, const LightSample &InLightSample, BWVector3D &LightDir, float &Pdf) override
+	Spectrum Sample_L(const IntersectionType *Intersection, const LightSample &InLightSample, BWVector3D &LightDir, float &Pdf, VisibleTester &VisibleTest) override
 	{
-		Spectrum Color;
-		return Color;
+		LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
+		VisibleTest.SetSegment(Intersection->IntersectionPoint, LightSource->GetPosition());
+		Pdf = 1.0f;
+		return Lo / pow(VisibleTest.Ray.Length, 2);
+	}
+	Spectrum Power() override
+	{
+		return 4.0f * PI * Lo;
 	}
 	float Pdf(const BWVector3D &P, const BWVector3D &Wi) override
 	{
 		return 0;
 	}
-	Spectrum Le(const IntersectionType *Intersection) override
+	Spectrum L(const IntersectionType *Intersection, const BWVector3D &PInLight, const BWVector3D &NInLight) override
 	{
-		Spectrum Color;
-		return Color;
+		return Lo / Power(Lenth(Intersection->IntersectionPoint, LightSource->GetPosition()));
 	}
 	
 private:
 	PointLightType *LightSource;
+	Spectrum Lo;
 };

@@ -509,16 +509,19 @@ struct Radian
 struct  BWRay
 {
 	BWRay();
+	BWRay(const BWVector3D &Start, const BWVector3D &Vector, float Lenth);
 	~BWRay();
-	BWRay operator-()
+	BWRay operator-() const
 	{
 		BWRay Result;
 		Result._start = _start;
 		Result._vector = _vector * -1;
+		Result.Length = Length;
 		return Result;
 	}
 	BWPoint4DD _start;
 	BWPoint3DD _vector;
+	float Length;
 };
 
 class  BWTriangle

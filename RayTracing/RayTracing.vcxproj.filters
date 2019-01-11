@@ -230,7 +230,10 @@
     <ClInclude Include="Scene\PointLight.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="OfflineRenderer\AreaLight.h">
+    <ClInclude Include="Test\TestIntergrator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\RTAreaLight.h">
       <Filter>OfflineRenderer</Filter>
     </ClInclude>
   </ItemGroup>

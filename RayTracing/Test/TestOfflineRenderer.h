@@ -24,6 +24,7 @@ public:
 	SceneType *Scene;
     CameraType *Camera;
 	Sampler *MainSampler;
+	Sample *OrigSample;
 	Integrator<typename SceneType , IntersectionInfo> *RendererIntegrator;
 };
 

@@ -23,9 +23,9 @@ void RTMaterial::CreateBSDF(const IntersectionInfo& Intersection, BSDF &Bsdf) co
 	
 
 	Lambertian* Lamber = new Lambertian();
-	Color.SetValue(0, 1.0);
-	Color.SetValue(1, 1.0);
-	Color.SetValue(2, 1.0);
+	Color.SetValue(0, 0.1);
+	Color.SetValue(1, 0.1);
+	Color.SetValue(2, 0.1);
 	Lamber->SetColor(Color);
-	//Bsdf.AddBXDF(Lamber);
+	Bsdf.AddBXDF(Lamber);
 }

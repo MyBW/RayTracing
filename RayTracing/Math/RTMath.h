@@ -3,12 +3,12 @@
 #include <math.h>
 #include <float.h>
 #include <algorithm>
-const float PI = 3.1415926f;
-const float ESP = 0.0000001f;//这个调整的话 可能会导致求解凸包过程崩溃
+const float PI = 3.14159265358979323846f;
+const float ESP = 0.00001f;//这个调整的话 可能会导致求解凸包过程崩溃
 const float FLT_MAX_ =  FLT_MAX;
 const float FLT_MIN_ = FLT_MIN;
 const float POS_INFINITY = FLT_MAX;
-const float INV_PI = 1.0 / 3.1415926f;
+const float INV_PI = 1.0 / 3.14159265358979323846f;
 const float INV_TWOPI =  0.15915494309189533577f;
 
 

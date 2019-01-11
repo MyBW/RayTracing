@@ -46,6 +46,8 @@ void AppTest::Init(int Width, int Height)
 	DirectionLight *L = new DirectionLight();
 	L->SetName(std::string("DirectionalLight"));
 	L->SetPosition(BWVector3D(0.0, 10.0, 5.0));
+	L->SetDirection(BWVector3D(0 , -5, 0));
+	L->LightRadiance = Spectrum(1);
 	Sceen.AddDirectionLight(L);
 
 	//Test Code start
@@ -130,10 +132,9 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 	if (ShowOfflineRender)
 	{
 		DirectLightingIntegrator<Scene, IntersectionInfo> LightingIntegrator;
+		Random RandomSampler(0, CameraForRender.GetScreenWidth() * CameraForRender.GetScreenHeight(), 1, CameraForRender.GetScreenWidth(), CameraForRender.GetScreenHeight());
 		OfflineRenderer.SetCamera(&CameraForRender);
 		OfflineRenderer.SetIntegrator(&LightingIntegrator);
-
-		Random RandomSampler(0, CameraForRender.GetScreenWidth() * CameraForRender.GetScreenHeight(), 1,CameraForRender.GetScreenWidth() , CameraForRender.GetScreenHeight());
 		OfflineRenderer.SetSampler(&RandomSampler);
 		OfflineRenderer.RenderScene(&Sceen);
 		

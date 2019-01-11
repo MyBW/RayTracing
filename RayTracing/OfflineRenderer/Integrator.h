@@ -7,7 +7,8 @@ class Integrator
 {
 public:
 	virtual void Init(SceneType *InScene);
-	virtual Spectrum Li(SceneType *InScene, IntersectionType *Intersction , Sample &InSample) { return Spectrum(); };
+	virtual void RequestSample(Sample &InSample){ }
+	virtual Spectrum Li(SceneType *InScene, IntersectionType *Intersction , Sample &InSample, RNG& Rng) { return Spectrum(); };
 	~Integrator()
 	{
 		for (auto Ele : DirectionLights)
@@ -22,6 +23,7 @@ public:
 protected:
 	std::vector<RTDirectionLight< typename SceneType::DirectionLightType, IntersectionType>*> DirectionLights;
 	std::vector<RTPointLight< typename SceneType::PointLightType, IntersectionType>*> PointLights;
+	std::vector<RTAreaLight<typename SceneType::AreaLightType, IntersectionType>*> AreaLights;
 	std::vector<RTLight<IntersectionType>*> AllLights;
 private:
 };
@@ -35,6 +37,7 @@ void Integrator<SceneType, IntersectionType>::Init(SceneType *InScene)
 		DirectionLights.push_back(new RTDirectionLight<SceneType::DirectionLightType, IntersectionType>());
 		AllLights.push_back(DirectionLights[i]);
 		DirectionLights[i]->SetLightSource(SceneDirectionLights[i]);
+		DirectionLights[i]->SetRadiance(SceneDirectionLights[i]->GetRadiance());
 	}
 	std::vector<SceneType::PointLightType*>& ScenePointLights = InScene->GetAllPointLight();
 	for (int i = 0; i < ScenePointLights.size(); i++)

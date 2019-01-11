@@ -6,31 +6,27 @@ class RTDirectionLight : public RTLight<IntersectionType>
 {
 public:
 	RTDirectionLight():LightSource(nullptr){ }
-	DirectionLightType* GetLightSource() { return LightSource; }
-	BWVector3D GetLightDir(const IntersectionType *Intersection) override
-	{
-		BWVector3D LightDir;
-		LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
-		return LightDir;
-	}
-	void SetLightSource(DirectionLightType *InLightSource) { LightSource = InLightSource; }
 
-	Spectrum Le(const IntersectionType *Intersection) override
+	
+	void SetRadiance(const Spectrum &Radiance) { Lo = Radiance; }
+	void SetWorldRadius(const float Radius) { WorldRadius = Radius; }
+	DirectionLightType* GetLightSource() { return LightSource; }
+	void SetLightSource(DirectionLightType *InLightSource) { LightSource = InLightSource; }
+	Spectrum L(const IntersectionType *Intersection, const BWVector3D &PInLight, const BWVector3D &NInLight) override
 	{
-		Spectrum Color;
-		Color.SetValue(0, 30);
-		return Color;
+		return Lo;
 	}
 	bool IsDeltaLight() { return true; }
-	Spectrum Sample_L(const IntersectionType *Intersection, const LightSample &InLightSample, BWVector3D& LightDir, float &Pbf) override
+	Spectrum Sample_L(const IntersectionType *Intersection, const LightSample &InLightSample, BWVector3D& LightDir, float &Pdf, VisibleTester &VisibleTest) override
 	{
-		if (!LightSource) return Spectrum(0.0);
-		LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
-		Spectrum Color;
-		Color.SetValue(0, 10.0);
-		Color.SetValue(1, 0);
-		Color.SetValue(2, 0);
-		return Color;
+		LightDir = LightSource->GetDirection() * -1;
+		VisibleTest.SetRay(Intersection->IntersectionPoint, LightDir);
+		Pdf = 1.0f;
+		return Lo;
+	}
+	Spectrum Power() override
+	{
+		return Lo * PI * WorldRadius * WorldRadius;
 	}
 	float Pdf(const BWVector3D &P, const BWVector3D &Wi) override
 	{
@@ -38,4 +34,6 @@ public:
 	}
 private:
 	DirectionLightType *LightSource;
+	Spectrum Lo;
+	float WorldRadius;
 };

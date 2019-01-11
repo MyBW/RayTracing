@@ -9,6 +9,17 @@ public:
 	Sample():DataMem(NULL)
 	{
 	}
+	Sample(const Sample& Src)
+	{
+		DataMem = nullptr;
+		N1D = Src.N1D;
+		N2D = Src.N2D;
+		AllocDataMemory();
+	}
+	~Sample()
+	{
+		if(DataMem) delete[] DataMem;
+	}
 	int Add1D(int Num)
 	{
 		N1D.push_back(Num);
@@ -19,6 +30,21 @@ public:
 		N2D.push_back(Num);
 		return N2D.size() - 1;
 	}
+	std::vector<Sample*> Duplicate(int DumplicateNum)
+	{
+		std::vector<Sample*> Samples;
+		for (size_t i = 0; i < DumplicateNum; i++)
+		{
+			Samples.push_back(new Sample(*this));
+		}
+		return Samples;
+	}
+	std::vector<int> N1D;
+	std::vector<int> N2D;
+	std::vector<float*>N1Data;
+	std::vector<float*>N2Data;
+	float *DataMem;
+private:
 	void ClearMemData()
 	{
 		if (DataMem)
@@ -33,6 +59,8 @@ public:
 	{
 		ClearMemData();
 		int TotSampleDataSize = 0;
+		N1Data.resize(N1D.size());
+		N2Data.resize(N2D.size());
 		for (int i = 0; i < N1D.size(); i++)
 		{
 			TotSampleDataSize += N1D[i];
@@ -56,9 +84,4 @@ public:
 			OffSet += N2D[i] * 2;
 		}
 	}
-	std::vector<int> N1D;
-	std::vector<int> N2D;
-	std::vector<float*>N1Data;
-	std::vector<float*>N2Data;
-	float *DataMem;
 };

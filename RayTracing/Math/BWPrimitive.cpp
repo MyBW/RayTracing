@@ -4,6 +4,13 @@ BWRay::BWRay()
 {
 }
 
+BWRay::BWRay(const BWVector3D &Start, const BWVector3D &Vector, float Lenth)
+{
+	_start = Start;
+	_vector = Vector;
+	Length = Lenth;
+}
+
 BWRay::~BWRay()
 {
 
