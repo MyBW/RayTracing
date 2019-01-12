@@ -4,6 +4,7 @@
 #include "Light.h"
 #include "DirectionLight.h"
 #include "PointLight.h"
+#include "AreaLight.h"
 #include "..\OfflineRenderer\RTMaterial.h"
 #include <functional>
 class Object;
@@ -14,6 +15,7 @@ public:
 	typedef Light LightType;
 	typedef DirectionLight DirectionLightType;
 	typedef PointLight PointLightType;
+	typedef AreaLight AreaLightType;
 	Scene();
 	~Scene();
 	void AddObject(const char *ObjFileName, const std::string &ObjName);
@@ -22,8 +24,10 @@ public:
 	void AddLight(Light* L);
 	void AddDirectionLight(DirectionLightType* L);
 	void AddPointLight(PointLightType *L);
+	void AddAreaLight(AreaLightType *L);
 	std::vector<DirectionLightType*>& GetAllDireciontLight();
 	std::vector<PointLightType*>& GetAllPointLight();
+	std::vector<AreaLightType*>& GetAllAreaLight();
 	Light* GetLightByName(std::string &Name);
 	std::vector<Object*>& GetObjects() { return Objects; }
 	void UpdateSceneInfo();
@@ -32,4 +36,5 @@ private:
 	std::vector<Light*> Lights;
 	std::vector<DirectionLightType*> DireciontLights;
 	std::vector<PointLightType*> PointLights;
+	std::vector<AreaLightType*> AreaLights;
 };

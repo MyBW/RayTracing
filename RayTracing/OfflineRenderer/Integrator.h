@@ -46,4 +46,20 @@ void Integrator<SceneType, IntersectionType>::Init(SceneType *InScene)
 		AllLights.push_back(PointLights[i]);
 		PointLights[i]->SetLightSource(ScenePointLights[i]);
 	}
+	std::vector<SceneType::AreaLightType*>& SceneAreaLights = InScene->GetAllAreaLight();
+	for (int i = 0; i < SceneAreaLights.size(); i++)
+	{
+		AreaLights.push_back(new RTAreaLight<SceneType::AreaLightType, IntersectionType>());
+		AllLights.push_back(AreaLights[i]);
+		AreaLights[i]->SetLightSource(SceneAreaLights[i]);
+		ShapeSet *ShapeSetData = new ShapeSet();
+		for (int n = 0 ;n < SceneAreaLights[i]->GetAllObject().size(); n++)
+		{
+			SceneType::AreaLightType::AreaLightShapeType* MeshData = SceneAreaLights[i]->GetAllObject()[n];
+			MeshAreaLightShape<SceneType::AreaLightType::AreaLightShapeType> *Mesh = MeshAreaLightShape<SceneType::AreaLightType::AreaLightShapeType>();
+			Mesh->AddMesh(MeshData);
+			ShapeSetData->AddShape(Mesh);
+		}
+		AreaLights[i]->SetShapeSet(ShapeSetData);
+	}
 }

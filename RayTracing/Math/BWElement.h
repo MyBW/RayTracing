@@ -141,6 +141,7 @@ struct BWEle3DD
 	const BWEle3DD operator*(BWEle3DD& vector) const ;
 	const BWEle3DD operator*(const BWEle3DD& vector) const;
 	const BWEle3DD& operator+=(const BWEle3DD& ele);
+	const BWEle3DD  operator-() const;
 	bool operator==(const BWEle3DD& vector) const
 	{
 		return !(*this != vector);

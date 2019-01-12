@@ -13,7 +13,7 @@ public:
 		float THit = FLT_MAX;
 		for (auto AreaLight : AreaLights)
 		{
-			if (AreaLight->Intersection(Ray, PInLight, NInLight, THit))
+			if (AreaLight->Intersection(Ray, PInLight, NInLight, THit) &&  THit > ESP && THit < Ray.Length - ESP)
 			{
 				FinalLight = AreaLight;
 				Ray.Length = THit;

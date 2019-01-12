@@ -58,6 +58,12 @@ const BWEle3DD BWEle3DD::operator-(const BWEle3DD & ele)
 {
 	return BWEle3DD(x - ele.x, y - ele.y, z - ele.z);
 }
+
+const BWEle3DD BWEle3DD::operator-() const
+{
+	return BWEle3DD(-x, -y, -z);
+}
+
 const BWEle3DD BWEle3DD::operator+(const BWEle3DD & ele) const
 {
 	return BWEle3DD(x + ele.x, y + ele.y, z + ele.z);

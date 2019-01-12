@@ -2,6 +2,7 @@
 #include <vector>
 #include <string>
 #include "..\Math\BWPrimitive.h"
+#include <functional>
 class RTMaterial;
 struct TriangleInfo
 {
@@ -45,7 +46,7 @@ public:
 	void GetAABB(BWVector3D &Min, BWVector3D &Max) const;
 	void UpdateWorldInfor();
 	const RTMaterial *GetMaterial() const  { return Material; } 
-
+	bool GetIntersectionInfo(const BWRay& ray, std::function<void(const std::vector<BWPoint3DD>& P, const std::vector<BWPoint3DD>& N, const std::vector<BWPoint2DD>& UV, float t, float u, float v, const BWRay &Ray, const RTMaterial*, bool &IsBreak)> IntersectionCallBack);
 	RTMaterial *Material;
 private:
 	void UpdateModelMatrix();

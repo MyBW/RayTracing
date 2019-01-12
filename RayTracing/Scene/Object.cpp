@@ -286,6 +286,26 @@ void Object::UpdateWorldInfor()
 }
 
 
+bool Object::GetIntersectionInfo(const BWRay& ray, std::function<void(const std::vector<BWPoint3DD>& P, const std::vector<BWPoint3DD>& N, const std::vector<BWPoint2DD>& UV, float t, float u, float v, const BWRay &Ray, const RTMaterial* Material, bool &IsBreak)> IntersectionCallBack)
+{
+	TriangleInfo TempRes;
+	float t, u, v;
+	int TriangleNum = GetTriangleNum();
+	bool IsBreak = false;
+	bool IsHit = false;
+	for (int i = 0; i < TriangleNum; i++)
+	{
+		GetTriangleWorldInfoByIndex(i, TempRes);
+		if (RayIntersectTriangle(ray, TempRes.P[0], TempRes.P[1], TempRes.P[2], t, u, v))
+		{
+			IsHit = true;
+			IntersectionCallBack(TempRes.P, TempRes.N, TempRes.UV, t, u, v, ray,GetMaterial() , IsBreak);
+			if (IsBreak) return IsHit;
+		}
+	}
+	return IsHit;
+}
+
 const BWMatrix4& Object::GetModelMatrix() const
 {
 	return ModelMatrix;

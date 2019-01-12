@@ -50,7 +50,22 @@ void Scene::AddObject(const char *ObjFileName, const std::string &ObjName)
 
 bool Scene::GetIntersectionInfo(const BWRay& ray, std::function<void(const std::vector<BWPoint3DD>& P, const std::vector<BWPoint3DD>& N, const std::vector<BWPoint2DD>& UV, float t, float u, float v,const BWRay &Ray, const RTMaterial*, bool &IsBreak)> IntersectionCallBack)
 {
-	TriangleInfo TempRes;
+	bool IsHit = false;
+	bool IsBreakLoop = false;
+	auto InterCallBack = [&](const std::vector<BWPoint3DD>& P, const std::vector<BWPoint3DD>& N, const std::vector<BWPoint2DD>& UV, float t, float u, float v, const BWRay &Ray, const RTMaterial*Material , bool &IsBreak)
+	{
+		IsHit = true;
+		IntersectionCallBack(P, N, UV, t, u, v, ray, Material, IsBreak);
+		IsBreakLoop = IsBreak;
+	};
+	for (auto Obj : Objects)
+	{
+		Obj->GetIntersectionInfo(ray, InterCallBack);
+		if (IsBreakLoop) return IsHit;
+	}
+	return IsHit;
+
+	/*TriangleInfo TempRes;
 	TempRes.Resize(3);
 	float t = 0, u = 0, v = 0;
 	float Mint = FLT_MAX;
@@ -69,7 +84,7 @@ bool Scene::GetIntersectionInfo(const BWRay& ray, std::function<void(const std::
 			}
 		}
 	}
-	return Mint != FLT_MAX;
+	return Mint != FLT_MAX;*/
 }
 
 Object* Scene::GetObjectByName(const std::string &Name)
@@ -108,6 +123,14 @@ void Scene::AddPointLight(Scene::PointLightType *L)
 	}
 }
 
+void Scene::AddAreaLight(AreaLightType *L)
+{
+	if (L)
+	{
+		AreaLights.push_back(L);
+	}
+}
+
 std::vector<Scene::DirectionLightType*>& Scene::GetAllDireciontLight()
 {
 	return DireciontLights;
@@ -116,6 +139,11 @@ std::vector<Scene::DirectionLightType*>& Scene::GetAllDireciontLight()
 std::vector<Scene::PointLightType*>& Scene::GetAllPointLight()
 {
 	return PointLights;
+}
+
+std::vector<Scene::AreaLightType*>& Scene::GetAllAreaLight()
+{
+	return AreaLights;
 }
 
 Light* Scene::GetLightByName(std::string &Name)

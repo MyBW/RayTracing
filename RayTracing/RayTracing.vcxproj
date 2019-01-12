@@ -208,6 +208,7 @@
     <ClInclude Include="RealTimeRenderer\RealTimeRenderable.h" />
     <ClInclude Include="RealTimeRenderer\RealTimeRenderer.h" />
     <ClInclude Include="RealTimeRenderer\ShaderRead.h" />
+    <ClInclude Include="Scene\AreaLight.h" />
     <ClInclude Include="Scene\Camera.h" />
     <ClInclude Include="Scene\DirectionLight.h" />
     <ClInclude Include="Scene\Light.h" />
