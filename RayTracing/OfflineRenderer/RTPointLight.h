@@ -28,7 +28,7 @@ public:
 	}
 	Spectrum L(const IntersectionType *Intersection, const BWVector3D &PInLight, const BWVector3D &NInLight) override
 	{
-		return Lo / Power(Lenth(Intersection->IntersectionPoint, LightSource->GetPosition()));
+		return Lo / pow(Lenth(Intersection->IntersectionPoint - LightSource->GetPosition()) , 2.0f);
 	}
 	
 private:

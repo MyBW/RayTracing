@@ -1,15 +1,15 @@
 #pragma once
 #include "Integrator.h"
 #include "Montecarlo.h"
-
+#include "RTLightSample.h"
 template<typename SceneType, typename IntersectionType>
 class DirectLightingIntegrator : public Integrator<SceneType, IntersectionType>
 {
 public:
-	RTAreaLight* SampleAreaLight(IntersectionType *Intersection, const BWVector3D &LightDir , BWVector3D &PInLight, BWVector3D &NInLight)
+	RTAreaLight<typename SceneType::AreaLightType, IntersectionType>* SampleAreaLight(IntersectionType *Intersection, const BWVector3D &LightDir , BWVector3D &PInLight, BWVector3D &NInLight)
 	{
 		BWRay Ray(Intersection->IntersectionPoint , LightDir, FLT_MAX);
-		RTAreaLight *FinalLight;
+		RTAreaLight<typename SceneType::AreaLightType, IntersectionType> *FinalLight  = nullptr;
 		float THit = FLT_MAX;
 		for (auto AreaLight : AreaLights)
 		{
@@ -35,34 +35,42 @@ public:
 		// 对光源采样
 		Spectrum L;
 		BWVector3D LightDir;
-		float LightPdf;
-		float BSDFPdf;
+		float LightPdf = 0.0f;
+		float BSDFPdf = 0.0f;
 		VisibleTester Test;
 		Spectrum Li = CurLight->Sample_L(Intersction, LightSampleData, LightDir, LightPdf, Test);
 		if (!Li.IsBlack() && LightPdf > 0.f && !Test.IsBlock(InScene))
 		{
 			Spectrum F = Bsdf.F(Intersction->InputRay._vector, LightDir);
-			if (CurLight->IsDeltaLight())
+			if (!F.IsBlack())
 			{
-				L += Li * F * TMax( Dot(LightDir, Intersction->IntersectionNormal), 0.0)/ LightPdf;
-			}
-			else
-			{
-				BSDFPdf = Bsdf.Pdf(Intersction->InputRay._vector, LightDir);
-				float Widght = PowerHeuristic(1, LightPdf, 1, BSDFPdf);
-				L += Li * F * TMax(Dot(LightDir, Intersction->IntersectionNormal), 0.0) * Widght / LightPdf;
+				F *= AbsDot(LightDir, Intersction->IntersectionNormal);
+				if (CurLight->IsDeltaLight())
+				{
+					L += F * Li / LightPdf;
+				}
+				else
+				{
+					BSDFPdf = Bsdf.Pdf(Intersction->InputRay._vector, LightDir);
+					float Weight = PowerHeuristic(1, LightPdf, 1, BSDFPdf);
+					L += F * Li * Weight / LightPdf;
+				}
 			}
 		}
-
 		// 对BSDF采样
 		if (!CurLight->IsDeltaLight())
 		{
+			BSDFPdf = 0.0f;
+			LightPdf = 0.0f;
+			Spectrum Li;
 			BXDF_TYPE SampleBXDFType;
 			Spectrum F = Bsdf.Sample_F(Intersction->InputRay._vector, LightDir, BSDFPdf, BSDFSampleData, SampleBXDFType);
+			F *= AbsDot(LightDir, Intersction->IntersectionNormal);
 			if (!F.IsBlack() && BSDFPdf > 0.)
 			{
 				float Widght = 1.f;
-				if (!(SampleBXDFType & BSDF_SPECULAR))
+				//if (!(SampleBXDFType & BSDF_SPECULAR))
+				if (true)
 				{
 					LightPdf = CurLight->Pdf(Intersction->IntersectionPoint, LightDir);
 					if (LightPdf == 0.f) return L;
@@ -70,7 +78,7 @@ public:
 				}
 				BWVector3D PInLight;
 				BWVector3D NInLight;
-				RTAreaLight *CurAreaLight = SampleAreaLight(InScene, LightDir, PInLight, NInLight);
+				RTAreaLight<typename SceneType::AreaLightType, IntersectionType> *CurAreaLight = SampleAreaLight(Intersction, LightDir, PInLight, NInLight);
 				VisibleTester VisibleTest;
 				VisibleTest.SetRay(Intersction->IntersectionPoint, PInLight);
 				if (CurAreaLight)
@@ -83,7 +91,7 @@ public:
 				}
 				if (!Li.IsBlack() && !VisibleTest.IsBlock(InScene))
 				{
-					L += F * Li * TMax(AbsDot(LightDir, Intersction->IntersectionNormal), 0.0)  * Widght / BSDFPdf;
+					L += F * Li * Widght / BSDFPdf;
 				}
 			}
 		}
@@ -95,7 +103,7 @@ public:
 		BSDF Bsdf;
 		Intersction->Material->CreateBSDF(*Intersction, Bsdf);
 		L = Bsdf.Le(Intersction->InputRay._vector);
-		if (L.IsBlack()) return L;
+		if (!L.IsBlack()) return L;
 		for (int i = 0 ;i < AllLights.size() ; i++)
 		{
 			RTLight<IntersectionType> *CurLight = AllLights[i];
@@ -109,12 +117,14 @@ public:
 			{
 				LightSampleOffset &CurLightSampleOffset = *LightSampleOffsets[i];
 				BSDFSampleOffset &CurBSDFSampleOffset = *BSDFSampleOffsets[i];
+				Spectrum Ld;
 				for (int j = 0; j < CurLightSampleOffset.SampleNums; j++)
 				{
 					LightSample LightSampleData(InSample, CurLightSampleOffset, j);
 					BSDFSample BSDFSampleData(InSample, CurBSDFSampleOffset, j);
-					L += TestLi(InScene, Intersction, CurLight, Bsdf, LightSampleData, BSDFSampleData);
+					Ld += TestLi(InScene, Intersction, CurLight, Bsdf, LightSampleData, BSDFSampleData);
 				}
+				L += Ld / CurLightSampleOffset.SampleNums;
 			}
 		}
 		return L;

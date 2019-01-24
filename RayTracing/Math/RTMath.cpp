@@ -163,6 +163,10 @@ double Lenth(const BWVector3DD& a)
 	return sqrt(a.x * a.x + a.y*a.y + a.z*a.z);
 }
 
+BWVector3D Reflect(const BWVector3D &wo, const BWVector3D &n)
+{
+	return -wo + n * 2 * Dot(wo, n);
+}
 BWVector3D GetDirection(const BWVector3D &From, const BWVector3D &To)
 {
 	BWVector3D Dir = To - From;

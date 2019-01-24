@@ -11,6 +11,8 @@ const float POS_INFINITY = FLT_MAX;
 const float INV_PI = 1.0 / 3.14159265358979323846f;
 const float INV_TWOPI =  0.15915494309189533577f;
 
+static const float FloatOneMinusEpsilon = 0.99999994;
+static const float OneMinusEpsilon = FloatOneMinusEpsilon;
 
 
 class Math
@@ -36,6 +38,7 @@ float  AbsDot(const BWVector3DD &a, const BWVector3DD &b);
 BWVector3DD Cross(const BWVector3DD& a, const BWVector3DD& b);
 void    Normalize( BWPoint3DD& vec);
 double  Lenth(const BWVector3DD& a);
+BWVector3D Reflect(const BWVector3D &wo, const BWVector3D &n);
 BWVector3D GetDirection(const BWVector3D &From, const BWVector3D &To);
 const BWVector3DD GetRotatedZ(const BWVector3DD vec, double angle);
 const BWVector3DD GetRotatedAxis(const BWVector3DD vec, double angle, const BWVector3DD & axis);
@@ -46,6 +49,12 @@ void MatrixTranspose(const float* matrix, float *trans);
 void MatrixMultMatrix(const double *matrix1, const double* matrix2, double* reslut);
 void MatrixMultMatrix(const double*, double*);
 
+inline BWVector3D SphericalDirection(float sintheta, float costheta, float phi) 
+{
+	return BWVector3D(sintheta * cosf(phi),
+		sintheta * sinf(phi),
+		costheta);
+}
 void CoordinateSystem(const BWVector3D &v1, BWVector3D *v2, BWVector3D *v3);
 //
 //bool RayIntersectAABB(const BWRay& ray, const Cuboid& AABB , float &t);

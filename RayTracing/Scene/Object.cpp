@@ -12,7 +12,7 @@ Object::Object():Position(0.0 , 0.0, 0.0), Scale(1.0, 1.0, 1.0)
 	Orientation.x = 0;
 	Orientation.y = 0;
 	Orientation.z = 0;
-	Material = new RTMaterial();
+	Material = nullptr;
 }
 
 bool Object::LoadObjModel(const char* FileName,const std::string &Name)
@@ -172,6 +172,16 @@ const std::vector<BWPoint2DD>& Object::GetLightmapUVData() const
 	return LightmapUV;
 }
 
+const std::vector<BWVector3D>& Object::GetWorldPosData() const
+{
+	return WorldPosData;
+}
+
+const std::vector<BWVector3D>& Object::GetWorldNormalData() const
+{
+	return WorldNormalData;
+}
+
 void Object::GetAABB(BWVector3D &Min, BWVector3D &Max) const
 {
 	Min = AABBMin;
@@ -293,6 +303,7 @@ bool Object::GetIntersectionInfo(const BWRay& ray, std::function<void(const std:
 	int TriangleNum = GetTriangleNum();
 	bool IsBreak = false;
 	bool IsHit = false;
+	TempRes.Resize(3);
 	for (int i = 0; i < TriangleNum; i++)
 	{
 		GetTriangleWorldInfoByIndex(i, TempRes);

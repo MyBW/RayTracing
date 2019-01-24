@@ -7,7 +7,7 @@ public:
 	RTMaterial()
 	{
 	}	
-	virtual void CreateBSDF(const IntersectionInfo& Intersection , BSDF &Bsdf) const ;
+	virtual void CreateBSDF(const IntersectionInfo& Intersection , BSDF &Bsdf)  const = 0 ;
 private:
 };
 

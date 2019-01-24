@@ -62,6 +62,7 @@ public:
 	virtual float D(const BWVector3D &Wh) = 0;
 	virtual void Sample_f(const BWVector3D &Wo, const BWVector3D &Wi, float u1, float u2, float *pdf) const = 0;
 	virtual float Pdf(const BWVector3D &Wo, const BWVector3D &Wi) const = 0;
+	virtual BWVector3D Sample_wh(const BWVector3D &wo, const float u , float v) const = 0;
 };
 class BlinnDistribution : public MicrofacetDistribution
 {
@@ -70,6 +71,8 @@ public:
 	float D(const BWVector3D &Wh) override;
 	void Sample_f(const BWVector3D &Wo, const BWVector3D &Wi, float u1, float u2, float *pdf) const override;
 	float Pdf(const BWVector3D &Wo, const BWVector3D &Wi) const override;
+	// Test Version
+	BWVector3D Sample_wh(const BWVector3D &wo, const float u, float v) const override;
 private:
 	float Exponent;
 };
@@ -86,6 +89,8 @@ public:
 	float D(const BWVector3D &Wh) override;
 	void Sample_f(const BWVector3D &Wo, const BWVector3D &Wi, float u1, float u2, float *pdf) const override;
 	float Pdf(const BWVector3D &Wo, const BWVector3D &Wi) const override;
+	// Test Version
+	BWVector3D Sample_wh(const BWVector3D &wo, const float u, float v) const override;
 private: 
 	float Ex;
 	float Ey;
@@ -153,7 +158,8 @@ public:
 class BXDF
 {
 public:
-	void SetLe(Spectrum InLe) { Lemit = InLe; }
+	BXDF():Lemit(0.0f){ }
+   void SetLe(Spectrum InLe) { Lemit = InLe; }
    virtual Spectrum F(const BWVector3D &Wi, const BWVector3D &Wo) const = 0;
    virtual Spectrum Le(const BWVector3D &Wo);
    virtual Spectrum Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float u1, float u2, float &pdf) const;
@@ -172,7 +178,7 @@ private:
 };
 
 class Microfacet : public BXDF
-{
+	{
 public:
 	~Microfacet()
 	{
@@ -186,9 +192,23 @@ public:
 	}
 	Spectrum F(const BWVector3D &Wi, const BWVector3D &Wo) const override;
 	float G(const BWVector3D &Wo, const BWVector3D &Wi, const BWVector3D &Wh) const;
+	float Pdf(const BWVector3D &Wo, BWVector3D &Wi) const ;
+	Spectrum Sample_F(const BWVector3D &Wo, BWVector3D &Wi, float u1, float u2, float &pdf) const override;
 private:
 	Spectrum R;
 	Fresnel *Fr;
 	MicrofacetDistribution *NormalD;
 };
 
+class SelfEmit : public BXDF
+{
+public: 
+	void SetEmit(Spectrum LEmit)
+	{
+		this->Lemit = LEmit;
+	}
+	Spectrum F(const BWVector3D &Wi, const BWVector3D &Wo) const
+	{
+		return Spectrum(0.0);
+	}
+};

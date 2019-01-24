@@ -43,6 +43,8 @@ public:
 	const std::vector<BWVector3D>& GetNormalData() const;
 	const std::vector<unsigned int>& GetIndexData() const;
 	const std::vector<BWPoint2DD>& GetLightmapUVData() const;
+	const std::vector<BWVector3D>& GetWorldPosData() const;
+	const std::vector<BWVector3D>& GetWorldNormalData() const;
 	void GetAABB(BWVector3D &Min, BWVector3D &Max) const;
 	void UpdateWorldInfor();
 	const RTMaterial *GetMaterial() const  { return Material; } 

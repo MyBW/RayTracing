@@ -4,6 +4,7 @@
 #include "glut.h"
 #include "..\Scene\Light.h"
 #include "..\OfflineRenderer\Sampler.h"
+#include "TestMaterial.h"
 
 //AUX_RGBImageRec * CreateTextureFromBmp()
 //{
@@ -25,40 +26,46 @@ void AppTest::Init(int Width, int Height)
 {
 	RTRenderer.Init(Width, Height);
 	CameraForRender.Init(Width, Height);
-	Sceen.AddObject("cube.obj", std::string("obj1"));
-	
 
+	Sceen.AddObject("cube.obj", std::string("obj1"));
 	Object *TestObj = Sceen.GetObjectByName("obj1");
 	TestObj->SetPosition(0, -3.0, 5);
 	TestObj->SetScale(10, 1, 10);
+	TestObj->Material = new LambertianAndMicrofaceMateial();
 	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj1"));
 
 	Sceen.AddObject("planet.obj", std::string("obj2"));
-
 	TestObj = Sceen.GetObjectByName("obj2");
 	TestObj->SetPosition(0, 0, 5);
 	TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
+	TestObj->Material = new LambertianAndMicrofaceMateial();
 	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj2"));
 
 	
 	
 
-	DirectionLight *L = new DirectionLight();
+	/*DirectionLight *L = new DirectionLight();
 	L->SetName(std::string("DirectionalLight"));
 	L->SetPosition(BWVector3D(0.0, 10.0, 5.0));
 	L->SetDirection(BWVector3D(0 , -5, 0));
 	L->LightRadiance = Spectrum(1);
-	Sceen.AddDirectionLight(L);
+	Sceen.AddDirectionLight(L);*/
 
-	//Test Code start
-	//FBXload.ImportFBX("1M_Cube.FBX");
-	//TestFBXObj.InitObj(&RTRenderer, &FBXload);
-	//Test Code end
+	{
+		Object *Obj = new Object();
+		Obj->LoadObjModel("cube.obj", "AreaLightObj");
+		Obj->SetPosition(0, 10, 5);
+		Obj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
+		Obj->SetScale(5, 5, 5);
+		Obj->Material = new EmitMaterial();
+		RTRenderer.AddDrawable(Obj);
 
-	// Test Offline Render
-	//OfflineRenderer.SetCamera(&CameraForRender);
-	//OfflineRenderer.RenderScene(&Sceen);
-
+		AreaLight *AreaL = new AreaLight();
+		AreaL->SetName(std::string("AreaLight"));
+		AreaL->AddAreaLightShapeType(Obj);
+		Sceen.AddAreaLight(AreaL);
+	}
+	
 
 	/*int width = OfflineRenderer.GetFilm()->GetWidth();
 	int height = OfflineRenderer.GetFilm()->GetHeight();

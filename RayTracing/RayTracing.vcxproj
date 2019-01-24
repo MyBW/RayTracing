@@ -165,6 +165,7 @@
     <ClCompile Include="OfflineRenderer\Film.cpp" />
     <ClCompile Include="OfflineRenderer\Montecarlo.cpp" />
     <ClCompile Include="OfflineRenderer\Parallel.cpp" />
+    <ClCompile Include="OfflineRenderer\RTAreaLightShape.cpp" />
     <ClCompile Include="OfflineRenderer\RTLight.cpp" />
     <ClCompile Include="OfflineRenderer\RTMaterial.cpp" />
     <ClCompile Include="OfflineRenderer\Sample.cpp" />
@@ -195,8 +196,10 @@
     <ClInclude Include="OfflineRenderer\Film.h" />
     <ClInclude Include="OfflineRenderer\Integrator.h" />
     <ClInclude Include="OfflineRenderer\Montecarlo.h" />
+    <ClInclude Include="OfflineRenderer\RTAreaLightShape.h" />
     <ClInclude Include="OfflineRenderer\RTDirectionLight.h" />
     <ClInclude Include="OfflineRenderer\RTLight.h" />
+    <ClInclude Include="OfflineRenderer\RTLightSample.h" />
     <ClInclude Include="OfflineRenderer\RTPointLight.h" />
     <ClInclude Include="OfflineRenderer\RTRenderer.h" />
     <ClInclude Include="OfflineRenderer\Parallel.h" />
@@ -220,6 +223,7 @@
     <ClInclude Include="Test\TestFBXDrawObj.h" />
     <ClInclude Include="Test\TestFBXLoad.h" />
     <ClInclude Include="Test\TestIntergrator.h" />
+    <ClInclude Include="Test\TestMaterial.h" />
     <ClInclude Include="Test\TestOfflineRenderer.h" />
   </ItemGroup>
   <ItemGroup>

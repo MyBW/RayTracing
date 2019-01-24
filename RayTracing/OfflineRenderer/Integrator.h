@@ -1,7 +1,9 @@
 #pragma once
 #include "RTDirectionLight.h"
 #include "RTPointLight.h"
+#include "RTAreaLight.h"
 class Sample;
+class RNG;
 template<typename SceneType, typename IntersectionType>
 class Integrator
 {
@@ -25,7 +27,6 @@ protected:
 	std::vector<RTPointLight< typename SceneType::PointLightType, IntersectionType>*> PointLights;
 	std::vector<RTAreaLight<typename SceneType::AreaLightType, IntersectionType>*> AreaLights;
 	std::vector<RTLight<IntersectionType>*> AllLights;
-private:
 };
 
 template<typename SceneType, typename IntersectionType>
@@ -49,17 +50,41 @@ void Integrator<SceneType, IntersectionType>::Init(SceneType *InScene)
 	std::vector<SceneType::AreaLightType*>& SceneAreaLights = InScene->GetAllAreaLight();
 	for (int i = 0; i < SceneAreaLights.size(); i++)
 	{
-		AreaLights.push_back(new RTAreaLight<SceneType::AreaLightType, IntersectionType>());
-		AllLights.push_back(AreaLights[i]);
-		AreaLights[i]->SetLightSource(SceneAreaLights[i]);
-		ShapeSet *ShapeSetData = new ShapeSet();
 		for (int n = 0 ;n < SceneAreaLights[i]->GetAllObject().size(); n++)
 		{
 			SceneType::AreaLightType::AreaLightShapeType* MeshData = SceneAreaLights[i]->GetAllObject()[n];
-			MeshAreaLightShape<SceneType::AreaLightType::AreaLightShapeType> *Mesh = MeshAreaLightShape<SceneType::AreaLightType::AreaLightShapeType>();
-			Mesh->AddMesh(MeshData);
-			ShapeSetData->AddShape(Mesh);
+			int TriangleNum = MeshData->GetTriangleNum();
+			const std::vector<BWVector3D> &PosData = MeshData->GetWorldPosData();
+			const std::vector<BWVector3D> &NormalData = MeshData->GetWorldNormalData();
+			const std::vector<BWPoint2DD> &UVData = MeshData->GetUVData();
+			std::vector<BWVector3D> Pos;
+			std::vector<BWVector3D> Normal;
+			std::vector<BWPoint2DD> UV;
+			
+			for (int m = 0 ;m< TriangleNum ; m++)
+			{
+				TriganleLightShape*Mesh = new TriganleLightShape();
+				Pos.resize(3);
+				Normal.resize(3);
+				UV.resize(3);
+				Pos[0] = PosData[m * 3];
+				Pos[1] = PosData[m * 3 + 1];
+				Pos[2] = PosData[m * 3 + 2];
+				Normal[0] = NormalData[m * 3];
+				Normal[1] = NormalData[m * 3 + 1];
+				Normal[2] = NormalData[m * 3 + 2];
+				UV[0] = UVData[m * 2];
+				UV[1] = UVData[m * 2 + 1];
+				Mesh->SetTriangleShape(Pos, Normal, UV);
+				AreaLights.push_back(new RTAreaLight<SceneType::AreaLightType, IntersectionType>());
+				AllLights.push_back(AreaLights[m]);
+				AreaLights[m]->SetLightSource(SceneAreaLights[i]);
+				AreaLights[m]->SetEmit(Spectrum(100.0));
+				AreaLights[m]->SetShape(Mesh);
+				Pos.clear();
+				Normal.clear();
+				UV.clear();
+			}
 		}
-		AreaLights[i]->SetShapeSet(ShapeSetData);
 	}
 }

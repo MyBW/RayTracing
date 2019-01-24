@@ -45,6 +45,14 @@ theta *= PI / 4.f;
 *dx = r * cosf(theta);
 *dy = r * sinf(theta);
 }
+
+void UniformSampleTriangle(float u1, float u2, float *u, float *v) 
+{
+	float su1 = sqrtf(u1);
+	*u = 1.f - su1;
+	*v = u2 * su1;
+}
+
 BWVector3D ConsineSampleHemisphere(float U1, float U2)
 {
 	BWVector3D Ret;
@@ -53,3 +61,33 @@ BWVector3D ConsineSampleHemisphere(float U1, float U2)
 	return Ret;
 }
 
+void Distribution1D::ResetDistributionData(const std::vector<float> &InData)
+{
+	Func = InData;
+	CDF.resize(Func.size() + 1);
+	// Compute integral of step function at $x_i$
+	CDF[0] = 0.;
+	for (int i = 1; i < CDF.size(); ++i)
+		CDF[i] = CDF[i - 1] + Func[i - 1] / Func.size();
+
+	// Transform step function integral into CDF
+	funcInt = CDF[Func.size()];
+	if (funcInt == 0.f) {
+		for (int i = 1; i < CDF.size(); ++i)
+			CDF[i] = float(i) / float(Func.size());
+	}
+	else {
+		for (int i = 1; i < CDF.size(); ++i)
+			CDF[i] /= funcInt;
+	}
+}
+
+int Distribution1D::SampleDistribute(float u, float &Pdf)
+{
+	float *ptr = std::upper_bound(CDF.data(), CDF.data() + CDF.size(), u);
+	int offset = TMax(0, int(ptr - CDF.data() - 1));
+	assert(offset < Func.size());
+	assert(u >= CDF[offset] && u < CDF[offset + 1]);
+	Pdf = Func[offset] / (funcInt * Func.size());
+	return offset;
+}

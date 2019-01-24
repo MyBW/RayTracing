@@ -117,6 +117,9 @@
     <ClCompile Include="OfflineRenderer\RTLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OfflineRenderer\RTAreaLightShape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">
@@ -237,6 +240,15 @@
       <Filter>OfflineRenderer</Filter>
     </ClInclude>
     <ClInclude Include="Scene\AreaLight.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\RTAreaLightShape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\RTLightSample.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\TestMaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -55,11 +55,11 @@ template<int Samples>
 class CoefficientSpectrum
 {
 public:
-	explicit CoefficientSpectrum(float v)
+	explicit CoefficientSpectrum(float v = 0.0f)
 	{
 		for (auto &i : C)
 			i = v;
-		Error(HasNaNs());
+		Error(!HasNaNs());
 	}
 	CoefficientSpectrum(const CoefficientSpectrum<Samples>& V)
 	{
@@ -72,7 +72,7 @@ public:
 	{
 		for (auto &i : C)
 		{
-			if (!isnan(i)) return true;
+			if (isnan(i)) return true;
 		}
 		return false;
 	}
@@ -83,7 +83,7 @@ public:
 		{
 			Rt.C[i] = CS + C[i];
 		}
-		Error(Rt.HasNaNs());
+		Error(!Rt.HasNaNs());
 		return Rt;
 	}
 	CoefficientSpectrum operator+(const CoefficientSpectrum &CS) const
@@ -93,7 +93,7 @@ public:
 		{
 			Rt.C[i] = CS.C[i] + C[i];
 		}
-		Error(Rt.HasNaNs());
+		Error(!Rt.HasNaNs());
 		return Rt;
 	}
 	CoefficientSpectrum operator-(const CoefficientSpectrum &CS) const
@@ -103,7 +103,7 @@ public:
 		{
 			Rt.C[i] = CS.C[i] - C[i];
 		}
-		Error(Rt.HasNaNs());
+		Error(!Rt.HasNaNs());
 		return Rt;
 	}
 	CoefficientSpectrum& operator+=(const CoefficientSpectrum &CS) 
@@ -112,7 +112,8 @@ public:
 		{
 			C[i] += CS.C[i];
 		}
-		Error(HasNaNs());
+		Error(!HasNaNs());
+		//assert(!HasNaNs());
 		return *this;
 	}
 	CoefficientSpectrum& operator-=(const CoefficientSpectrum &CS)
@@ -121,7 +122,7 @@ public:
 		{
 			C[i] -= CS.C[i];
 		}
-		Error(HasNaNs());
+		Error(!HasNaNs());
 		return this;
 	}
 	CoefficientSpectrum operator*(const float a) const
@@ -129,19 +130,20 @@ public:
 		CoefficientSpectrum ret = *this;
 		for (int i = 0; i < Samples; ++i)
 			ret.C[i] *= a;
-		Error(ret.HasNaNs());
+		Error(!ret.HasNaNs());
 		return ret;
 	}
 	CoefficientSpectrum &operator*=(const float a) {
 		for (int i = 0; i < Samples; ++i)
 			C[i] *= a;
-		Error(HasNaNs());
+		Error(!HasNaNs());
 		return *this;
 	}
 
 	friend inline CoefficientSpectrum operator*( const float a, const CoefficientSpectrum &s) 
 	{
-		Error(isnan(a) || s.HasNaNs());
+		Error(!s.HasNaNs());
+		Error(!isnan(a))
 		return s * a;
 	}
 
@@ -151,7 +153,7 @@ public:
 		{
 			C[i] *= s.C[i];
 		}
-		Error(HasNaNs());
+		Error(!HasNaNs());
 		return *this;
 	}
 	CoefficientSpectrum operator*(const CoefficientSpectrum &s) const 
@@ -161,7 +163,7 @@ public:
 		{
 			ret.C[i] *= s.C[i];
 		}
-		Error(HasNaNs());
+		Error(!HasNaNs());
 		return ret;
 	}
 
@@ -170,13 +172,13 @@ public:
 		CoefficientSpectrum ret = *this;
 		for (int i = 0; i < Samples; ++i)
 			ret.C[i] /= a;
-		Error(ret.HasNaNs());
+		Error(!ret.HasNaNs());
 		return ret;
 	}
 	CoefficientSpectrum &operator/=(const float a) {
 		for (int i = 0; i < Samples; ++i)
 			C[i] /= a;
-		Error(HasNaNs());
+		Error(!HasNaNs());
 		return *this;
 	}
 	CoefficientSpectrum &operator/=(const CoefficientSpectrum &s)
@@ -185,7 +187,7 @@ public:
 		{
 			C[i] /= s.C[i];
 		}
-		Error(HasNaNs());
+		Error(!HasNaNs());
 		return *this;
 	}
 	CoefficientSpectrum operator/(const CoefficientSpectrum &s)
@@ -195,7 +197,7 @@ public:
 		{
 			ret.C[i] /= s.C[i];
 		}
-		Error(HasNaNs());
+		Error(!HasNaNs());
 		return ret;
 	}
 	CoefficientSpectrum Clamp(float low = 0, float high = INFINITY) const 
@@ -203,7 +205,7 @@ public:
 		CoefficientSpectrum ret(Samples);
 		for (int i = 0; i < Samples; ++i)
 			ret.C[i] = ::Clamp(C[i], low, high);
-		Error(ret.HasNaNs());
+		Error(!ret.HasNaNs());
 		return ret;
 	}
 	bool IsBlack()
@@ -218,6 +220,14 @@ public:
 	{
 		if (Index < Samples && Index >= 0)
 			C[Index] = Value;
+	}
+	float GetValue(int Index)
+	{
+		if (Index< Samples && Index >= 0)
+		{
+			return C[Index];
+		}
+		return -1;
 	}
 protected:
 	float C[Samples];
