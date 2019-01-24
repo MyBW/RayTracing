@@ -1,8 +1,8 @@
 #pragma once
 #include "RTLight.h"
 
-template<typename DirectionLightType, typename IntersectionType>
-class RTDirectionLight : public RTLight<IntersectionType>
+template<typename DirectionLightType>
+class RTDirectionLight : public RTLight
 {
 public:
 	RTDirectionLight():LightSource(nullptr){ }
@@ -12,12 +12,12 @@ public:
 	void SetWorldRadius(const float Radius) { WorldRadius = Radius; }
 	DirectionLightType* GetLightSource() { return LightSource; }
 	void SetLightSource(DirectionLightType *InLightSource) { LightSource = InLightSource; }
-	Spectrum L(const IntersectionType *Intersection, const BWVector3D &PInLight, const BWVector3D &NInLight) override
+	Spectrum L(const IntersectionInfo *Intersection, const BWVector3D &PInLight, const BWVector3D &NInLight) override
 	{
 		return Lo;
 	}
 	bool IsDeltaLight() { return true; }
-	Spectrum Sample_L(const IntersectionType *Intersection, const LightSample &InLightSample, BWVector3D& LightDir, float &Pdf, VisibleTester &VisibleTest) override
+	Spectrum Sample_L(const IntersectionInfo *Intersection, const LightSample &InLightSample, BWVector3D& LightDir, float &Pdf, VisibleTester &VisibleTest) override
 	{
 		LightDir = LightSource->GetDirection() * -1;
 		VisibleTest.SetRay(Intersection->IntersectionPoint, LightDir);

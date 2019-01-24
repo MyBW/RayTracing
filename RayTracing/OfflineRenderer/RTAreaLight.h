@@ -4,24 +4,22 @@
 #include "Montecarlo.h"
 #include "RTAreaLightShape.h"
 #include <functional>
-template<typename AreaLightType, typename IntersectionInfoType>
-class RTAreaLight : public RTLight<IntersectionInfoType>
+template<typename AreaLightType>
+class RTAreaLight : public RTLight
 {
 public:
 	~RTAreaLight()
 	{
-		delete ShapeSetData;
+		delete EmitShape;
 	}
-	void SetShapeSet(ShapeSet *ShapeSetData) { this->ShapeSetData = ShapeSetData; }
-
 	void SetShape(Shape *InShape) { EmitShape = InShape; }
 	void SetEmit(const Spectrum &InEmit)
 	{
 		Emit = InEmit;
 	}
 	bool IsDeltaLight() { return false; }
-	Spectrum Power() {  return Emit * ShapeSetData->GetArea(); }
-	Spectrum L(const IntersectionInfoType *Intersection, const BWVector3D &PInLight, const BWVector3D &NInLight) override
+	Spectrum Power() {  return Emit * EmitShape->Area(); }
+	Spectrum L(const IntersectionInfo *Intersection, const BWVector3D &PInLight, const BWVector3D &NInLight) override
 	{
 		float CosTheta = Dot(GetDirection(PInLight, Intersection->IntersectionPoint), NInLight);
 		if (CosTheta > 0)
@@ -34,7 +32,7 @@ public:
 	{
 		return EmitShape->Pdf(P, Wi);
 	}
-	Spectrum Sample_L(const IntersectionInfoType *Intersection, const LightSample &InLightSample, BWVector3D &LightDir, float &Pdf, VisibleTester &VisibleTest)
+	Spectrum Sample_L(const IntersectionInfo *Intersection, const LightSample &InLightSample, BWVector3D &LightDir, float &Pdf, VisibleTester &VisibleTest)
 	{
 		BWPoint2DD U(InLightSample.Pos[0], InLightSample.Pos[1]);
 		BWVector3D NInLight;
@@ -71,7 +69,6 @@ public:
 private:
 	AreaLightType *SrcAreaLight;
 	Spectrum Emit;
-	ShapeSet *ShapeSetData;
 	Shape *EmitShape;
 };
 

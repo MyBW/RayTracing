@@ -48,7 +48,7 @@ void TestOfflineRenderer<SceneType, CameraType>::SetCamera(CameraType* Camera)
 }
 
 template<typename SceneType, typename CameraType>
-void TestOfflineRenderer<SceneType, CameraType>::SetIntegrator(Integrator<typename SceneType, IntersectionInfo> *InIntergrator)
+void TestOfflineRenderer<SceneType, CameraType>::SetIntegrator(Integrator<typename SceneType> *InIntergrator)
 {
 	RendererIntegrator = InIntergrator;
 }
@@ -67,6 +67,7 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 	int SampleNum = 0;
 	while ((SampleNum = SubSampler->GetMoreSamples(Samples, &Rng)) != 0)
 	{
+		Spectrum Color(0.0f);
 		for (int i = 0 ; i < SampleNum ; i++)
 		{
 			IntersectionInfo Intersection;
@@ -93,11 +94,11 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 			};
 			if (Scene->GetIntersectionInfo(Ray, GetIntersectionInfo))
 			{
-				Spectrum Color = Render->RendererIntegrator->Li(Scene, &Intersection, *Samples[i], Rng);
-				CameraFilm->SetSpectrum(Samples[i]->ImageX, Samples[i]->ImageY, &Color);
+				Color += Render->RendererIntegrator->Li(Scene, &Intersection, *Samples[i], Rng);
 			}
 		}
-		
+		Color = Color / SampleNum;
+		CameraFilm->SetSpectrum(Samples[0]->ImageX, Samples[0]->ImageY, &Color);
 	}
 	delete SubSampler;
 	for (auto SampleData : Samples)

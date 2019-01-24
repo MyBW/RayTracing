@@ -1,8 +1,8 @@
 #pragma once
 #include "RTLight.h"
 
-template<typename PointLightType, typename IntersectionType>
-class RTPointLight :public RTLight<IntersectionType>
+template<typename PointLightType>
+class RTPointLight :public RTLight
 {
 public:
 	RTPointLight() :LightSource(nullptr) { }
@@ -11,7 +11,7 @@ public:
 	PointLightType* GetLightSource() { return LightSource; }
 	void SetLightSource(PointLightType *InLightSource) { LightSource = InLightSource; }
 	bool IsDeltaLight() { return true; }
-	Spectrum Sample_L(const IntersectionType *Intersection, const LightSample &InLightSample, BWVector3D &LightDir, float &Pdf, VisibleTester &VisibleTest) override
+	Spectrum Sample_L(const IntersectionInfo *Intersection, const LightSample &InLightSample, BWVector3D &LightDir, float &Pdf, VisibleTester &VisibleTest) override
 	{
 		LightDir = GetDirection(Intersection->IntersectionPoint, LightSource->GetPosition());
 		VisibleTest.SetSegment(Intersection->IntersectionPoint, LightSource->GetPosition());
@@ -26,7 +26,7 @@ public:
 	{
 		return 0;
 	}
-	Spectrum L(const IntersectionType *Intersection, const BWVector3D &PInLight, const BWVector3D &NInLight) override
+	Spectrum L(const IntersectionInfo *Intersection, const BWVector3D &PInLight, const BWVector3D &NInLight) override
 	{
 		return Lo / pow(Lenth(Intersection->IntersectionPoint - LightSource->GetPosition()) , 2.0f);
 	}

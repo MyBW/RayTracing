@@ -2,14 +2,14 @@
 #include "Integrator.h"
 #include "Montecarlo.h"
 #include "RTLightSample.h"
-template<typename SceneType, typename IntersectionType>
-class DirectLightingIntegrator : public Integrator<SceneType, IntersectionType>
+template<typename SceneType>
+class DirectLightingIntegrator : public Integrator<SceneType>
 {
 public:
-	RTAreaLight<typename SceneType::AreaLightType, IntersectionType>* SampleAreaLight(IntersectionType *Intersection, const BWVector3D &LightDir , BWVector3D &PInLight, BWVector3D &NInLight)
+	RTAreaLight<typename SceneType::AreaLightType>* SampleAreaLight(IntersectionInfo *Intersection, const BWVector3D &LightDir , BWVector3D &PInLight, BWVector3D &NInLight)
 	{
 		BWRay Ray(Intersection->IntersectionPoint , LightDir, FLT_MAX);
-		RTAreaLight<typename SceneType::AreaLightType, IntersectionType> *FinalLight  = nullptr;
+		RTAreaLight<typename SceneType::AreaLightType> *FinalLight  = nullptr;
 		float THit = FLT_MAX;
 		for (auto AreaLight : AreaLights)
 		{
@@ -29,7 +29,7 @@ public:
 			BSDFSampleOffsets.push_back(new BSDFSampleOffset(InSample, 1));
 		}
 	}
-	Spectrum TestLi(SceneType *InScene, IntersectionType *Intersction, RTLight<IntersectionType> *CurLight, BSDF &Bsdf, LightSample &LightSampleData, BSDFSample &BSDFSampleData)
+	Spectrum TestLi(SceneType *InScene, IntersectionInfo *Intersction, RTLight *CurLight, BSDF &Bsdf, LightSample &LightSampleData, BSDFSample &BSDFSampleData)
 	{
 		//多重重要性采样
 		// 对光源采样
@@ -78,7 +78,7 @@ public:
 				}
 				BWVector3D PInLight;
 				BWVector3D NInLight;
-				RTAreaLight<typename SceneType::AreaLightType, IntersectionType> *CurAreaLight = SampleAreaLight(Intersction, LightDir, PInLight, NInLight);
+				RTAreaLight<typename SceneType::AreaLightType> *CurAreaLight = SampleAreaLight(Intersction, LightDir, PInLight, NInLight);
 				VisibleTester VisibleTest;
 				VisibleTest.SetRay(Intersction->IntersectionPoint, PInLight);
 				if (CurAreaLight)
@@ -97,16 +97,18 @@ public:
 		}
 		return L;
 	}
-	Spectrum Li(SceneType *InScene, IntersectionType *Intersction, Sample &InSample , RNG &Rng) override
+	Spectrum Li(SceneType *InScene, IntersectionInfo *Intersction, Sample &InSample , RNG &Rng) override
 	{
 		Spectrum L;
 		BSDF Bsdf;
 		Intersction->Material->CreateBSDF(*Intersction, Bsdf);
 		L = Bsdf.Le(Intersction->InputRay._vector);
+		// if hit the area light. then compute the emit light and return.
 		if (!L.IsBlack()) return L;
+		//uniform sample all lights.
 		for (int i = 0 ;i < AllLights.size() ; i++)
 		{
-			RTLight<IntersectionType> *CurLight = AllLights[i];
+			RTLight *CurLight = AllLights[i];
 			if (i > LightSampleOffsets.size())
 			{
 				LightSample LightSampleData(Rng);

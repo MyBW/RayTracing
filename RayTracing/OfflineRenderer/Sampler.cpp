@@ -10,8 +10,8 @@ int Random::GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG)
 		ImageSamplePos = new float[SamplesPerPixel * 2];
 		for (int i = 0; i < SamplesPerPixel * 2; i += 2)
 		{
-			ImageSamplePos[i * 2] = InRNG->GetRandomFloat();
-			ImageSamplePos[i * 2 + 1] = InRNG->GetRandomFloat();
+			ImageSamplePos[i] = InRNG->GetRandomFloat();
+			ImageSamplePos[i + 1] = InRNG->GetRandomFloat();
 		}
 	}
 	if (CurrPixelSampleNum == SamplesPerPixel)
@@ -23,8 +23,8 @@ int Random::GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG)
 		}
 		for (int i = 0; i < SamplesPerPixel * 2; i+=2)
 		{
-			ImageSamplePos[i * 2] = InRNG->GetRandomFloat();
-			ImageSamplePos[i * 2 + 1] = InRNG->GetRandomFloat();
+			ImageSamplePos[i] = InRNG->GetRandomFloat();
+			ImageSamplePos[i + 1] = InRNG->GetRandomFloat();
 		}
 		ResetSamplePosition(CurrSamplePos);
 		CurrPixelSampleNum = 0;
@@ -49,8 +49,7 @@ int Random::GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG)
 				*(Samples[i]->N2Data[k]+ j + 1) = InRNG->GetRandomFloat();
 			}
 		}
+		CurrPixelSampleNum++;
 	}
-	
-	CurrPixelSampleNum++;
-	return 1;
+	return SamplesPerPixel;
 }

@@ -27,19 +27,26 @@ void AppTest::Init(int Width, int Height)
 	RTRenderer.Init(Width, Height);
 	CameraForRender.Init(Width, Height);
 
+	Spectrum BaseColor;
 	Sceen.AddObject("cube.obj", std::string("obj1"));
 	Object *TestObj = Sceen.GetObjectByName("obj1");
 	TestObj->SetPosition(0, -3.0, 5);
 	TestObj->SetScale(10, 1, 10);
-	TestObj->Material = new LambertianAndMicrofaceMateial();
+	BaseColor.SetValue(0, 166.0/255 * 0.7);
+	BaseColor.SetValue(1, 23.0/255 * 0.7);
+	BaseColor.SetValue(2, 14.0/255 * 0.7);
+	TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
 	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj1"));
 
+	/*BaseColor.SetValue(0, 32.0 / 255 * 0.7);
+	BaseColor.SetValue(1, 73.0 / 255 * 0.7);
+	BaseColor.SetValue(2, 15.0 / 255 * 0.7);
 	Sceen.AddObject("planet.obj", std::string("obj2"));
 	TestObj = Sceen.GetObjectByName("obj2");
 	TestObj->SetPosition(0, 0, 5);
 	TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
-	TestObj->Material = new LambertianAndMicrofaceMateial();
-	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj2"));
+	TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj2"));*/
 
 	
 	
@@ -54,33 +61,21 @@ void AppTest::Init(int Width, int Height)
 	{
 		Object *Obj = new Object();
 		Obj->LoadObjModel("cube.obj", "AreaLightObj");
-		Obj->SetPosition(0, 10, 5);
+		Obj->SetPosition(0, 50, 5);
 		Obj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
 		Obj->SetScale(5, 5, 5);
-		Obj->Material = new EmitMaterial();
 		RTRenderer.AddDrawable(Obj);
 
+		Spectrum EmitColor;
+		EmitColor.SetValue(0, 50.f);
+		EmitColor.SetValue(1, 50.f);
+		EmitColor.SetValue(2, 50.f);
 		AreaLight *AreaL = new AreaLight();
 		AreaL->SetName(std::string("AreaLight"));
+		AreaL->SetEmitColor(EmitColor);
 		AreaL->AddAreaLightShapeType(Obj);
 		Sceen.AddAreaLight(AreaL);
 	}
-	
-
-	/*int width = OfflineRenderer.GetFilm()->GetWidth();
-	int height = OfflineRenderer.GetFilm()->GetHeight();
-	Lines.clear();
-	for (int i = 0; i < width * height; i += 10)
-	{
-		BWRay Ray = OfflineRenderer.GetFilm()->GetRayFromCamera(i);
-		IntersectionInfo Info;
-		if (Sceen.GetIntersectionInfo(Ray, Info))
-		{
-			Lines.push_back(Ray._start);
-			Lines.push_back(Info.IntersectionPoint);
-		}
-	}*/
-	
 }
 
 void AppTest::Update()
@@ -138,26 +133,12 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 	CameraForRender.Move(Direction);
 	if (ShowOfflineRender)
 	{
-		DirectLightingIntegrator<Scene, IntersectionInfo> LightingIntegrator;
-		Random RandomSampler(0, CameraForRender.GetScreenWidth() * CameraForRender.GetScreenHeight(), 1, CameraForRender.GetScreenWidth(), CameraForRender.GetScreenHeight());
+		DirectLightingIntegrator<Scene> LightingIntegrator;
+		Random RandomSampler(0, CameraForRender.GetScreenWidth() * CameraForRender.GetScreenHeight(), 16, CameraForRender.GetScreenWidth(), CameraForRender.GetScreenHeight());
 		OfflineRenderer.SetCamera(&CameraForRender);
 		OfflineRenderer.SetIntegrator(&LightingIntegrator);
 		OfflineRenderer.SetSampler(&RandomSampler);
 		OfflineRenderer.RenderScene(&Sceen);
-		
-		//int width = OfflineRenderer.GetFilm()->GetWidth();
-		//int height = OfflineRenderer.GetFilm()->GetHeight();
-		//Lines.clear();
-		//for (int i = 0; i < width * height; i += 160)
-		//{
-		//	BWRay Ray = OfflineRenderer.GetFilm()->GetRayFromCamera(i);
-		//	/*IntersectionInfo Info;
-		//	if (Sceen.GetIntersectionInfo(Ray, Info))
-		//	{
-		//		Lines.push_back(Ray._start);
-		//		Lines.push_back(Info.IntersectionPoint);
-		//	}*/
-		//}
 	}
 	glutPostRedisplay();
 }
@@ -204,25 +185,6 @@ void AppTest::UpdataSceneWithRealTimeRenderer()
 	RTRenderer.SetProjectMatrix(CameraForRender.GetProjectMatrix());
 
 	RTRenderer.ShowCoord();
-
-
-	/*BWRay Ray;
-	Lines.clear();
-	Ray._start = BWVector4DD(0, 0, 0.0, 3.0 );
-	Ray._vector = BWVector3D(0, 0.0, -1);
-
-
-	Lines.push_back(Ray._start);
-	Lines.push_back(Ray._start + Ray._vector * 10);
-*/
-	//ShowAllNormal();
-	//RTRenderer.SetLineWidth(1);
-	//RTRenderer.SetLineColor(1.0, 0.0, 0.0);/**/
-	//Sceen.DrawScene();
-
-	//Test Code Start
-	//TestFBXObj.Draw();
-	//Test Code End
 
 	RTRenderer.SetLineColor(0.0, 0.0, 1.0);
 	RTRenderer.DrawLine(Lines);

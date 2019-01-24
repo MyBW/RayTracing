@@ -4,13 +4,13 @@
 #include "RTAreaLight.h"
 class Sample;
 class RNG;
-template<typename SceneType, typename IntersectionType>
+template<typename SceneType>
 class Integrator
 {
 public:
 	virtual void Init(SceneType *InScene);
 	virtual void RequestSample(Sample &InSample){ }
-	virtual Spectrum Li(SceneType *InScene, IntersectionType *Intersction , Sample &InSample, RNG& Rng) { return Spectrum(); };
+	virtual Spectrum Li(SceneType *InScene, IntersectionInfo *Intersction , Sample &InSample, RNG& Rng) { return Spectrum(); };
 	~Integrator()
 	{
 		for (auto Ele : DirectionLights)
@@ -21,21 +21,25 @@ public:
 		{
 			delete Ele;
 		}
+		for (auto Ele : AreaLights  )
+		{
+			delete Ele;
+		}
 	}
 protected:
-	std::vector<RTDirectionLight< typename SceneType::DirectionLightType, IntersectionType>*> DirectionLights;
-	std::vector<RTPointLight< typename SceneType::PointLightType, IntersectionType>*> PointLights;
-	std::vector<RTAreaLight<typename SceneType::AreaLightType, IntersectionType>*> AreaLights;
-	std::vector<RTLight<IntersectionType>*> AllLights;
+	std::vector<RTDirectionLight< typename SceneType::DirectionLightType>*> DirectionLights;
+	std::vector<RTPointLight< typename SceneType::PointLightType>*> PointLights;
+	std::vector<RTAreaLight<typename SceneType::AreaLightType>*> AreaLights;
+	std::vector<RTLight*> AllLights;
 };
 
-template<typename SceneType, typename IntersectionType>
-void Integrator<SceneType, IntersectionType>::Init(SceneType *InScene)
+template<typename SceneType>
+void Integrator<SceneType>::Init(SceneType *InScene)
 {
 	std::vector<SceneType::DirectionLightType*>& SceneDirectionLights = InScene->GetAllDireciontLight();
 	for (int i = 0; i < SceneDirectionLights.size(); i++)
 	{
-		DirectionLights.push_back(new RTDirectionLight<SceneType::DirectionLightType, IntersectionType>());
+		DirectionLights.push_back(new RTDirectionLight<SceneType::DirectionLightType>());
 		AllLights.push_back(DirectionLights[i]);
 		DirectionLights[i]->SetLightSource(SceneDirectionLights[i]);
 		DirectionLights[i]->SetRadiance(SceneDirectionLights[i]->GetRadiance());
@@ -43,7 +47,7 @@ void Integrator<SceneType, IntersectionType>::Init(SceneType *InScene)
 	std::vector<SceneType::PointLightType*>& ScenePointLights = InScene->GetAllPointLight();
 	for (int i = 0; i < ScenePointLights.size(); i++)
 	{
-		PointLights.push_back(new RTPointLight<SceneType::PointLightType, IntersectionType>());
+		PointLights.push_back(new RTPointLight<SceneType::PointLightType>());
 		AllLights.push_back(PointLights[i]);
 		PointLights[i]->SetLightSource(ScenePointLights[i]);
 	}
@@ -76,10 +80,10 @@ void Integrator<SceneType, IntersectionType>::Init(SceneType *InScene)
 				UV[0] = UVData[m * 2];
 				UV[1] = UVData[m * 2 + 1];
 				Mesh->SetTriangleShape(Pos, Normal, UV);
-				AreaLights.push_back(new RTAreaLight<SceneType::AreaLightType, IntersectionType>());
+				AreaLights.push_back(new RTAreaLight<SceneType::AreaLightType>());
 				AllLights.push_back(AreaLights[m]);
 				AreaLights[m]->SetLightSource(SceneAreaLights[i]);
-				AreaLights[m]->SetEmit(Spectrum(100.0));
+				AreaLights[m]->SetEmit(SceneAreaLights[i]->GetEmitColor());
 				AreaLights[m]->SetShape(Mesh);
 				Pos.clear();
 				Normal.clear();

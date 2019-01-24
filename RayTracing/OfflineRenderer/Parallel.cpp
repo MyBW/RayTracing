@@ -1,7 +1,8 @@
 #include "Parallel.h"
-
+#include <iostream>
 std::vector<Task*> TaskList;
 int AllTaskNum = 0;
+float AllTaskNumForCount = 0.0f;
 HANDLE *ThreadHandles = NULL;
 Mutex *TaskListMutex;
 Semaphore *TaskListSyn = NULL;
@@ -17,6 +18,7 @@ void EnqueueTasks(std::vector<Task*> InTaskList)
 		TaskList.push_back(T);
 	}
 	AllTaskNum += InTaskList.size();
+	AllTaskNumForCount = AllTaskNum;
 	TaskListSyn->Post(InTaskList.size());
 	InTaskList.clear();
 }
@@ -54,6 +56,7 @@ DWORD WINAPI ThreadFunc(LPVOID lParam)
 		Task * CurrentTask = NULL;
 		{
 			MutexLock TMutexLock(*TaskListMutex);
+			std::cout << (1.0f - TaskList.size() / AllTaskNumForCount) * 100 << "%" << std::endl;
 			if (TaskList.size() == 0) break;
 			CurrentTask = TaskList.back();
 			TaskList.pop_back();
