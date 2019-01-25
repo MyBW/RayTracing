@@ -1,7 +1,10 @@
 #pragma once
 #include "RTRenderer.h"
 #include <vector>
+#include "Film.h"
+#include "Integrator.h"
 class RTMaterial;
+class Sampler;
 class VisibleTester
 {
 public:
@@ -49,12 +52,36 @@ struct IntersectionInfo
 	BWPoint2DD IntersectionUV;
 	const RTMaterial* Material;
 };
-template<typename ScenenType>
+template<typename SceneType>
 class Renderer
 {
 public:
-	virtual void RenderScene(ScenenType* Scene) = 0;
-	// 计算两个点之间的遮蔽
-	virtual Spectrum Transmittance() = 0;
-	virtual Spectrum Li() = 0;
+	typedef typename SceneType::CameraType CameraType;
+	Renderer(CameraType* Camera = nullptr, Sampler *MainSampler = nullptr)
+	{
+		SetCamera(Camera);
+		this->MainSampler = MainSampler;
+	}
+	virtual void RenderScene(SceneType* Scene) = 0;
+	void SetCamera(CameraType* Camera)
+	{
+		if (!Camera) return;
+		this->Camera = Camera;
+		ScreenFilm.InitFilm(Camera, Camera->GetScreenWidth(), Camera->GetScreenHeight());
+	}
+	CameraType* GetCamera() const { return Camera; }
+	SceneType* GetScene() const { return Scene; }
+	Film<CameraType>* GetFilm() { return &ScreenFilm; }
+	void SetIntegrator(Integrator<typename SceneType> *InIntergrator) { RendererIntegrator = InIntergrator; }
+	void SetSampler(Sampler* InSampler) { MainSampler = InSampler; }
+	Sampler* GetMainSampler() { return MainSampler; }
+	Sample* GetOrigSample() { return OrigSample; }
+	Integrator<typename SceneType>* GetIntegrator() { return RendererIntegrator; }
+protected:
+	Film<CameraType> ScreenFilm;
+	SceneType *Scene;
+	CameraType *Camera;
+	Sampler *MainSampler;
+	Sample *OrigSample;
+	Integrator<typename SceneType> *RendererIntegrator;
 };

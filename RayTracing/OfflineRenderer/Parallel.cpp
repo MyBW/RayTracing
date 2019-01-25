@@ -83,9 +83,9 @@ int NumSystemCores()
 void TaskInit()
 {
 	static const int nThreadNum = NumSystemCores();
-	TaskListSyn = new Semaphore();
-	TaskListRuningCondition = new ConditionVariable();
-	TaskListMutex = Mutex::Create();
+	if (TaskListSyn == NULL) TaskListSyn = new Semaphore();
+	if (TaskListRuningCondition == NULL) TaskListRuningCondition = new ConditionVariable();
+	if (TaskListMutex == NULL)  TaskListMutex = Mutex::Create();
 	ThreadHandles = new HANDLE[nThreadNum];
 	for (int i = 0; i < nThreadNum; i++)
 	{

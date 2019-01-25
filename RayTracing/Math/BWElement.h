@@ -54,6 +54,7 @@ struct BWEle2I
 		};
 		int M[2];
 	};
+	BWEle2I(int Inx, int Iny):x(Inx),y(Iny){ }
 	BWEle2I() :x(0), y(0)
 	{
 

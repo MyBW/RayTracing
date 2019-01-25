@@ -4,61 +4,66 @@
 #include "..\OfflineRenderer\Sampler.h"
 #include "..\OfflineRenderer\Integrator.h"
 #include "RNG.h"
-template<typename SceneType, typename CameraType>
-void TestOfflineRenderer<SceneType, CameraType>::RenderScene(SceneType* Scene)
+template<typename SceneType>
+void TestOfflineRenderer<SceneType>::InitSPPMPixel()
 {
-	if (!Camera)  return;
-	
-	OrigSample = new Sample();
-	this->Scene = Scene;
-	this->Scene->UpdateSceneInfo();
-	RendererIntegrator->Init(this->Scene);
-	RendererIntegrator->RequestSample(*OrigSample);
+	Bounds2i& PixelBounds = ScreenFilm.FilmBounds;
+	int PixelNum = PixelBounds.Area();
+	SPPMPixels.resize(PixelNum);
+	for (auto& P : SPPMPixels)
+	{
+		P = new SPPMPixel();
+		P->Radius = InitialSearchRadius;
+	}
+}
+template<typename SceneType>
+void TestOfflineRenderer<SceneType>::RenderScene(SceneType* Scene)
+{
+	InitSPPMPixel();
+	Distribution1D *LightDistr = CreateLightPowerDistribute(Scene);
 
-	const int SplitScreenNum = 64;
-	std::vector<Task*> OfflineRendererTasks;
-	int AllPixelNum = ScreenFilm.GetWidth() * ScreenFilm.GetHeight();
-	int PixelNumForTask = AllPixelNum / SplitScreenNum;
-	for (int i = 0 ;i < SplitScreenNum ; i++)
+	const float invSqrtSPP = 1.f / std::sqrt(IteratorNum);
+	Random Sampler;
+	//HaltonSampler sampler(nIterations, pixelBounds);
+
+	Bounds2i& PixelBounds = ScreenFilm.FilmBounds;
+	std::vector<int> Extent = PixelBounds.Diagonal();
+	const int TileSize = 16;
+	BWEle2I NTile((Extent[0] + TileSize - 1) / TileSize, (Extent[1] + TileSize - 1) / TileSize);
+	for (int itor = 0 ; itor < IteratorNum; itor++)
 	{
-		OfflineRendererTasks.push_back(new TestOfflineRendererTask<SceneType, CameraType>(this, i *PixelNumForTask, i*PixelNumForTask + PixelNumForTask - 1));
+		//Generate SPPM visible points
+		{
+			ParallelProcess([&](std::vector<Task*>& Tasks)
+			{
+				for (int i = 0 ;i <  NTile.x; i++)
+				{
+					for (int j = 0; j < NTile.y; j++)
+					{
+						Tasks.push_back(new GenerateSPPMVisiblePointTask<SceneType>(i, j));
+					}
+				}
+			});
+		}
 	}
-	if (AllPixelNum > (PixelNumForTask * SplitScreenNum))
-	{
-		OfflineRendererTasks.push_back(new TestOfflineRendererTask<SceneType, CameraType>(this, AllPixelNum - PixelNumForTask* SplitScreenNum, AllPixelNum - 1));
-	}
-    EnqueueTasks(OfflineRendererTasks);
+}
+template<typename SceneType>
+void TestOfflineRenderer<SceneType>::ParallelProcess(std::function<void(std::vector<Task*>&)> CreateTask)
+{
+	std::vector<Task*> Tasks;
+	CreateTask(Tasks);
+	EnqueueTasks(Tasks);
 	WaitTaskListFinish();
 	CleanupTaskList();
 }
 
-template<typename SceneType, typename CameraType>
-TestOfflineRenderer<SceneType, CameraType>::TestOfflineRenderer(CameraType* Camera ,Sampler *MainSampler)
-{
-	SetCamera(Camera);
-	this->MainSampler = MainSampler;
-}
-
-template<typename SceneType, typename CameraType>
-void TestOfflineRenderer<SceneType, CameraType>::SetCamera(CameraType* Camera)
-{
-	if (!Camera) return;
-	this->Camera = Camera;
-	ScreenFilm.InitFilm(Camera, Camera->GetScreenWidth(), Camera->GetScreenHeight());
-}
-
-template<typename SceneType, typename CameraType>
-void TestOfflineRenderer<SceneType, CameraType>::SetIntegrator(Integrator<typename SceneType> *InIntergrator)
-{
-	RendererIntegrator = InIntergrator;
-}
 
 
-template<typename SceneType, typename CameraType>
-void TestOfflineRendererTask<SceneType, CameraType>::Run()
+template<typename SceneType>
+void TestOfflineRendererTask<SceneType>::Run()
 {
 	SceneType *Scene = Render->GetScene();
-	Film<CameraType> *CameraFilm = Render->GetFilm();
+	Film<typename SceneType::CameraType> *CameraFilm = Render->GetFilm();
 	Sampler *MainSampelr = Render->GetMainSampler();
 	Sampler *SubSampler = MainSampelr->GetSubSampler(StarPixelIndex, EndPiexlIndex);
 	int MaxSampleCount = SubSampler->GetMaxSampleCount();
@@ -107,18 +112,24 @@ void TestOfflineRendererTask<SceneType, CameraType>::Run()
 	}
 }
 
-template<typename SceneType, typename CameraType>
-TestOfflineRendererTask<SceneType, CameraType>::~TestOfflineRendererTask()
+template<typename SceneType>
+TestOfflineRendererTask<SceneType>::~TestOfflineRendererTask()
 {
 
 }
 
-template<typename SceneType, typename CameraType>
-TestOfflineRendererTask<SceneType, CameraType>::TestOfflineRendererTask(TestOfflineRenderer<SceneType, CameraType> *Render, int StarPixelIndex, int EndPiexlIndex)
+template<typename SceneType>
+TestOfflineRendererTask<SceneType>::TestOfflineRendererTask(TestOfflineRenderer<SceneType> *Render, int StarPixelIndex, int EndPiexlIndex)
 {
 	this->Render = Render;
 	this->StarPixelIndex = StarPixelIndex;
 	this->EndPiexlIndex = EndPiexlIndex;
+}
+
+template<typename SceneType>
+void GenerateSPPMVisiblePointTask<SceneType>::Run()
+{
+
 }
 
 

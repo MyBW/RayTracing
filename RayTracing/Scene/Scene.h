@@ -7,6 +7,7 @@
 #include "AreaLight.h"
 #include "..\OfflineRenderer\RTMaterial.h"
 #include <functional>
+#include "Camera.h"
 class Object;
 
 class Scene
@@ -16,6 +17,7 @@ public:
 	typedef DirectionLight DirectionLightType;
 	typedef PointLight PointLightType;
 	typedef AreaLight AreaLightType;
+	typedef Camera CameraType;
 	Scene();
 	~Scene();
 	void AddObject(const char *ObjFileName, const std::string &ObjName);

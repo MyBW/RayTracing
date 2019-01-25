@@ -4,43 +4,63 @@
 #include "../OfflineRenderer/Film.h"
 #include "../OfflineRenderer/Integrator.h"
 class Sampler;
-template<typename SceneType, typename CameraType>
+struct SPPMPixel 
+{
+	struct VisibalePoint
+	{
+		BWVector3D P;
+		BWVector3D Wo;
+		const BSDF *Bsdf = nullptr;
+		Spectrum Beta;
+	} VP;
+	int M;
+	Spectrum Ld;
+	float Radius = 0;
+	float Phi[Spectrum::SampleNum];
+	float N;
+	Spectrum Tau;
+};
+template<typename SceneType>
 class TestOfflineRenderer : public Renderer<SceneType>
 {
 public:
-	TestOfflineRenderer(CameraType* Camera = nullptr, Sampler *MainSampler = nullptr);
+	TestOfflineRenderer(CameraType* Camera = nullptr, Sampler *MainSampler = nullptr):Render<SceneType>(Camera, MainSampler){ }
 	void RenderScene(SceneType* Scene) override;
-	void SetCamera(CameraType* Camera);
-	void SetIntegrator(Integrator<typename SceneType> *InIntergrator);
-	void SetSampler(Sampler* InSampler) { MainSampler = InSampler; }
-	CameraType* GetCamera() const { return Camera; }
-	SceneType* GetScene() const { return Scene; }
-	Film<CameraType>* GetFilm() { return &ScreenFilm; }
-	Sampler* GetMainSampler() { return MainSampler; }
-	Spectrum Transmittance() override { return Spectrum(); }
-	Spectrum Li() override { return Spectrum(); }
+	void InitSPPMPixel();
+	void ParallelProcess(std::function<void(std::vector<Task*>&)> CreateTask);
+	Distribution1D* CreateLightPowerDistribute(SceneType *Scene);
 
-	Film<CameraType> ScreenFilm;
-	SceneType *Scene;
-    CameraType *Camera;
-	Sampler *MainSampler;
-	Sample *OrigSample;
-	Integrator<typename SceneType> *RendererIntegrator;
+	std::vector<SPPMPixel*>& GetSPPMPixel() { return SPPMPixels; }
+
+	std::vector<SPPMPixel*> SPPMPixels;
+	float InitialSearchRadius = 0;
+	int IteratorNum = 0;
 };
 
 
 
-template<typename SceneType, typename CameraType>
+template<typename SceneType>
 class TestOfflineRendererTask :public Task
 {
 public:
-	TestOfflineRendererTask(TestOfflineRenderer<SceneType, CameraType> *Render , int StarPixelIndex, int EndPiexlIndex);
+	TestOfflineRendererTask(TestOfflineRenderer<SceneType> *Render , int StarPixelIndex, int EndPiexlIndex);
 	~TestOfflineRendererTask();
 	void Run() override;
 private:
-	TestOfflineRenderer<SceneType, CameraType> *Render;
+	TestOfflineRenderer<SceneType> *Render;
 	int StarPixelIndex;
 	int EndPiexlIndex;
+};
+
+template<typename SceneType>
+class GenerateSPPMVisiblePointTask : public Task
+{
+public:
+	GenerateSPPMVisiblePointTask(int x, int y):TileX(x), TileY(y){ }
+	void Run() override;
+private:
+	int TileX;
+	int TileY;
 };
 
 #include "TestOfflineRenderer.inl"

@@ -81,9 +81,6 @@
     <ClCompile Include="OfflineRenderer\Film.cpp">
       <Filter>OfflineRenderer</Filter>
     </ClCompile>
-    <ClCompile Include="Test\TestOfflineRenderer.cpp">
-      <Filter>Test</Filter>
-    </ClCompile>
     <ClCompile Include="Math\RTMath.cpp">
       <Filter>Math</Filter>
     </ClCompile>
@@ -251,6 +248,9 @@
     <ClInclude Include="Test\TestMaterial.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OfflineRenderer\RTSamplerRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="RealTimeRenderer\RealTimeRenderer.inl">
@@ -264,6 +264,9 @@
     </None>
     <None Include="OfflineRenderer\Film.inl">
       <Filter>OfflineRenderer</Filter>
+    </None>
+    <None Include="OfflineRenderer\RTSamplerRenderer.inl">
+      <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
 </Project>

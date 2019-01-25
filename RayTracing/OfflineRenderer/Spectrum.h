@@ -229,6 +229,7 @@ public:
 		}
 		return -1;
 	}
+	static const int SampleNum = Samples;
 protected:
 	float C[Samples];
 };

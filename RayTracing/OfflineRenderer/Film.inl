@@ -68,6 +68,8 @@ void Film<CameraType>::InitFilm(CameraType *Camera, int Width, int Height)
 	this->Width = Width;
 	this->Height = Height;
 	this->Camera = Camera;
+	FilmBounds.SetMax(0, Width);
+	FilmBounds.SetMax(1, Height);
 	FinalColor = new Spectrum[Width * Height];
 }
 

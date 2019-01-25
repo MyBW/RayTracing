@@ -26,30 +26,116 @@ void AppTest::Init(int Width, int Height)
 {
 	RTRenderer.Init(Width, Height);
 	CameraForRender.Init(Width, Height);
+	//Bottom
+	{
+		Spectrum BaseColor;
+		Sceen.AddObject("cube.obj", std::string("obj1"));
+		Object *TestObj = Sceen.GetObjectByName("obj1");
+		TestObj->SetScale(15, 1, 10);
+		
+		BaseColor.SetValue(0, 196.0 / 255 * 0.7);
+		BaseColor.SetValue(1, 165.0 / 255 * 0.7);
+		BaseColor.SetValue(2, 97.0 / 255 * 0.7);
 
-	Spectrum BaseColor;
-	Sceen.AddObject("cube.obj", std::string("obj1"));
-	Object *TestObj = Sceen.GetObjectByName("obj1");
-	TestObj->SetPosition(0, -3.0, 5);
-	TestObj->SetScale(10, 1, 10);
-	BaseColor.SetValue(0, 166.0/255 * 0.7);
-	BaseColor.SetValue(1, 23.0/255 * 0.7);
-	BaseColor.SetValue(2, 14.0/255 * 0.7);
-	TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
-	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj1"));
+		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj1"));
+	}
+	//Back
+	{
+		Spectrum BaseColor;
+		Sceen.AddObject("cube.obj", std::string("obj2"));
+		Object *TestObj = Sceen.GetObjectByName("obj2");
+		TestObj->SetPosition(0, 7.5, -5);
+		TestObj->SetScale(15, 1, 15);
+		TestObj->SetRoataion(BWVector3D(1.0, 0.0, 0.0), Radian(3.15 / 2));
+		BaseColor.SetValue(0, 196.0 / 255 * 0.7);
+		BaseColor.SetValue(1, 165.0 / 255 * 0.7);
+		BaseColor.SetValue(2, 97.0 / 255 * 0.7);
+		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj2"));
+	}
+	//Left
+	{
+		Spectrum BaseColor;
+		Sceen.AddObject("cube.obj", std::string("obj3"));
+		Object *TestObj = Sceen.GetObjectByName("obj3");
+		TestObj->SetPosition(-7.5, 7.5, 0);
+		TestObj->SetScale(15, 1, 10);
+		TestObj->SetRoataion(BWVector3D(0.0, 0.0, 1.0), Radian(3.15 / 2));
+		BaseColor.SetValue(0, 166.0 / 255 * 0.7);
+		BaseColor.SetValue(1, 23.0 / 255 * 0.7);
+		BaseColor.SetValue(2, 14.0 / 255 * 0.7);
+		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj3"));
+	}
+	//Up
+	{
+		Spectrum BaseColor;
+		Sceen.AddObject("cube.obj", std::string("obj4"));
+		Object *TestObj = Sceen.GetObjectByName("obj4");
+		TestObj->SetPosition(0, 15, 0);
+		TestObj->SetScale(15, 1, 10);
+		BaseColor.SetValue(0, 196.0 / 255 * 0.7);
+		BaseColor.SetValue(1, 165.0 / 255 * 0.7);
+		BaseColor.SetValue(2, 97.0 / 255 * 0.7);
+		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj4"));
+	}
+	//Right
+	{
+		Spectrum BaseColor;
+		Sceen.AddObject("cube.obj", std::string("obj5"));
+		Object *TestObj = Sceen.GetObjectByName("obj5");
+		TestObj->SetPosition(7.5, 7.5, 0);
+		TestObj->SetScale(15, 1, 10);
+		TestObj->SetRoataion(BWVector3D(0.0, 0.0, 1.0), Radian(3.15 / 2));
+		BaseColor.SetValue(0, 63.0 / 255 * 0.7);
+		BaseColor.SetValue(1, 124.0 / 255 * 0.7);
+		BaseColor.SetValue(2, 181.0 / 255 * 0.7);
+		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj5"));
+	}
 
-	/*BaseColor.SetValue(0, 32.0 / 255 * 0.7);
-	BaseColor.SetValue(1, 73.0 / 255 * 0.7);
-	BaseColor.SetValue(2, 15.0 / 255 * 0.7);
-	Sceen.AddObject("planet.obj", std::string("obj2"));
-	TestObj = Sceen.GetObjectByName("obj2");
-	TestObj->SetPosition(0, 0, 5);
-	TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
-	TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
-	RTRenderer.AddDrawable(Sceen.GetObjectByName("obj2"));*/
-
+	{
+		Spectrum BaseColor;
+		BaseColor.SetValue(0, 32.0 / 255 * 0.7);
+		BaseColor.SetValue(1, 73.0 / 255 * 0.7);
+		BaseColor.SetValue(2, 15.0 / 255 * 0.7);
+		Sceen.AddObject("cube.obj", std::string("obj6"));
+		Object* TestObj = Sceen.GetObjectByName("obj6");
+		TestObj->SetPosition(2, 3, 0);
+		TestObj->SetScale(3, 6, 3);
+		TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
+		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj6"));
+	}
+	{
+		Spectrum BaseColor;
+		BaseColor.SetValue(0, 32.0 / 255 * 0.7);
+		BaseColor.SetValue(1, 73.0 / 255 * 0.7);
+		BaseColor.SetValue(2, 15.0 / 255 * 0.7);
+		Sceen.AddObject("cube.obj", std::string("obj7"));
+		Object* TestObj = Sceen.GetObjectByName("obj7");
+		TestObj->SetPosition(-3, 8, 0);
+		TestObj->SetScale(2, 2, 2);
+		TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
+		TestObj->SetRoataion(BWVector3D(1.0, 0.0, 0.0), Radian(3.15 / 4));
+		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj7"));
+	}
 	
-	
+	{
+		Spectrum BaseColor;
+		BaseColor.SetValue(0, 196.0 / 255 * 0.7);
+		BaseColor.SetValue(1, 165.0 / 255 * 0.7);
+		BaseColor.SetValue(2, 97.0 / 255 * 0.7);
+		Sceen.AddObject("planet.obj", std::string("obj8"));
+		Object* TestObj = Sceen.GetObjectByName("obj8");
+		TestObj->SetPosition(-3, 2, 0);
+		TestObj->SetScale(1, 1, 1);
+		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj8"));
+	}
 
 	/*DirectionLight *L = new DirectionLight();
 	L->SetName(std::string("DirectionalLight"));
@@ -61,9 +147,9 @@ void AppTest::Init(int Width, int Height)
 	{
 		Object *Obj = new Object();
 		Obj->LoadObjModel("cube.obj", "AreaLightObj");
-		Obj->SetPosition(0, 50, 5);
+		Obj->SetPosition(0, 10, 0);
 		Obj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
-		Obj->SetScale(5, 5, 5);
+		Obj->SetScale(2, 2, 2);
 		RTRenderer.AddDrawable(Obj);
 
 		Spectrum EmitColor;
@@ -134,7 +220,7 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 	if (ShowOfflineRender)
 	{
 		DirectLightingIntegrator<Scene> LightingIntegrator;
-		Random RandomSampler(0, CameraForRender.GetScreenWidth() * CameraForRender.GetScreenHeight(), 16, CameraForRender.GetScreenWidth(), CameraForRender.GetScreenHeight());
+		Random RandomSampler(0, CameraForRender.GetScreenWidth() * CameraForRender.GetScreenHeight(), 32, CameraForRender.GetScreenWidth(), CameraForRender.GetScreenHeight());
 		OfflineRenderer.SetCamera(&CameraForRender);
 		OfflineRenderer.SetIntegrator(&LightingIntegrator);
 		OfflineRenderer.SetSampler(&RandomSampler);

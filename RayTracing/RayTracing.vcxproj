@@ -179,7 +179,6 @@
     <ClCompile Include="Test\AppTest.cpp" />
     <ClCompile Include="Test\TestFBXDrawObj.cpp" />
     <ClCompile Include="Test\TestFBXLoad.cpp" />
-    <ClCompile Include="Test\TestOfflineRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\App.h" />
@@ -205,6 +204,7 @@
     <ClInclude Include="OfflineRenderer\Parallel.h" />
     <ClInclude Include="OfflineRenderer\Renderer.h" />
     <ClInclude Include="OfflineRenderer\RTMaterial.h" />
+    <ClInclude Include="OfflineRenderer\RTSamplerRenderer.h" />
     <ClInclude Include="OfflineRenderer\Sample.h" />
     <ClInclude Include="OfflineRenderer\Sampler.h" />
     <ClInclude Include="OfflineRenderer\Spectrum.h" />
@@ -224,13 +224,18 @@
     <ClInclude Include="Test\TestFBXLoad.h" />
     <ClInclude Include="Test\TestIntergrator.h" />
     <ClInclude Include="Test\TestMaterial.h" />
-    <ClInclude Include="Test\TestOfflineRenderer.h" />
+    <ClInclude Include="Test\TestOfflineRenderer.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="OfflineRenderer\Film.inl" />
+    <None Include="OfflineRenderer\RTSamplerRenderer.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderable.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderer.inl" />
-    <None Include="Test\TestOfflineRenderer.inl" />
+    <None Include="Test\TestOfflineRenderer.inl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

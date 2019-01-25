@@ -2,7 +2,7 @@
 #include <memory.h>
 #include <assert.h>
 #include "BWElement.h"
-
+#include <vector>
 
 
 typedef BWEle2DD BWPoint2DD;
@@ -658,3 +658,69 @@ struct Degree
 	float mDeg;
 	explicit Degree(float d) :mDeg(d){}
 };
+
+template<int D, typename T>
+class Bounds
+{
+public:
+	Bounds()
+	{
+		for (size_t i = 0; i < D; i++)
+		{
+			Max[i] = std::numeric_limits<T>::max();
+			Min[i] = std::numeric_limits<T>::lowest();
+		}
+	}
+	T Area()
+	{
+		T FinalArea = 1;
+		for (size_t i = 0; i < D; i++)
+		{
+			FinalArea *= Max[i] - Min[i];
+		}
+		return FinalArea;
+	}
+	std::vector<T> Diagonal()
+	{
+		std::vector<T> Extent;
+		Extent.resize(D);
+		for (size_t i = 0; i < D; i++)
+		{
+			Extent[i] = Max[i] - Min[i];
+		}
+		return Extent;
+	}
+	void SetMax(int Index, T Data)
+	{
+		if (!Check(Index)) return;
+		Max[Index] = Data;
+	}
+	void SetMin(int Index, T Data)
+	{
+		if (!Check(Index)) return;
+		Min[Index] = Data;
+	}
+	T GetMax(int Index)
+	{
+		if (!Check(Index)) return -1;
+		return Max[Index];
+	}
+	T GetMin(int Index)
+	{
+		if (!Check(Index)) return -1;
+		return Min[Index];
+	}
+	static const int Dime = D; 
+private:
+	bool Check(int Index)
+	{
+		return -1 < Index && Index < D;
+	}
+	T Max[D];
+	T Min[D];
+};
+
+typedef Bounds<2, int> Bounds2i;
+typedef Bounds<2, float> Bounds2f;
+typedef Bounds<3, int> Bounds3i;
+typedef Bounds<3, float> Bounds3f;
