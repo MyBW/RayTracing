@@ -23,6 +23,16 @@ std::vector<BWVector3D> Lines;
 
 void AppTest::Init(int Width, int Height)
 {
+	{
+		Bounds2i TestsBounds(std::vector<int>{0, 0}, std::vector<int>{2, 2});
+		std::vector<int> Pos = TestsBounds.GetMin();
+		for (int i = 0; i < 30; i++)
+		{
+			TestsBounds.IncreasePosInArea(Pos);
+		}
+	}
+	
+
 	RTRenderer.Init(Width, Height);
 	CameraForRender.Init(Width, Height);
 	//Bottom
@@ -123,7 +133,7 @@ void AppTest::Init(int Width, int Height)
 		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj7"));
 	}
 	
-	{
+	/*{
 		Spectrum BaseColor;
 		BaseColor.SetValue(0, 196.0 / 255 * 0.7);
 		BaseColor.SetValue(1, 165.0 / 255 * 0.7);
@@ -134,7 +144,7 @@ void AppTest::Init(int Width, int Height)
 		TestObj->SetScale(1, 1, 1);
 		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
 		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj8"));
-	}
+	}*/
 
 	/*DirectionLight *L = new DirectionLight();
 	L->SetName(std::string("DirectionalLight"));
@@ -220,7 +230,7 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 	{
 		DirectLightingIntegrator<Scene> LightingIntegrator;
 		Bounds2i ScreenBounds(std::vector<int>{0, 0}, std::vector<int>{(int) CameraForRender.GetScreenWidth(), (int)CameraForRender.GetScreenHeight()});
-		Random RandomSampler(ScreenBounds, 32);
+		Random RandomSampler(ScreenBounds, 6);
 		OfflineRenderer.SetCamera(&CameraForRender);
 		OfflineRenderer.SetIntegrator(&LightingIntegrator);
 		OfflineRenderer.SetSampler(&RandomSampler);
@@ -283,28 +293,6 @@ void AppTest::UpdataSceneWithRealTimeRenderer()
 
 void AppTest::UpdateSceneWithOfflineRenderer()
 {
-
-	/*static unsigned char *Data = nullptr;
-	int width = OfflineRenderer.GetFilm()->GetWidth();
-	int height = OfflineRenderer.GetFilm()->GetHeight();
-	if (!Data)
-	{
-		Data = new unsigned char[width*height * 3];
-		for (int i = 0; i < height * width; i++)
-		{
-			Spectrum *Color = OfflineRenderer.GetFilm()->GetSpectrum(i);
-			float RGB[3];
-			Color->ToRGB(RGB);
-			Data[i * 3] = RGB[0] * 255;
-			Data[i * 3 + 1] = RGB[1] * 255;
-			Data[i * 3 + 2] = RGB[2] * 255;
-		}
-	}
-
-	RTRenderer.BeginFrame();
-	RTRenderer.DrawImage(OfflineRenderer.GetFilm()->GetWidth(), OfflineRenderer.GetFilm()->GetHeight(), Data);
-	RTRenderer.EndFrame();*/
-
 	static float *Data = nullptr;
 	int width = OfflineRenderer.GetFilm()->GetWidth();
 	int height = OfflineRenderer.GetFilm()->GetHeight();

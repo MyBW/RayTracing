@@ -3,7 +3,6 @@ void RTSamplerRenderer<SceneType>::RenderScene(SceneType* Scene)
 {
 	if (!Camera)  return;
 
-	OrigSample = new Sample();
 	this->Scene = Scene;
 	this->Scene->UpdateSceneInfo();
 	RendererIntegrator->Init(this->Scene);

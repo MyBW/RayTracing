@@ -10,7 +10,7 @@ struct SPPMPixel
 	{
 		BWVector3D P;
 		BWVector3D Wo;
-		const BSDF *Bsdf = nullptr;
+		BSDF *Bsdf = nullptr;
 		Spectrum Beta;
 	} VP;
 	int M;
@@ -24,10 +24,10 @@ template<typename SceneType>
 class TestOfflineRenderer : public Renderer<SceneType>
 {
 public:
-	TestOfflineRenderer(CameraType* Camera = nullptr, Sampler *MainSampler = nullptr):Render<SceneType>(Camera, MainSampler){ }
+	TestOfflineRenderer(CameraType* Camera = nullptr, Sampler *MainSampler = nullptr):Renderer<SceneType>(Camera, MainSampler){ }
 	void RenderScene(SceneType* Scene) override;
 	void InitSPPMPixel();
-	Distribution1D* CreateLightPowerDistribute(SceneType *Scene);
+	Distribution1D* CreateLightPowerDistribute(SceneType *Scene) { return nullptr; }
 
 	std::vector<SPPMPixel*>& GetSPPMPixel() { return SPPMPixels; }
 
@@ -36,32 +36,16 @@ public:
 	int IteratorNum = 0;
 };
 
-
-
-template<typename SceneType>
-class TestOfflineRendererTask :public Task
-{
-public:
-	TestOfflineRendererTask(TestOfflineRenderer<SceneType> *Render , int StarPixelIndex, int EndPiexlIndex);
-	~TestOfflineRendererTask();
-	void Run() override;
-private:
-	TestOfflineRenderer<SceneType> *Render;
-	int StarPixelIndex;
-	int EndPiexlIndex;
-};
-
 template<typename SceneType>
 class GenerateSPPMVisiblePointTask : public Task
 {
 public:
-	GenerateSPPMVisiblePointTask(int x, int y, int InTileSize , std::vector<SPPMPixel*>& InSPPMPixels):TileX(x), TileY(y),TileSize(InTileSize),SPPMPixels(InSPPMPixels) { }
+	GenerateSPPMVisiblePointTask( TestOfflineRenderer<SceneType> *InRender, const Bounds2i& InPixelBounds, std::vector<SPPMPixel*>& InSPPMPixels):Render(InRender), PixelBounds(InPixelBounds),SPPMPixels(&InSPPMPixels) { }
 	void Run() override;
 private:
-	int TileX;
-	int TileY;
-	int TileSize;
+	Bounds2i PixelBounds;
 	std::vector<SPPMPixel*> *SPPMPixels;
+	TestOfflineRenderer<SceneType> *Render;
 };
 
 #include "TestOfflineRenderer.inl"

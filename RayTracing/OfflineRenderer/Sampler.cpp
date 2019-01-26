@@ -102,3 +102,27 @@ int Random::GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG)
 	}
 	return SamplesPerPixel;
 }
+
+int Random::GetOneSample(Sample& InSample, RNG *InRNG)
+{
+	InSample.ImageX = InRNG->GetRandomFloat() + CurrentPixelPos[0];
+	InSample.ImageY = InRNG->GetRandomFloat() + CurrentPixelPos[1];
+	int OffSet = 0;
+	for (int k = 0; k < InSample.N1D.size(); k++)
+	{
+		for (int j = 0; j < InSample.N1D[k]; j++)
+		{
+			*(InSample.N1Data[k] + j) = InRNG->GetRandomFloat();
+		}
+	}
+	for (int k = 0; k < InSample.N2D.size(); k++)
+	{
+		for (int j = 0; j < InSample.N2D[k]; j += 2)
+		{
+			*(InSample.N2Data[k] + j) = InRNG->GetRandomFloat();
+			*(InSample.N2Data[k] + j + 1) = InRNG->GetRandomFloat();
+		}
+	}
+	if (!PixelArea.IncreasePosInArea(CurrentPixelPos)) return 0;
+	return 1;
+}

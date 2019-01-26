@@ -22,8 +22,9 @@ public:
 	void ShowAllAABB();
 private:
 	RealTimeRenderer<Object> RTRenderer;
-	RTSamplerRenderer<Scene> OfflineRenderer;
 
+	//RTSamplerRenderer<Scene> OfflineRenderer;
+	TestOfflineRenderer<Scene> OfflineRenderer;
 	Scene Sceen;
 	Camera CameraForRender;
 	bool IsContorllCamera = false;

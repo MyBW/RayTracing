@@ -10,6 +10,7 @@ public:
 	virtual Sampler* GetSubSampler(const Bounds2i &SubSamplerPixleArea) = 0;
 	virtual int GetMaxSampleCount() = 0;
 	virtual int GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG) = 0;
+	virtual int GetOneSample(Sample& InSample, RNG *InRng) { return 0; }
 protected:
 	Bounds2i PixelArea;
 	int SamplesPerPixel;
@@ -32,7 +33,7 @@ public:
 		return new Random(SubSamplerPixleArea, SamplesPerPixel);
 	}
 	int GetMoreSamples(std::vector<Sample *>& Samples, RNG *InRNG) override;
-	
+	int GetOneSample(Sample& InSample, RNG *InRng) override;
 private:
 	int CurrPixelSampleNum;
 	float *ImageSamplePos;

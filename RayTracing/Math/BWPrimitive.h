@@ -669,10 +669,11 @@ public:
 		Min.resize(D);
 		for (size_t i = 0; i < D; i++)
 		{
-			Max[i] = std::numeric_limits<T>::max();
-			Min[i] = std::numeric_limits<T>::lowest();
+			Min[i] = std::numeric_limits<T>::max();
+			Max[i] = std::numeric_limits<T>::lowest();
 		}
 	}
+	Bounds(std::vector<T> &P):Min(P),Max(P){ }
 	Bounds(std::vector<T> &InMin, std::vector<T> &InMax):Min(InMin),Max(InMax){ }
 	T Area()
 	{
@@ -718,7 +719,7 @@ public:
 		if (!Check(P.size() - 1)) return false;
 		for (int i = 0 ;i < D; i++)
 		{
-			if (P[i] >= Min[i] && P[i] <= Max[i]) continue;
+			if (P[i] >= Min[i] && P[i] < Max[i]) continue;
 			return false;
 		}
 		return  true;
@@ -729,7 +730,7 @@ public:
 		TmpP[0]++;
 		for (int i = 0 ; i < D - 1 ; i++)
 		{
-			if (TmpP[i] > Max[i])
+			if (TmpP[i] >= Max[i])
 			{
 				TmpP[i] = Min[i];
 				TmpP[i + 1]++;
@@ -760,6 +761,24 @@ public:
 	}
 	const std::vector<T>& GetMax() const { return Max; }
 	const std::vector<T>& GetMin() const { return Min; }
+	Bounds<D, T> Expand(T ExpandSize) const 
+	{
+		Bounds<D, T> Res;
+		for (int i = 0 ;i < D; i++)
+		{
+			Res.Min[i] = Min[i] - ExpandSize;
+			Res.Max[i] = Max[i] + ExpandSize;
+		}
+		return Res;
+	}
+	void Union(const Bounds<D, T> &UnionBound)
+	{
+		for (int i =0 ;i < D;i++)
+		{
+			Min[i] = TMin(Min[i], UnionBound.Min[i]);
+			Max[i] = TMax(Max[i], UnionBound.Max[i]);
+		}
+	}
 	static const int Dime = D; 
 private:
 	bool Check(int Index)

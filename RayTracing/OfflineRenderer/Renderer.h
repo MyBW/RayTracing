@@ -62,6 +62,7 @@ public:
 	{
 		SetCamera(Camera);
 		this->MainSampler = MainSampler;
+		OrigSample = new Sample();
 	}
 	virtual void RenderScene(SceneType* Scene) = 0;
 	void SetCamera(CameraType* Camera)
