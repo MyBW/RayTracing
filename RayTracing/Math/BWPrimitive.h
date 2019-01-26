@@ -665,12 +665,15 @@ class Bounds
 public:
 	Bounds()
 	{
+		Max.resize(D);
+		Min.resize(D);
 		for (size_t i = 0; i < D; i++)
 		{
 			Max[i] = std::numeric_limits<T>::max();
 			Min[i] = std::numeric_limits<T>::lowest();
 		}
 	}
+	Bounds(std::vector<T> &InMin, std::vector<T> &InMax):Min(InMin),Max(InMax){ }
 	T Area()
 	{
 		T FinalArea = 1;
@@ -710,14 +713,61 @@ public:
 		if (!Check(Index)) return -1;
 		return Min[Index];
 	}
+	bool IsInTheBound(const std::vector<T>& P)
+	{
+		if (!Check(P.size() - 1)) return false;
+		for (int i = 0 ;i < D; i++)
+		{
+			if (P[i] >= Min[i] && P[i] <= Max[i]) continue;
+			return false;
+		}
+		return  true;
+	}
+	bool IncreasePosInArea(std::vector<T>& P)
+	{
+		std::vector<T> TmpP = P;
+		TmpP[0]++;
+		for (int i = 0 ; i < D - 1 ; i++)
+		{
+			if (TmpP[i] > Max[i])
+			{
+				TmpP[i] = Min[i];
+				TmpP[i + 1]++;
+				continue;
+			}
+			break;
+		}
+		if (!IsInTheBound(TmpP)) return false;
+		P = TmpP;
+		return true;
+	}
+	void SplitBounds(int SplitBoundsWidth, std::vector<Bounds<D, T>>& Splits)
+	{
+		std::vector<T> Extent = Diagonal();
+		int X =(int)( (Extent[0] + SplitBoundsWidth - 1) / SplitBoundsWidth);
+		int Y =(int)( (Extent[1] + SplitBoundsWidth - 1) / SplitBoundsWidth);
+		for (int i = 0 ; i < X ; i++)
+		{
+			for (int j = 0; j < Y; j++)
+			{
+				T XMin = i * SplitBoundsWidth;
+				T YMin = j * SplitBoundsWidth;
+				T XMax = XMin + SplitBoundsWidth > Max[0] ? Max[0] : XMin + SplitBoundsWidth;
+				T YMax = YMin + SplitBoundsWidth > Max[1] ? Max[1] : YMin + SplitBoundsWidth;
+				Splits.push_back(Bounds<D, T>(std::vector<T>{XMin, YMin}, std::vector<T>{XMax, YMax}));
+			}
+		}
+	}
+	const std::vector<T>& GetMax() const { return Max; }
+	const std::vector<T>& GetMin() const { return Min; }
 	static const int Dime = D; 
 private:
 	bool Check(int Index)
 	{
 		return -1 < Index && Index < D;
 	}
-	T Max[D];
-	T Min[D];
+	std::vector<T> Max;
+	std::vector<T> Min;
 };
 
 typedef Bounds<2, int> Bounds2i;

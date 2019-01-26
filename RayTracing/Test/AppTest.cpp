@@ -21,7 +21,6 @@
 TestFBXLoad FBXload;
 std::vector<BWVector3D> Lines;
 
-
 void AppTest::Init(int Width, int Height)
 {
 	RTRenderer.Init(Width, Height);
@@ -220,7 +219,8 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 	if (ShowOfflineRender)
 	{
 		DirectLightingIntegrator<Scene> LightingIntegrator;
-		Random RandomSampler(0, CameraForRender.GetScreenWidth() * CameraForRender.GetScreenHeight(), 32, CameraForRender.GetScreenWidth(), CameraForRender.GetScreenHeight());
+		Bounds2i ScreenBounds(std::vector<int>{0, 0}, std::vector<int>{(int) CameraForRender.GetScreenWidth(), (int)CameraForRender.GetScreenHeight()});
+		Random RandomSampler(ScreenBounds, 32);
 		OfflineRenderer.SetCamera(&CameraForRender);
 		OfflineRenderer.SetIntegrator(&LightingIntegrator);
 		OfflineRenderer.SetSampler(&RandomSampler);

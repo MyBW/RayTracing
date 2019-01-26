@@ -40,21 +40,12 @@ void TestOfflineRenderer<SceneType>::RenderScene(SceneType* Scene)
 				{
 					for (int j = 0; j < NTile.y; j++)
 					{
-						Tasks.push_back(new GenerateSPPMVisiblePointTask<SceneType>(i, j));
+						Tasks.push_back(new GenerateSPPMVisiblePointTask<SceneType>(i, j,TileSize , SPPMPixels));
 					}
 				}
 			});
 		}
 	}
-}
-template<typename SceneType>
-void TestOfflineRenderer<SceneType>::ParallelProcess(std::function<void(std::vector<Task*>&)> CreateTask)
-{
-	std::vector<Task*> Tasks;
-	CreateTask(Tasks);
-	EnqueueTasks(Tasks);
-	WaitTaskListFinish();
-	CleanupTaskList();
 }
 
 
@@ -129,7 +120,7 @@ TestOfflineRendererTask<SceneType>::TestOfflineRendererTask(TestOfflineRenderer<
 template<typename SceneType>
 void GenerateSPPMVisiblePointTask<SceneType>::Run()
 {
-
+		
 }
 
 

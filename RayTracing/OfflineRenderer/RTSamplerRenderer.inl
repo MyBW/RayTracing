@@ -8,22 +8,16 @@ void RTSamplerRenderer<SceneType>::RenderScene(SceneType* Scene)
 	this->Scene->UpdateSceneInfo();
 	RendererIntegrator->Init(this->Scene);
 	RendererIntegrator->RequestSample(*OrigSample);
-
-	const int SplitScreenNum = 64;
-	std::vector<Task*> OfflineRendererTasks;
-	int AllPixelNum = ScreenFilm.GetWidth() * ScreenFilm.GetHeight();
-	int PixelNumForTask = AllPixelNum / SplitScreenNum;
-	for (int i = 0; i < SplitScreenNum; i++)
+	ParallelProcess([&](std::vector<Task*> &Tasks)
 	{
-		OfflineRendererTasks.push_back(new RTSamplerRendererTask<SceneType>(this, i *PixelNumForTask, i*PixelNumForTask + PixelNumForTask - 1));
-	}
-	if (AllPixelNum > (PixelNumForTask * SplitScreenNum))
-	{
-		OfflineRendererTasks.push_back(new RTSamplerRendererTask<SceneType>(this, AllPixelNum - PixelNumForTask* SplitScreenNum, AllPixelNum - 1));
-	}
-	EnqueueTasks(OfflineRendererTasks);
-	WaitTaskListFinish();
-	CleanupTaskList();
+		const int SplitScreenWidth = 64;
+		std::vector<Bounds2i> SplitScreenBounds;
+		ScreenFilm.FilmBounds.SplitBounds(SplitScreenWidth, SplitScreenBounds);
+		for (size_t i = 0; i < SplitScreenBounds.size(); i++)
+		{
+			Tasks.push_back(new RTSamplerRendererTask<SceneType>(this, SplitScreenBounds[i]));
+		}
+	});
 }
 
 
@@ -33,7 +27,7 @@ void RTSamplerRendererTask<SceneType>::Run()
 	SceneType *Scene = Render->GetScene();
 	Film<typename SceneType::CameraType> *CameraFilm = Render->GetFilm();
 	Sampler *MainSampelr = Render->GetMainSampler();
-	Sampler *SubSampler = MainSampelr->GetSubSampler(StarPixelIndex, EndPiexlIndex);
+	Sampler *SubSampler = MainSampelr->GetSubSampler(ScreenBounds);
 	int MaxSampleCount = SubSampler->GetMaxSampleCount();
 	std::vector<Sample*> Samples = Render->GetOrigSample()->Duplicate(MaxSampleCount);
 	RNG Rng;
@@ -44,6 +38,7 @@ void RTSamplerRendererTask<SceneType>::Run()
 		for (int i = 0; i < SampleNum; i++)
 		{
 			IntersectionInfo Intersection;
+			if (!CameraFilm->IsInTheFilm(Samples[i]->ImageX, Samples[i]->ImageY)) continue;
 			BWRay Ray = CameraFilm->GetRayFromCamera(Samples[i]->ImageX, Samples[i]->ImageY);
 			float Mint = FLT_MAX;
 			auto GetIntersectionInfo = [&Intersection, &Mint](const std::vector<BWPoint3DD>& P, const std::vector<BWPoint3DD>& N, const std::vector<BWPoint2DD>& UV, float t, float u, float v, const BWRay &Ray, const RTMaterial* Material, bool &IsBreak)
@@ -92,4 +87,10 @@ RTSamplerRendererTask<SceneType>::RTSamplerRendererTask(RTSamplerRenderer<SceneT
 	this->Render = Render;
 	this->StarPixelIndex = StarPixelIndex;
 	this->EndPiexlIndex = EndPiexlIndex;
+}
+template<typename SceneType>
+RTSamplerRendererTask<SceneType>::RTSamplerRendererTask(RTSamplerRenderer<SceneType> *Render, const Bounds2i &InScreenBounds)
+{
+	this->Render = Render;
+	ScreenBounds = InScreenBounds;
 }

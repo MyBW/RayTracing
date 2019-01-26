@@ -27,7 +27,6 @@ public:
 	TestOfflineRenderer(CameraType* Camera = nullptr, Sampler *MainSampler = nullptr):Render<SceneType>(Camera, MainSampler){ }
 	void RenderScene(SceneType* Scene) override;
 	void InitSPPMPixel();
-	void ParallelProcess(std::function<void(std::vector<Task*>&)> CreateTask);
 	Distribution1D* CreateLightPowerDistribute(SceneType *Scene);
 
 	std::vector<SPPMPixel*>& GetSPPMPixel() { return SPPMPixels; }
@@ -56,11 +55,13 @@ template<typename SceneType>
 class GenerateSPPMVisiblePointTask : public Task
 {
 public:
-	GenerateSPPMVisiblePointTask(int x, int y):TileX(x), TileY(y){ }
+	GenerateSPPMVisiblePointTask(int x, int y, int InTileSize , std::vector<SPPMPixel*>& InSPPMPixels):TileX(x), TileY(y),TileSize(InTileSize),SPPMPixels(InSPPMPixels) { }
 	void Run() override;
 private:
 	int TileX;
 	int TileY;
+	int TileSize;
+	std::vector<SPPMPixel*> *SPPMPixels;
 };
 
 #include "TestOfflineRenderer.inl"

@@ -1,8 +1,6 @@
 #include "BWPrimitive.h"
 #include <vector>
-BWRay::BWRay()
-{
-}
+BWRay::BWRay():Length(-1.0f){ }
 
 BWRay::BWRay(const BWVector3D &Start, const BWVector3D &Vector, float Lenth)
 {

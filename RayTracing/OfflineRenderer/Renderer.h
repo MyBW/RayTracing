@@ -5,6 +5,7 @@
 #include "Integrator.h"
 class RTMaterial;
 class Sampler;
+class Task;
 class VisibleTester
 {
 public:
@@ -77,6 +78,14 @@ public:
 	Sampler* GetMainSampler() { return MainSampler; }
 	Sample* GetOrigSample() { return OrigSample; }
 	Integrator<typename SceneType>* GetIntegrator() { return RendererIntegrator; }
+	void ParallelProcess(std::function<void(std::vector<Task*>&)> CreateTask)
+	{
+		std::vector<Task*> Tasks;
+		CreateTask(Tasks);
+		EnqueueTasks(Tasks);
+		WaitTaskListFinish();
+		CleanupTaskList();
+	}
 protected:
 	Film<CameraType> ScreenFilm;
 	SceneType *Scene;

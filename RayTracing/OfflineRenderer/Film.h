@@ -19,6 +19,7 @@ public:
 	int GetWidth() const { return Width; }
 	int GetHeight() const { return Height; }
 	BWRay GetRayFromCamera(float WIndex, float HIndex);
+	bool IsInTheFilm(float WIndex, float HIndex);
 	BWRay GetRayFromCamera(int PixelIndex);
 	void *GetData() { return FinalColor; }
 	CameraType* GetCamera() { return Camera; }

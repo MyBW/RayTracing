@@ -1,55 +1,40 @@
 #pragma once
 #include <vector>
+#include "BWPrimitive.h"
 class Sample;
 class RNG;
 class Sampler
 {
 public:
-	Sampler(int StartPixelIndex, int EndPixelIndex, int SPP, int InFilmWidth, int InFilmHeight):
-		StartPixelIndex(StartPixelIndex),EndPixelIndex(EndPixelIndex),SamplesPerPixel(SPP),FilmWidth(InFilmWidth),FilmHeight(InFilmHeight)
-	{
-
-	}
+	Sampler(const Bounds2i &InPixelArea, int InSPP) :PixelArea(InPixelArea), SamplesPerPixel(InSPP) { }
+	virtual Sampler* GetSubSampler(const Bounds2i &SubSamplerPixleArea) = 0;
 	virtual int GetMaxSampleCount() = 0;
-	virtual Sampler* GetSubSampler(int SubStartPixelIndex, int SubEndPixelIndex) = 0;
 	virtual int GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG) = 0;
 protected:
-	int StartPixelIndex;
-	int EndPixelIndex;
+	Bounds2i PixelArea;
 	int SamplesPerPixel;
-	int FilmWidth;
-	int FilmHeight;
 };
 
 class Random : public Sampler
 {
 public:
-	Random(int StartPixelIndex, int EndPixelIndex, int SPP , int InFilmWidth, int InFilmHeight) :Sampler(StartPixelIndex, EndPixelIndex, SPP, InFilmWidth, InFilmHeight)
-		,CurrSamplePos(StartPixelIndex),CurrPixelSampleNum(0)
+	Random(const Bounds2i& PixelArea, int SPP) :Sampler(PixelArea, SPP), ImageSamplePos(nullptr)
 	{
-		ImageSamplePos = nullptr;
-		ResetSamplePosition(CurrSamplePos);
+		CurrentPixelPos = PixelArea.GetMin();
 	}
 	~Random()
 	{
 		delete [] ImageSamplePos;
 	}
 	int GetMaxSampleCount() override { return SamplesPerPixel; }
-	Sampler* GetSubSampler(int SubStartPixelIndex, int SubEndPixelIndex)
+	Sampler* GetSubSampler(const Bounds2i &SubSamplerPixleArea) override
 	{
-		return new Random(SubStartPixelIndex, SubEndPixelIndex, SamplesPerPixel, FilmWidth, FilmHeight);
+		return new Random(SubSamplerPixleArea, SamplesPerPixel);
 	}
-	int GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG);
-	void ResetSamplePosition(int SamplePos)
-	{
-		CurrSamplePos = SamplePos;
-		CurrSamplePosX = CurrSamplePos % FilmWidth;
-		CurrSamplePosY = CurrSamplePos / FilmWidth;
-	}
+	int GetMoreSamples(std::vector<Sample *>& Samples, RNG *InRNG) override;
+	
 private:
-	int CurrSamplePos;
-	int CurrSamplePosX;
-	int CurrSamplePosY;
 	int CurrPixelSampleNum;
 	float *ImageSamplePos;
+	std::vector<int> CurrentPixelPos;
 };

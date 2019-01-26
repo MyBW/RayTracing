@@ -16,11 +16,16 @@ class RTSamplerRendererTask :public Task
 {
 public:
 	RTSamplerRendererTask(RTSamplerRenderer<SceneType> *Render, int StarPixelIndex, int EndPiexlIndex);
+	RTSamplerRendererTask(RTSamplerRenderer<SceneType> *Render, const Bounds2i &InScreenBounds);
 	~RTSamplerRendererTask();
 	void Run() override;
 private:
 	RTSamplerRenderer<SceneType> *Render;
+	Bounds2i ScreenBounds;
 	int StarPixelIndex;
 	int EndPiexlIndex;
 };
+
+
+
 #include "RTSamplerRenderer.inl"

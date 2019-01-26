@@ -19,6 +19,12 @@ BWRay Film<CameraType>::GetRayFromCamera(float WIndex, float HIndex)
 	return GetRayFromCameraWithNormal(X, Y);
 }
 template<typename CameraType>
+bool Film<CameraType>::IsInTheFilm(float WIndex, float HIndex)
+{
+	return WIndex >= 0 && WIndex < Width && HIndex >= 0 && Height >= HIndex;
+}
+
+template<typename CameraType>
 BWRay Film<CameraType>::GetRayFromCamera(int PixelIndex)
 {
 	int WIndex = PixelIndex % Width;
