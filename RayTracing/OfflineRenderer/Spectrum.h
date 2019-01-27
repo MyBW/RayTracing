@@ -257,6 +257,10 @@ public:
 		Error(!s.HasNaNs());
 		return s;
 	}
+	float y() const {
+		const float YWeight[3] = { 0.212671f, 0.715160f, 0.072169f };
+		return YWeight[0] * C[0] + YWeight[1] * C[1] + YWeight[2] * C[2];
+	}
 };
 
 

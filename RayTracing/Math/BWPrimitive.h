@@ -779,6 +779,16 @@ public:
 			Max[i] = TMax(Max[i], UnionBound.Max[i]);
 		}
 	}
+	std::vector<float> Offset(const std::vector<T> &P) const
+	{
+		std::vector<float> Offsets;
+		if (!Check(P.size() - 1)) return Offsets;
+		for (int i = 0; i < D; i++)
+		{
+			Offsets[i] = (P[i] - Min[i]) / (Max[i] - Min[i]);
+		}
+		return Offsets;
+	}
 	static const int Dime = D; 
 private:
 	bool Check(int Index)
@@ -793,3 +803,5 @@ typedef Bounds<2, int> Bounds2i;
 typedef Bounds<2, float> Bounds2f;
 typedef Bounds<3, int> Bounds3i;
 typedef Bounds<3, float> Bounds3f;
+
+bool ToGrid(const BWVector3D &P,const Bounds3f &Bound, const int GridRes[3], int GridPos[3]);

@@ -66,6 +66,7 @@ public:
 	{
 		this->SrcAreaLight = SrcAreaLight;
 	}
+	Spectrum Sample_Le(const BWPoint2DD &U, const BWPoint2DD &V, BWRay &Ray, BWVector3D &Normal, float &PosPdf, float &DirPdf) override;
 private:
 	AreaLightType *SrcAreaLight;
 	Spectrum Emit;
@@ -73,3 +74,20 @@ private:
 };
 
 
+template<typename AreaLightType>
+Spectrum RTAreaLight<AreaLightType>::Sample_Le(const BWPoint2DD &U, const BWPoint2DD &V, BWRay &Ray, BWVector3D &Normal, float &PosPdf, float &DirPdf)
+{
+	EmitShape->Sample(U, PosPdf, Normal);
+	Normal.normalize();
+	BWVector3D w = ConsineSampleHemisphere(V.x, V.y);
+	w.normalize();
+	DirPdf = CosineHemispherePdf(w.z);
+
+	BWVector3D v1, v2, n(Normal);
+	CoordinateSystem(n, &v1, &v2);
+	w = w.x * v1 + w.y * v2 + w.z * n;
+	Ray._start = PosPdf;
+	Ray._vector = w;
+	Ray.Length = FLT_MAX;
+	return Dot(w, Normal) > 0.0f ? Emit : Spectrum(0.0f);
+}

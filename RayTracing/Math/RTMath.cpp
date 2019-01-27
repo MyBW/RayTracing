@@ -163,6 +163,11 @@ double Lenth(const BWVector3DD& a)
 	return sqrt(a.x * a.x + a.y*a.y + a.z*a.z);
 }
 
+float DistanceSquared(const BWPoint3DD& P1, const BWPoint3DD &P2)
+{
+	return P1.x * P2.x + P1.y * P2.y + P1.z * P2.z;
+}
+
 BWVector3D Reflect(const BWVector3D &wo, const BWVector3D &n)
 {
 	return -wo + n * 2 * Dot(wo, n);

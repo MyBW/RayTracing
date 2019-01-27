@@ -1,5 +1,6 @@
 #include "BWPrimitive.h"
 #include <vector>
+#include "RTMath.h"
 BWRay::BWRay():Length(-1.0f){ }
 
 BWRay::BWRay(const BWVector3D &Start, const BWVector3D &Vector, float Lenth)
@@ -227,3 +228,16 @@ void BWBOX::Draw()
 }
 
 
+bool ToGrid(const BWVector3D &InP, const Bounds3f &Bound, const int GridRes[3], int GridPos[3])
+{
+	bool IsInBound = true;
+	std::vector<float> P = { InP.x, InP.y, InP.z };
+	std::vector<float> POffset = Bound.Offset(P);
+	for (int i = 0 ; i < 3; i++)
+	{
+		GridPos[i] = int(POffset[i] * GridRes[i]);
+		IsInBound &= (GridPos[i] >= 0 && GridPos[i] < GridRes[i]);
+		GridPos[i] = Clamp(float(GridPos[i]), 0.f, float(GridRes[i] - 1));
+	}
+	return IsInBound;
+}

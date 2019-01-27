@@ -38,6 +38,8 @@ float  AbsDot(const BWVector3DD &a, const BWVector3DD &b);
 BWVector3DD Cross(const BWVector3DD& a, const BWVector3DD& b);
 void    Normalize( BWPoint3DD& vec);
 double  Lenth(const BWVector3DD& a);
+float DistanceSquared(const BWPoint3DD& P1, const BWPoint3DD &P2);
+//WO direction point out from n  . Wo and n is normalize.
 BWVector3D Reflect(const BWVector3D &wo, const BWVector3D &n);
 BWVector3D GetDirection(const BWVector3D &From, const BWVector3D &To);
 const BWVector3DD GetRotatedZ(const BWVector3DD vec, double angle);
@@ -109,3 +111,8 @@ auto TMax(T1 l, T2 r)->decltype(l > r ? l : r)
 	 return l > r ? r : l;
  }
 
+ inline unsigned int Hash(const int p[3], int hashSize) {
+	 return (unsigned int)((p[0] * 73856093) ^ (p[1] * 19349663) ^
+		 (p[2] * 83492791)) %
+		 hashSize;
+ }

@@ -19,6 +19,7 @@ public:
 			BSDFSampleOffsets.push_back(new BSDFSampleOffset(InSample, 1));
 		}
 	}
+	std::vector<RTLight*>& GetAllLight() { return AllLights; }
 	virtual Spectrum Li(SceneType *InScene, IntersectionInfo *Intersction , Sample &InSample, RNG& Rng) { return Spectrum(); };
 	Spectrum EstimateDirect(SceneType *InScene, IntersectionInfo *Intersction, RTLight *CurLight, BSDF &Bsdf, LightSample &LightSampleData, BSDFSample &BSDFSampleData)
 	{
