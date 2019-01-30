@@ -32,15 +32,17 @@ public:
 	TestOfflineRenderer(CameraType* Camera = nullptr, Sampler *MainSampler = nullptr):Renderer<SceneType>(Camera, MainSampler){ }
 	void RenderScene(SceneType* Scene) override;
 	void InitSPPMPixel();
-	Distribution1D* CreateLightPowerDistribute(SceneType *Scene) { return nullptr; }
+	Distribution1D* CreateLightPowerDistribute(SceneType *Scene);
 
 	std::vector<SPPMPixel*>& GetSPPMPixel() { return SPPMPixels; }
-
+	void SetLines(std::vector<BWVector3D> &DebugShowLine) { this->DebugShowLine = &DebugShowLine; }
 	std::vector<SPPMPixel*> SPPMPixels;
+	Distribution1D *LightDistr = nullptr;
 	float InitialSearchRadius = 0;
 	int IteratorNum = 0;
 	int PhotonNumPreItor;
 	int MaxTraceDepth;
+	std::vector<BWVector3D> *DebugShowLine;
 };
 
 template<typename SceneType>
@@ -60,7 +62,7 @@ class AddVisiblePointToGridTask : public Task
 {
 public:
 	AddVisiblePointToGridTask(int InSPPMPixelIndex, std::vector<SPPMPixel*>& InSPPMPixels, Bounds3f &InGridBound, std::vector<SPPMPixelList*> &InGrid, int GridResX, int GridResY, int GridResZ, Mutex *InGridMutex)
-		: SPPMPixelIndex(InSPPMPixelIndex), SPPMPixels(&InSPPMPixels), GridBound(InGridBound), Grid(&InGrid), GridMutex(InGridMutex)
+		: SPPMPixelIndex(InSPPMPixelIndex), SPPMPixels(InSPPMPixels), GridBound(InGridBound), Grid(InGrid), GridMutex(InGridMutex)
 	{
 		GridRes[0] = GridResX;
 		GridRes[1] = GridResY;
@@ -69,8 +71,8 @@ public:
 	void Run() override;
 private:
 	int SPPMPixelIndex;
-	std::vector<SPPMPixel*> *SPPMPixels;
-	std::vector<SPPMPixelList*> *Grid;
+	std::vector<SPPMPixel*> &SPPMPixels;
+	std::vector<SPPMPixelList*> &Grid;
 	Bounds3f GridBound;
     int GridRes[3];
 	Mutex *GridMutex;
@@ -80,11 +82,11 @@ template<typename SceneType>
 class TracePhotonsTask : public Task
 {
 public:
-	TracePhotonsTask(int InCurrentPhotonIndex, int InPhotonNumPreItor, int InCurItor, 
-					 Distribution1D *InLightDirstr, std::vector<RTLight*> InLights, int InMaxTraceDepth,
+	TracePhotonsTask(TestOfflineRenderer<SceneType> *InRender, int InCurrentPhotonIndex, int InPhotonNumInTask, int InPhotonNumPreItor, int InCurItor,
+					 Distribution1D *InLightDirstr, std::vector<RTLight*> &InLights, int InMaxTraceDepth,
 					Bounds3f &InGridBound, int GridResX, int GridResY, int GridResZ, 
-		            std::vector<SPPMPixelList*> &InGrid, std::vector<SPPMPixel*> InSPPMPixels, Mutex *InGridMutex )
-	:CurrentPhotonIndex(InCurrentPhotonIndex), PhotonNumPreItor(InPhotonNumPreItor), CurItor(InCurItor)
+		            std::vector<SPPMPixelList*> &InGrid, std::vector<SPPMPixel*> &InSPPMPixels, Mutex *InGridMutex )
+	:Render(InRender), CurrentPhotonIndex(InCurrentPhotonIndex), PhotonNumInTask(InPhotonNumInTask) ,PhotonNumPreItor(InPhotonNumPreItor), CurItor(InCurItor)
 	,LightsDistr(InLightDirstr),Lights(InLights),MaxTraceDepth(InMaxTraceDepth),GridBound(InGridBound)
 		, Grid(InGrid), SPPMPixels(InSPPMPixels), GridMutex(InGridMutex) 
 	{
@@ -92,9 +94,11 @@ public:
 		GridRes[1] = GridResY;
 		GridRes[2] = GridResZ;
 	}
+	std::vector<BWVector3D> *DebugShowLine = nullptr;
 	void Run() override;
 private:
 	int CurrentPhotonIndex;
+	int PhotonNumInTask;
 	int PhotonNumPreItor;
 	int CurItor;
 	Distribution1D *LightsDistr;
@@ -103,19 +107,20 @@ private:
 	Bounds3f GridBound;
 	int GridRes[3];
 	std::vector<SPPMPixelList*> &Grid;
-	std::vector<SPPMPixel*> SPPMPixels;
+	std::vector<SPPMPixel*> &SPPMPixels;
 	Mutex *GridMutex;
+	TestOfflineRenderer<SceneType> *Render;
 };
 
 template<typename SceneType>
-class UpdateVisiblePointValueTask : Task
+class UpdateVisiblePointValueTask : public Task
 {
 public:
-	UpdateVisiblePointValueTask(int InIndex, std::vector<SPPMPixel*> InSPPMPixels):Index(InIndex),SPPMPixels(InSPPMPixels){ }
+	UpdateVisiblePointValueTask(int InIndex, std::vector<SPPMPixel*>& InSPPMPixels):Index(InIndex),SPPMPixels(InSPPMPixels){ }
 	void Run() override;
 private:
 	int Index;
-	std::vector<SPPMPixel*> SPPMPixels;
+	std::vector<SPPMPixel*>& SPPMPixels;
 };
 
 #include "TestOfflineRenderer.inl"

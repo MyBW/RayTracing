@@ -309,9 +309,12 @@ bool Object::GetIntersectionInfo(const BWRay& ray, std::function<void(const std:
 		GetTriangleWorldInfoByIndex(i, TempRes);
 		if (RayIntersectTriangle(ray, TempRes.P[0], TempRes.P[1], TempRes.P[2], t, u, v))
 		{
-			IsHit = true;
-			IntersectionCallBack(TempRes.P, TempRes.N, TempRes.UV, t, u, v, ray,GetMaterial() , IsBreak);
-			if (IsBreak) return IsHit;
+			if (t > ESP)
+			{
+				IsHit = true;
+				IntersectionCallBack(TempRes.P, TempRes.N, TempRes.UV, t, u, v, ray, GetMaterial(), IsBreak);
+				if (IsBreak) return IsHit;
+			}
 		}
 	}
 	return IsHit;

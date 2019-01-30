@@ -40,7 +40,7 @@ static float RadicalInverseSpecialized(unsigned long int a) {
 }
 
 // Low Discrepancy Inline Functions
-inline unsigned long int ReverseBits32(unsigned long int n) {
+inline unsigned int ReverseBits32(unsigned int n) {
 	n = (n << 16) | (n >> 16);
 	n = ((n & 0x00ff00ff) << 8) | ((n & 0xff00ff00) >> 8);
 	n = ((n & 0x0f0f0f0f) << 4) | ((n & 0xf0f0f0f0) >> 4);
@@ -49,9 +49,9 @@ inline unsigned long int ReverseBits32(unsigned long int n) {
 	return n;
 }
 
-inline unsigned long int ReverseBits64(unsigned long int n) {
-	unsigned long int n0 = ReverseBits32((unsigned int)n);
-	unsigned long int n1 = ReverseBits32((unsigned int)(n >> 32));
+inline unsigned long long int ReverseBits64(unsigned long long int n) {
+	unsigned long long int n0 = ReverseBits32((unsigned int)n);
+	unsigned long long int n1 = ReverseBits32((unsigned int)(n >> 32));
 	return (n0 << 32) | n1;
 }
-float RadicalInverse(int baseIndex, unsigned long int a);
+float RadicalInverse(int baseIndex, unsigned long long int a);

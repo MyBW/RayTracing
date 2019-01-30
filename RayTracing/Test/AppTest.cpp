@@ -20,7 +20,7 @@
 
 TestFBXLoad FBXload;
 std::vector<BWVector3D> Lines;
-
+std::vector<BWVector3D> DebugLines;
 void AppTest::Init(int Width, int Height)
 {
 	{
@@ -35,6 +35,7 @@ void AppTest::Init(int Width, int Height)
 
 	RTRenderer.Init(Width, Height);
 	CameraForRender.Init(Width, Height);
+
 	//Bottom
 	{
 		Spectrum BaseColor;
@@ -104,7 +105,20 @@ void AppTest::Init(int Width, int Height)
 		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
 		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj5"));
 	}
-
+	/*Front
+	{
+		Spectrum BaseColor;
+		Sceen.AddObject("cube.obj", std::string("obj8"));
+		Object *TestObj = Sceen.GetObjectByName("obj8");
+		TestObj->SetPosition(0, 7.5, 5);
+		TestObj->SetScale(15, 1, 15);
+		TestObj->SetRoataion(BWVector3D(1.0, 0.0, 0.0), Radian(3.15 / 2));
+		BaseColor.SetValue(0, 196.0 / 255 * 0.7);
+		BaseColor.SetValue(1, 165.0 / 255 * 0.7);
+		BaseColor.SetValue(2, 97.0 / 255 * 0.7);
+		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj8"));
+	}*/
 	{
 		Spectrum BaseColor;
 		BaseColor.SetValue(0, 32.0 / 255 * 0.7);
@@ -162,9 +176,9 @@ void AppTest::Init(int Width, int Height)
 		RTRenderer.AddDrawable(Obj);
 
 		Spectrum EmitColor;
-		EmitColor.SetValue(0, 50.f);
-		EmitColor.SetValue(1, 50.f);
-		EmitColor.SetValue(2, 50.f);
+		EmitColor.SetValue(0, 60.f);
+		EmitColor.SetValue(1, 60.f);
+		EmitColor.SetValue(2, 60.f);
 		AreaLight *AreaL = new AreaLight();
 		AreaL->SetName(std::string("AreaLight"));
 		AreaL->SetEmitColor(EmitColor);
@@ -222,6 +236,24 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 		ShowOfflineRender = !ShowOfflineRender;
 		break;
 	}
+	case 'l':
+	case 'L':
+	{
+		Lines.clear() ;
+		Lines = DebugLines;
+		if (DebugLines.size() == 0)
+		{
+			break;
+		}
+		int size = DebugLines.size() / 6;
+		int begin = rand() % size * 6;
+		int end = begin + 5;
+		for (; begin < end ; begin++)
+		{
+			Lines.push_back(DebugLines[begin]);
+			Lines.push_back(DebugLines[begin + 1]);
+		}
+	}
 	default:
 		break;
 	}
@@ -234,7 +266,9 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 		OfflineRenderer.SetCamera(&CameraForRender);
 		OfflineRenderer.SetIntegrator(&LightingIntegrator);
 		OfflineRenderer.SetSampler(&RandomSampler);
+		//OfflineRenderer.SetLines(DebugLines);
 		OfflineRenderer.RenderScene(&Sceen);
+		
 	}
 	glutPostRedisplay();
 }

@@ -18,6 +18,10 @@ public:
 		Pdf = 1.0f;
 		return Lo / pow(VisibleTest.Ray.Length, 2);
 	}
+	Spectrum Sample_Le(const BWPoint2DD &U, const BWPoint2DD &V, BWRay &Ray, BWVector3D &Normal, float &PosPdf, float &DirPdf) override
+	{
+		return Spectrum();
+	}
 	Spectrum Power() override
 	{
 		return 4.0f * PI * Lo;

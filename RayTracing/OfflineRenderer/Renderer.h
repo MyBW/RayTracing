@@ -79,13 +79,28 @@ public:
 	Sampler* GetMainSampler() { return MainSampler; }
 	Sample* GetOrigSample() { return OrigSample; }
 	Integrator<typename SceneType>* GetIntegrator() { return RendererIntegrator; }
-	void ParallelProcess(std::function<void(std::vector<Task*>&)> CreateTask)
+	void ParallelProcess(std::function<void(std::vector<Task*>&)> CreateTask , bool IsUseSingleThread = false)
 	{
 		std::vector<Task*> Tasks;
 		CreateTask(Tasks);
-		EnqueueTasks(Tasks);
-		WaitTaskListFinish();
-		CleanupTaskList();
+		if (IsUseSingleThread == true)
+		{
+			for (size_t i = 0; i < Tasks.size(); i++)
+			{
+				Tasks[i]->Run();
+			}
+			for (size_t i = 0; i < Tasks.size(); i++)
+			{
+				delete Tasks[i];
+				Tasks[i] = nullptr;
+			}
+		}
+		else
+		{
+			EnqueueTasks(Tasks);
+			WaitTaskListFinish();
+			CleanupTaskList();
+		}
 	}
 protected:
 	Film<CameraType> ScreenFilm;

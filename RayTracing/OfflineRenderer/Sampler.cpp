@@ -105,6 +105,7 @@ int Random::GetMoreSamples(std::vector<Sample*>& Samples, RNG *InRNG)
 
 int Random::GetOneSample(Sample& InSample, RNG *InRNG)
 {
+	if (!PixelArea.IsInTheBound(CurrentPixelPos)) return 0;
 	InSample.ImageX = InRNG->GetRandomFloat() + CurrentPixelPos[0];
 	InSample.ImageY = InRNG->GetRandomFloat() + CurrentPixelPos[1];
 	int OffSet = 0;
@@ -123,6 +124,6 @@ int Random::GetOneSample(Sample& InSample, RNG *InRNG)
 			*(InSample.N2Data[k] + j + 1) = InRNG->GetRandomFloat();
 		}
 	}
-	if (!PixelArea.IncreasePosInArea(CurrentPixelPos)) return 0;
+	PixelArea.IncreasePos(CurrentPixelPos);
 	return 1;
 }

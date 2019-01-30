@@ -80,6 +80,7 @@ void RealTimeRenderer<ObjectType>::SetDrawMode(GLenum Enum)
 template<typename ObjectType>
 void RealTimeRenderer<ObjectType>::DrawLine(const std::vector<BWVector3D> &Lines)
 {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	SetModelMatrix(BWMatrix4::IDENTITY);
 
 	GLuint LinesBuff;
@@ -216,6 +217,7 @@ void RealTimeRenderer<ObjectType>::InitPiplineState(int Width, int Height)
 template<typename ObjectType>
 void RealTimeRenderer<ObjectType>::Draw()
 {
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	for (auto Obj : DrawList)
 	{
 		Obj->Draw(this);

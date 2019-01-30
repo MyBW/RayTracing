@@ -117,6 +117,7 @@ class BSDFSample
 public:
 	BSDFSample(Sample &InSample, const BSDFSampleOffset &Offsets, int SampleIndex);
 	BSDFSample(RNG &Rng);
+	BSDFSample() :Component(0.0f) { Dir[0] = 0.0f; Dir[1] = 0.0f; }
 	float Dir[2];
 	float Component;
 };

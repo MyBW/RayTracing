@@ -724,20 +724,24 @@ public:
 		}
 		return  true;
 	}
-	bool IncreasePosInArea(std::vector<T>& P)
+	void IncreasePos(std::vector<T>& P)
 	{
-		std::vector<T> TmpP = P;
-		TmpP[0]++;
-		for (int i = 0 ; i < D - 1 ; i++)
+		P[0]++;
+		for (int i = 0; i < D - 1; i++)
 		{
-			if (TmpP[i] >= Max[i])
+			if (P[i] >= Max[i])
 			{
-				TmpP[i] = Min[i];
-				TmpP[i + 1]++;
+				P[i] = Min[i];
+				P[i + 1]++;
 				continue;
 			}
 			break;
 		}
+	}
+	bool IncreasePosInArea(std::vector<T>& P)
+	{
+		std::vector<T> TmpP = P;
+		IncreasePos(TmpP);
 		if (!IsInTheBound(TmpP)) return false;
 		P = TmpP;
 		return true;
@@ -775,14 +779,18 @@ public:
 	{
 		for (int i =0 ;i < D;i++)
 		{
-			Min[i] = TMin(Min[i], UnionBound.Min[i]);
-			Max[i] = TMax(Max[i], UnionBound.Max[i]);
+			Min[i] = Min[i] > UnionBound.Min[i] ? UnionBound.Min[i] : Min[i];
+			Max[i] = Max[i] < UnionBound.Max[i] ? UnionBound.Max[i] : Max[i];
+			
+			/*Min[i] = TMin(Min[i], UnionBound.Min[i]);
+			Max[i] = TMax(Max[i], UnionBound.Max[i]);*/
 		}
 	}
 	std::vector<float> Offset(const std::vector<T> &P) const
 	{
 		std::vector<float> Offsets;
 		if (!Check(P.size() - 1)) return Offsets;
+		Offsets.resize(D);
 		for (int i = 0; i < D; i++)
 		{
 			Offsets[i] = (P[i] - Min[i]) / (Max[i] - Min[i]);
@@ -791,7 +799,7 @@ public:
 	}
 	static const int Dime = D; 
 private:
-	bool Check(int Index)
+	bool Check(int Index) const 
 	{
 		return -1 < Index && Index < D;
 	}

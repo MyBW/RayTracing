@@ -28,6 +28,10 @@ public:
 	{
 		return Lo * PI * WorldRadius * WorldRadius;
 	}
+	Spectrum Sample_Le(const BWPoint2DD &U, const BWPoint2DD &V, BWRay &Ray, BWVector3D &Normal, float &PosPdf, float &DirPdf)
+	{
+		return Spectrum();
+	}
 	float Pdf(const BWVector3D &P, const BWVector3D &Wi) override
 	{
 		return 0.0;
