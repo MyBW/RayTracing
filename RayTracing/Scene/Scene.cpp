@@ -130,7 +130,7 @@ void Scene::AddAreaLight(AreaLightType *L)
 		AreaLights.push_back(L);
 		for (auto AreaLObj : L->GetAllObject())
 		{
-			Objects.push_back(AreaLObj);
+			//Objects.push_back(AreaLObj);
 		}
 	}
 }

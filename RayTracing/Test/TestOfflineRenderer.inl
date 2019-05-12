@@ -87,10 +87,10 @@ void TestOfflineRenderer<SceneType>::RenderScene(SceneType* Scene)
 	//}
 
 
-	IteratorNum = 30;
-	PhotonNumPreItor = 10000;
-	MaxTraceDepth = 10;
-	InitialSearchRadius = 1.0f;
+	IteratorNum = 8;
+	PhotonNumPreItor = 80000;
+	MaxTraceDepth = 20;
+	InitialSearchRadius = 1.00f;
 
 	InitSPPMPixel();
 	this->Scene = Scene;
@@ -101,7 +101,7 @@ void TestOfflineRenderer<SceneType>::RenderScene(SceneType* Scene)
 	//Random Sampler;
 	//HaltonSampler sampler(nIterations, pixelBounds);
 
-	const int TileSize = 64;
+	const int TileSize = 32;
 	
 	const float invSqrtSPP = 1.f / std::sqrt(IteratorNum);
 	Bounds2i& PixelBounds = ScreenFilm.FilmBounds;
@@ -231,7 +231,7 @@ void TestOfflineRenderer<SceneType>::RenderScene(SceneType* Scene)
 				{
 					SPPMPixel &Pixel = *SPPMPixels[i + j * ScreenFilm.GetWidth()];
 					Spectrum L = Pixel.Ld / IteratorNum;
-				    L += Pixel.Tau / (Np * PI * Pixel.Radius * Pixel.Radius);
+				    L += Pixel.Tau / (Np * PI * Pixel.Radius * Pixel.Radius) * 150;
 					ScreenFilm.SetSpectrum(i, j, &L);
 				}
 			}
@@ -335,7 +335,7 @@ void TracePhotonsTask<SceneType>::Run()
 	for (int PhotonIndex = CurrentPhotonIndex ; PhotonIndex < CurrentPhotonIndex + PhotonNumInTask ; PhotonIndex++)
 	{
 		SceneType *Scene = Render->GetScene();
-		unsigned long long int HaltonIndex = CurItor * PhotonNumPreItor + CurrentPhotonIndex;
+		unsigned long long int HaltonIndex = CurItor * PhotonNumPreItor + PhotonIndex;
 		int HaltonDim = 0;
 		float LightPdf;
 
@@ -353,7 +353,7 @@ void TracePhotonsTask<SceneType>::Run()
 		float DirPdf;
 		Spectrum LightLe = CurLight->Sample_Le(ULight, VLight, PhotonRay, NInLight, PosPdf, DirPdf);
 		if (LightLe.IsBlack() || PosPdf == 0.0f || DirPdf == 0.0f) return;
-		Spectrum beta = (AbsDot(NInLight, PhotonRay._vector) * LightLe) / (LightPdf * PosPdf * DirPdf);
+		Spectrum beta = (AbsDot(NInLight, PhotonRay._vector) * LightLe) / (LightPdf * PosPdf * DirPdf) * 0.05;
 		if (beta.IsBlack()) return;
 		std::vector<BWVector3D> Points;
 		Points.push_back(PhotonRay._start);
@@ -410,9 +410,9 @@ void TracePhotonsTask<SceneType>::Run()
 							if (Lenth(PixelData.VP.P - Intersection.IntersectionPoint) <= Radius)
 							{
 								BWVector3D wi = -PhotonRay._vector;
-								PixelData.Phi += beta * PixelData.VP.Bsdf->F(PixelData.VP.Wo, wi);
 								PixelData.M += 1;
-								//PixelData.Phi = beta;
+								PixelData.Phi += beta * PixelData.VP.Bsdf->F(PixelData.VP.Wo, wi);
+								//PixelData.Phi += beta;  // only undirect light input
 								//if (beta.GetValue(0) == 1.0 && CurDepht == MaxTraceDepth - 1)
 								//{
 								//	for (int j = 0 ; j < Points.size();j++)

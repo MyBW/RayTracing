@@ -262,7 +262,7 @@ void AppTest::ProcessKeyboard(unsigned char key, int x, int y)
 	{
 		DirectLightingIntegrator<Scene> LightingIntegrator;
 		Bounds2i ScreenBounds(std::vector<int>{0, 0}, std::vector<int>{(int) CameraForRender.GetScreenWidth(), (int)CameraForRender.GetScreenHeight()});
-		Random RandomSampler(ScreenBounds, 6);
+		Random RandomSampler(ScreenBounds, 1);
 		OfflineRenderer.SetCamera(&CameraForRender);
 		OfflineRenderer.SetIntegrator(&LightingIntegrator);
 		OfflineRenderer.SetSampler(&RandomSampler);

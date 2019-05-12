@@ -1,0 +1,13 @@
+ SPPM过程：
+ 1.在计算间接光照过程中（TracePhotonsTask）在每次弹射过程中光源也参与到了弹射过程 也就是可能会引起一条光线和光源多次相交
+ 2.在计算间接光照过程中（TracePhotonsTask）初始光源计算值太大 
+  Spectrum beta = (AbsDot(NInLight, PhotonRay._vector) * LightLe) / (LightPdf * PosPdf * DirPdf);
+ 3.在计算间接光照过程中（TracePhotonsTask） PixelData.Phi += beta * PixelData.VP.Bsdf->F(PixelData.VP.Wo, wi); 这个计算值很低
+  如果替换成 PixelData.Phi += beta;  // only undirect light input  会好很多
+
+
+  本次测试修改的地方有：
+  L += Pixel.Tau / (Np * PI * Pixel.Radius * Pixel.Radius) * 150;
+  Spectrum beta = (AbsDot(NInLight, PhotonRay._vector) * LightLe) / (LightPdf * PosPdf * DirPdf) * 0.05;
+  //Objects.push_back(AreaLObj);
+  MeshData->UpdateWorldInfor();

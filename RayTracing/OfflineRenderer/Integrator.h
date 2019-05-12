@@ -180,6 +180,7 @@ void Integrator<SceneType>::Init(SceneType *InScene)
 		for (int n = 0 ;n < SceneAreaLights[i]->GetAllObject().size(); n++)
 		{
 			SceneType::AreaLightType::AreaLightShapeType* MeshData = SceneAreaLights[i]->GetAllObject()[n];
+			MeshData->UpdateWorldInfor();
 			int TriangleNum = MeshData->GetTriangleNum();
 			const std::vector<BWVector3D> &PosData = MeshData->GetWorldPosData();
 			const std::vector<BWVector3D> &NormalData = MeshData->GetWorldNormalData();
