@@ -165,6 +165,8 @@
     <ClCompile Include="OfflineRenderer\Film.cpp" />
     <ClCompile Include="OfflineRenderer\Montecarlo.cpp" />
     <ClCompile Include="OfflineRenderer\Parallel.cpp" />
+    <ClCompile Include="OfflineRenderer\PathTracingIntegrator.cpp" />
+    <ClCompile Include="OfflineRenderer\PathTracingRender.cpp" />
     <ClCompile Include="OfflineRenderer\RTAreaLightShape.cpp" />
     <ClCompile Include="OfflineRenderer\RTLight.cpp" />
     <ClCompile Include="OfflineRenderer\RTMaterial.cpp" />
@@ -189,6 +191,8 @@
     <ClInclude Include="Math\RTMath.h" />
     <ClInclude Include="MeshLoad\FBXAttributeTypeData.h" />
     <ClInclude Include="MeshLoad\FBXImporterImp.h" />
+    <ClInclude Include="OfflineRenderer\PathTracingIntegrator.h" />
+    <ClInclude Include="OfflineRenderer\PathTracingRender.h" />
     <ClInclude Include="OfflineRenderer\RTAreaLight.h" />
     <ClInclude Include="OfflineRenderer\BSDF.h" />
     <ClInclude Include="OfflineRenderer\DirectLightingIntegrator.h" />
@@ -230,6 +234,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="OfflineRenderer\Film.inl" />
+    <None Include="OfflineRenderer\PathTracingRender.inl" />
     <None Include="OfflineRenderer\RTSamplerRenderer.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderable.inl" />
     <None Include="RealTimeRenderer\RealTimeRenderer.inl" />

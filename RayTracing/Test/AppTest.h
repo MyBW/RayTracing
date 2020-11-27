@@ -7,6 +7,7 @@
 #include "TestOfflineRenderer.h"
 #include "../OfflineRenderer/DirectLightingIntegrator.h"
 #include "../OfflineRenderer/RTSamplerRenderer.h"
+#include "../OfflineRenderer/PathTracingRender.h"
 
 class AppTest : public App
 {
@@ -23,8 +24,9 @@ public:
 private:
 	RealTimeRenderer<Object> RTRenderer;
 
+	PathTracingRender<Scene> OfflineRenderer;
 	//RTSamplerRenderer<Scene> OfflineRenderer;
-	TestOfflineRenderer<Scene> OfflineRenderer;
+	//TestOfflineRenderer<Scene> OfflineRenderer;
 	Scene Sceen;
 	Camera CameraForRender;
 	bool IsContorllCamera = false;

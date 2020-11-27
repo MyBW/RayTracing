@@ -117,6 +117,12 @@
     <ClCompile Include="OfflineRenderer\RTAreaLightShape.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OfflineRenderer\PathTracingRender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OfflineRenderer\PathTracingIntegrator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">
@@ -251,6 +257,12 @@
     <ClInclude Include="OfflineRenderer\RTSamplerRenderer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OfflineRenderer\PathTracingRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OfflineRenderer\PathTracingIntegrator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="RealTimeRenderer\RealTimeRenderer.inl">
@@ -266,6 +278,9 @@
       <Filter>OfflineRenderer</Filter>
     </None>
     <None Include="OfflineRenderer\RTSamplerRenderer.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="OfflineRenderer\PathTracingRender.inl">
       <Filter>Header Files</Filter>
     </None>
   </ItemGroup>
