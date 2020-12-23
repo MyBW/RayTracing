@@ -653,6 +653,7 @@ public:
 	BWPoint3DD _halfLenth;
 };
 
+
 struct Degree
 {
 	float mDeg;
@@ -813,3 +814,19 @@ typedef Bounds<3, int> Bounds3i;
 typedef Bounds<3, float> Bounds3f;
 
 bool ToGrid(const BWVector3D &P,const Bounds3f &Bound, const int GridRes[3], int GridPos[3]);
+
+template<typename T>
+class Array2D
+{
+public:
+	Array2D(){}
+	Array2D(const Bounds2i &Extent) :Extent(Extent)
+	{
+		int N = Extent.Area();
+		Values = new T[N];
+	}
+private:
+	Bounds2i Extent;
+	T *Values;
+};
+
