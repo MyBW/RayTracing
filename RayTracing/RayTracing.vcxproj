@@ -181,6 +181,10 @@
     <ClCompile Include="Test\AppTest.cpp" />
     <ClCompile Include="Test\TestFBXDrawObj.cpp" />
     <ClCompile Include="Test\TestFBXLoad.cpp" />
+    <ClCompile Include="V2\Film.cpp" />
+    <ClCompile Include="V2\Util\Color.cpp" />
+    <ClCompile Include="V2\Util\ColorSpace.cpp" />
+    <ClCompile Include="V2\Util\Spectrum.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App\App.h" />
@@ -231,6 +235,11 @@
     <ClInclude Include="Test\TestOfflineRenderer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="V2\Film.hpp" />
+    <ClInclude Include="V2\Util\Check.h" />
+    <ClInclude Include="V2\Util\Color.hpp" />
+    <ClInclude Include="V2\Util\ColorSpace.hpp" />
+    <ClInclude Include="V2\Util\Spectrum.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OfflineRenderer\Film.inl" />

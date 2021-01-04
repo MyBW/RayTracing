@@ -47,4 +47,18 @@ namespace BlackWalnut
 		return 1 / std::sqrt(2 * PI * sigma * sigma) *
 			Exp(-std::sqrt(x - mu) / (2 * sigma * sigma));
 	}
+
+	template<typename Predicate>
+	inline int FindInterval(int i, const Predicate &Pred)
+	{
+		int Size = i - 2, First = 1;
+		while (Size > 0)
+		{
+			int Half = Size >> 1, Middle = First + Half;
+			bool PredResult = Pred(Middle);
+			First = PredResult ? Middle + 1 : First;
+			Size = PredResult ? Size - (Half + 1) : Half;
+		}
+		return Clamp(First - 1, 0, Size - 2);
+	}
 }
