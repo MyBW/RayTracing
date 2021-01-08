@@ -1,4 +1,5 @@
 #include "Film.hpp"
+#include "Math\MatrixMath.hpp"
 BlackWalnut::Matrix3X3f BlackWalnut::PixelSensor::SolveXYZFromSensorRGB(BaseSpectrum &SensorIlluminant, BaseSpectrum &OutputIlluminant)
 {
 	float RGBCamera[24][3], XYZOutput[24][3];
