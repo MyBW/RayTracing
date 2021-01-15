@@ -1,8 +1,11 @@
 #pragma once
 #include <vector>
 #include <algorithm>
-#include "..\Math\Math.hpp"
 #include "..\Util\Color.hpp"
+#include "Check.h"
+#include "Sampling.hpp"
+#include "..\V2\Math\Math.hpp"
+#include <map>
 namespace BlackWalnut
 {
 	const int NSpectrumSamples = 4;
@@ -47,6 +50,16 @@ namespace BlackWalnut
 			SampledSpectrum Ret = *this;
 			return Ret *= S;
 		}
+		SampledSpectrum operator*(const float Value) const
+		{
+			CHECK(!HasNaNs());
+			SampledSpectrum Ret = *this;
+			for (int i = 0; i < NSpectrumSamples; i++)
+			{
+				Ret.Values[i] *= Value;
+			}
+			return Ret;
+		}
 		SampledSpectrum operator/(const SampledSpectrum &S) const
 		{
 			SampledSpectrum Ret = *this;
@@ -84,6 +97,11 @@ namespace BlackWalnut
 			}
 			return *this;
 		}
+		SampledSpectrum& operator*=(const  float Value)
+		{
+			*this = *this * Value;
+			return *this;
+		}
 		bool operator==(const SampledSpectrum& S) const
 		{
 			for (int i = 0; i < NSpectrumSamples; i++)
@@ -117,7 +135,7 @@ namespace BlackWalnut
 			float Min = Values[0];
 			for (int i = 1; i < NSpectrumSamples; i++)
 			{
-				Min = std::min(Min, Values[i]);
+				Min = (std::min)(Min, Values[i]);
 			}
 			return Min;
 		}
@@ -126,7 +144,7 @@ namespace BlackWalnut
 			float Max = Values[0];
 			for (int i = 1; i < NSpectrumSamples; i++)
 			{
-				Max = std::max(Max, Values[i]);
+				Max = (std::max)(Max, Values[i]);
 			}
 			return Max;
 		}
@@ -194,6 +212,19 @@ namespace BlackWalnut
 				WaveLength.Pdf[i] = 1.0f / NSpectrumSamples;
 			}
 			return WaveLength;
+		}
+		static SampledWavelengths SampleXYZ(float U)
+		{
+			SampledWavelengths SWL;
+			for (int i = 0; i < NSpectrumSamples; ++i) {
+				float up = U + float(i) / NSpectrumSamples;
+				if (up > 1)
+					up -= 1;
+
+				SWL.Lambda[i] = SampleXYZMatching(up);
+				SWL.Pdf[i] = XYZMatchingPDF(SWL.Lambda[i]);
+			}
+			return SWL;
 		}
 	private:
 		std::vector<float> Lambda;
@@ -263,6 +294,8 @@ namespace BlackWalnut
 	class PiecewiseLinearSpectrum : public BaseSpectrum
 	{
 	public:
+
+		static PiecewiseLinearSpectrum * FromInterleaved(std::vector<float> Samples, bool Normlize);
 		PiecewiseLinearSpectrum() = default;
 		PiecewiseLinearSpectrum(std::vector<float> &Lambda, std::vector<float> &Values);
 		void Scale(float S)
@@ -277,7 +310,7 @@ namespace BlackWalnut
 			float Max = Values[0];
 			for (float &f : Values)
 			{
-				Max = std::max(Max, f);
+				Max = (std::max)(Max, f);
 			}
 			return Max;
 		}
@@ -286,7 +319,7 @@ namespace BlackWalnut
 			float Min = Values[0];
 			for (float &f : Values)
 			{
-				Min = std::min(Min, f);
+				Min = (std::min)(Min, f);
 			}
 			return Min;
 		}
@@ -301,17 +334,17 @@ namespace BlackWalnut
 		}
 		float operator()(float Lambda) const override
 		{
-			if (Values.empty() || Lambda < Values.front() || Lambda > Values.back())
+			if (Lambdas.empty() || Lambda < Lambdas.front() || Lambda > Lambdas.back())
 			{
 				return 0;
 			}
-			int Offset = FindInterval(Values.size(), [&](int Index) {return Values[Index] < Lambda; });
-			float T = (Lambda - Values[Offset]) / (Values[Offset + 1] - Values[Offset]);
+			int Offset = FindInterval(Lambdas.size(), [&](int Index) {return Lambdas[Index] <= Lambda; });
+			float T = (Lambda - Lambdas[Offset]) / (Lambdas[Offset + 1] - Lambdas[Offset]);
 			return Lerp(Values[Offset], Values[Offset + 1], T);
 		}
 	private:
 		std::vector<float> Values;
-		std::vector<float> Lambda;
+		std::vector<float> Lambdas;
 	};
 
 	class BlackbodySpectrum : BaseSpectrum
@@ -354,4 +387,14 @@ namespace BlackWalnut
 			result += a(lambda) * b(lambda);
 		return result / CIE_Y_integral;
 	}
+
+	class Spectra
+	{
+	public:
+		static std::map<std::string, BaseSpectrum*> NamedSpectra;
+		static void Init();
+	};
+	BaseSpectrum* GetNamedSpectrum(const std::string Name);
+
+	
 }

@@ -7,6 +7,12 @@
 namespace BlackWalnut
 {
 
+	class FilterBase
+	{
+	public:
+		virtual float Integral() const = 0;
+		virtual Vector2f Radius() const = 0;
+	};
 	// FilterSample Definition
 	struct FilterSample {
 		Vector2f P;
@@ -57,7 +63,8 @@ namespace BlackWalnut
 	//};
 
 	// BoxFilter Definition
-	class BoxFilter {
+	class BoxFilter : public FilterBase
+	{
 	public:
 		// BoxFilter Public Methods
 		BoxFilter(const Vector2f &radius = Vector2f(0.5, 0.5)) : radius(radius) {}

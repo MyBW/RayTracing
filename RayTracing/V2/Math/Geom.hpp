@@ -6,6 +6,7 @@
 #ifndef PI
 #define PI 3.14159265358979323846f
 #endif
+#include "..\V2\Util\Check.h"
 
 #ifndef TWO_PI
 #define TWO_PI 3.14159265358979323846f * 2.0f
@@ -118,6 +119,15 @@ namespace BlackWalnut
         operator T*() { return Data; };
         void MakeZero(){ memset(Data, 0, sizeof(*this));}
         operator const T*() const { return static_cast<const T*>(Data); };
+		Vector3Type<T> operator/(float Value) const 
+		{
+			CHECK(Value);
+			Vector3Type<T> Ret;
+			Ret.X = X / Value;
+			Ret.Y = Y / Value;
+			Ret.Z = Z / Value;
+			return Ret;
+		}
     };
     
     template <typename T>

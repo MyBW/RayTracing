@@ -1,5 +1,5 @@
 #include "Color.hpp"
-
+#include "../RGBSpectrum/RGBSpectrum.hpp"
 using namespace BlackWalnut;
 extern const int sRGBToSpectrumTable_Res;
 extern const float sRGBToSpectrumTable_Scale[64];

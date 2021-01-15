@@ -1,8 +1,8 @@
 #pragma once
-
 namespace BlackWalnut
 {
-	 #define DELTA			(0.00001f)
+	//const float PI = 3.1415926;
+	
 	int DivideAndRoundUp(int Dividend, int Divisor);
 	float Exp(float Data);
 	float Sqrt(float Data);
@@ -11,6 +11,7 @@ namespace BlackWalnut
 	float Cos(float Data);
 	float Pow(float A, float B);
 	int CeilToInt(float F);
+
 	template< class T, class U >
 	 T Lerp(const T& A, const T& B, const U& Alpha)
 	{
@@ -42,11 +43,7 @@ namespace BlackWalnut
 		return Data1 > Data2 ? Data1 : Data2;
 	}
 
-	float Gaussian(float x, float mu = 0, float sigma = 1) 
-	{
-		return 1 / std::sqrt(2 * PI * sigma * sigma) *
-			Exp(-std::sqrt(x - mu) / (2 * sigma * sigma));
-	}
+	float Gaussian(float x, float mu = 0, float sigma = 1);
 
 	template<typename Predicate>
 	inline int FindInterval(int i, const Predicate &Pred)
@@ -59,6 +56,12 @@ namespace BlackWalnut
 			First = PredResult ? Middle + 1 : First;
 			Size = PredResult ? Size - (Half + 1) : Half;
 		}
-		return Clamp(First - 1, 0, Size - 2);
+		return Clamp(First - 1, 0, i - 2);
+	}
+
+	template<typename T>
+	bool IsNaN(T V)
+	{
+		return std::isnan(V);
 	}
 }

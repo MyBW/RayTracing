@@ -89,13 +89,14 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>Dependence\OpenGL\GLHead;Dependence\fbx\include;Dependence\jsoncpp\include;Core;Math;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Dependence\OpenGL\GLHead;Dependence\fbx\include;Dependence\jsoncpp\include;Core;Math;RayTracingTest\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32.lib;GLAUX.LIB;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>Dependence\fbx\lib\vs2015\x86\debug;Dependence\OpenGL\GLlIB&amp;DLL;Dependence\jsoncpp\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;GLAUX.LIB;gtestd.lib;gtest_maind.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>Dependence\fbx\lib\vs2015\x86\debug;Dependence\OpenGL\GLlIB&amp;DLL;RayTracingTest\gtest\lib\Debug;Dependence\jsoncpp\lib\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -173,6 +174,8 @@
     <ClCompile Include="OfflineRenderer\Sample.cpp" />
     <ClCompile Include="OfflineRenderer\Sampler.cpp" />
     <ClCompile Include="OfflineRenderer\Spectrum.cpp" />
+    <ClCompile Include="RayTracingTest\Color_Test.cpp" />
+    <ClCompile Include="RayTracingTest\RayTracing_Test.cpp" />
     <ClCompile Include="RealTimeRenderer\ShaderRead.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\Light.cpp" />
@@ -182,8 +185,17 @@
     <ClCompile Include="Test\TestFBXDrawObj.cpp" />
     <ClCompile Include="Test\TestFBXLoad.cpp" />
     <ClCompile Include="V2\Film.cpp" />
+    <ClCompile Include="V2\Filter.cpp" />
+    <ClCompile Include="V2\InitResource.cpp" />
+    <ClCompile Include="V2\Math\Math.cpp" />
+    <ClCompile Include="V2\Math\MatrixMath.cpp" />
+    <ClCompile Include="V2\RGBSpectrum\rgbspectrum_aces.cpp" />
+    <ClCompile Include="V2\RGBSpectrum\rgbspectrum_dci_p3.cpp" />
+    <ClCompile Include="V2\RGBSpectrum\rgbspectrum_rec2020.cpp" />
+    <ClCompile Include="V2\RGBSpectrum\rgbspectrum_srgb.cpp" />
     <ClCompile Include="V2\Util\Color.cpp" />
     <ClCompile Include="V2\Util\ColorSpace.cpp" />
+    <ClCompile Include="V2\Util\Sampling.cpp" />
     <ClCompile Include="V2\Util\Spectrum.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -236,9 +248,17 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="V2\Film.hpp" />
+    <ClInclude Include="V2\Filter.hpp" />
+    <ClInclude Include="V2\InitResource.hpp" />
+    <ClInclude Include="V2\Math\Geom.hpp" />
+    <ClInclude Include="V2\Math\Math.hpp" />
+    <ClInclude Include="V2\Math\Matrix.hpp" />
+    <ClInclude Include="V2\Math\MatrixMath.hpp" />
+    <ClInclude Include="V2\RGBSpectrum\RGBSpectrum.hpp" />
     <ClInclude Include="V2\Util\Check.h" />
     <ClInclude Include="V2\Util\Color.hpp" />
     <ClInclude Include="V2\Util\ColorSpace.hpp" />
+    <ClInclude Include="V2\Util\Sampling.hpp" />
     <ClInclude Include="V2\Util\Spectrum.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -250,6 +270,7 @@
     <None Include="Test\TestOfflineRenderer.inl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </None>
+    <None Include="V2\Filter.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

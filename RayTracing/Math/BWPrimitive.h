@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "BWElement.h"
 #include <vector>
+#include <algorithm>
 
 
 typedef BWEle2DD BWPoint2DD;
@@ -705,15 +706,25 @@ public:
 		if (!Check(Index)) return;
 		Min[Index] = Data;
 	}
-	T GetMax(int Index)
+	T GetMax(int Index) const
 	{
 		if (!Check(Index)) return -1;
 		return Max[Index];
 	}
-	T GetMin(int Index)
+	T GetMin(int Index) const
 	{
 		if (!Check(Index)) return -1;
 		return Min[Index];
+	}
+	template<typename V>
+	bool IsInTheBound(const V& P)
+	{
+		std::vector<float> Vec;
+		for (int i = 0; i < D; i++)
+		{
+			Vec.push_back(P[i]);
+		}
+		return IsInTheBound(Vec);
 	}
 	bool IsInTheBound(const std::vector<T>& P)
 	{
@@ -812,6 +823,19 @@ typedef Bounds<2, int> Bounds2i;
 typedef Bounds<2, float> Bounds2f;
 typedef Bounds<3, int> Bounds3i;
 typedef Bounds<3, float> Bounds3f;
+
+template <typename T>
+inline Bounds<2,T> Intersect(const Bounds<2, T> &b1, const Bounds<2, T> &b2) {
+	// Be careful to not run the two-point Bounds constructor.
+	Bounds<2, T> b;
+	b.SetMax(0, std::max(b1.GetMax(0), b2.GetMax(0)));
+	b.SetMax(1, std::max(b1.GetMax(1), b2.GetMax(1)));
+	
+	b.SetMin(0, std::max(b1.GetMin(0), b2.GetMin(0)));
+	b.SetMin(1, std::max(b1.GetMin(1), b2.GetMin(1)));
+	return b;
+}
+
 
 bool ToGrid(const BWVector3D &P,const Bounds3f &Bound, const int GridRes[3], int GridPos[3]);
 

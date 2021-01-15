@@ -1,11 +1,17 @@
 #pragma once
+#include "..\V2\Math\Geom.hpp"
+#include "..\V2\Math\Matrix.hpp"
+#include "..\V2\Math\MatrixMath.hpp"
+#include "Check.h"
 
 namespace BlackWalnut
 {
+#undef RGB
 
 	class RGB
 	{
 	public:
+		RGB() = default;
 		RGB(float InX, float InY, float InZ)
 			:X(InX), Y(InY), Z(InZ)
 		{
@@ -37,6 +43,13 @@ namespace BlackWalnut
 			X /= S.X;
 			Y /= S.Y;
 			Z /= S.Z;
+			return *this;
+		}
+		RGB& operator/=(const float S)
+		{
+			X /= S;
+			Y /= S;
+			Z /= S;
 			return *this;
 		}
 		RGB& operator*=(const float S)
@@ -74,7 +87,13 @@ namespace BlackWalnut
 		{
 			return{ X / S, Y / S, Z / S };
 		}
-		float operator[](int I)
+		float& operator[](int I)
+		{
+			if (I == 0) return X;
+			if (I == 1) return Y;
+			if (I == 2) return Z;
+		}
+		float operator[](int I) const
 		{
 			if (I == 0) return X;
 			if (I == 1) return Y;
@@ -91,6 +110,7 @@ namespace BlackWalnut
 	class XYZ
 	{
 	public:
+		XYZ() = default;
 		XYZ(float InX, float InY, float InZ)
 			:X(InX), Y(InY), Z(InZ)
 		{
@@ -151,6 +171,15 @@ namespace BlackWalnut
 			XYZ Ret = *this;
 			return Ret /= S;
 		}
+		XYZ operator/(const float S) const
+		{
+			CHECK(S);
+			XYZ Ret = *this;
+			Ret.X /= S;
+			Ret.Y /= S;
+			Ret.Z /= S;
+			return Ret;
+		}
 		XYZ operator*(const float &S)
 		{
 			X *= S;
@@ -158,7 +187,13 @@ namespace BlackWalnut
 			Z *= S;
 			return { X * S, Y * S, Z * S };
 		}
-		float operator[](int I)
+		float& operator[](int I)
+		{
+			if (I == 0) return X;
+			if (I == 1) return Y;
+			if (I == 2) return Z;
+		}
+		float operator[](int I) const
 		{
 			if (I == 0) return X;
 			if (I == 1) return Y;
@@ -201,23 +236,23 @@ namespace BlackWalnut
 	// White Balance Definitions
 	// clang-format off
 	// These are the Bradford transformation matrices.
-	const Matrix3X3f LMSFromXYZ(0.8951, 0.2664, -0.1614,
+	const Matrix3X3f LMSFromXYZ = { 0.8951, 0.2664, -0.1614,
 		-0.7502, 1.7135, 0.0367,
-		0.0389, -0.0685, 1.0296);
-	const Matrix3X3f XYZFromLMS(0.986993, -0.147054, 0.159963,
+		0.0389, -0.0685, 1.0296 };
+	const Matrix3X3f XYZFromLMS = { 0.986993, -0.147054, 0.159963,
 		0.432305, 0.51836, 0.0492912,
-		-0.00852866, 0.0400428, 0.968487);
+		-0.00852866, 0.0400428, 0.968487 };
 	inline Matrix3X3f WhiteBalance(Vector2f SrcWhite, Vector2f DesWhite)
 	{
 		XYZ SrcXYZ = XYZ::FromxyY(SrcWhite);
 		XYZ DesXYZ = XYZ::FromxyY(DesWhite);
-		auto SrcLMS = LMSFromXYZ * SrcXYZ;
-		auto DesLMS = LMSFromXYZ * DesXYZ;
+		auto SrcLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, SrcXYZ);
+		auto DesLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, DesXYZ);
 		Matrix3X3f LMSCorrect;
 		LMSCorrect.MakeZero();
-		LMSCorrect[0][0] = DesXYZ[0] / SrcXYZ[0];
-		LMSCorrect[1][1] = DesXYZ[1] / SrcXYZ[1];
-		LMSCorrect[2][2] = DesXYZ[2] / SrcXYZ[2];
+		LMSCorrect[0][0] = DesLMS[0] / SrcLMS[0];
+		LMSCorrect[1][1] = DesLMS[1] / SrcLMS[1];
+		LMSCorrect[2][2] = DesLMS[2] / SrcLMS[2];
 		return XYZFromLMS * LMSCorrect * LMSFromXYZ;
 	}
 }
