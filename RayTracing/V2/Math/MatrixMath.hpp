@@ -408,4 +408,16 @@ namespace BlackWalnut
 		 }
 		 return result;
 	 }
+
+
+	 template <typename C>
+	 inline constexpr float EvaluatePolynomial(float t, C c) {
+		 return c;
+	 }
+	 template<typename C, typename... Args>
+	 constexpr float EvaluatePolynomial(float T, C InC, Args... CRemaining)
+	 {
+		 using FMAT = typename std::common_type<float, C>::type;
+		 return FMA(FMAT(T), FMAT(EvaluatePolynomial(T, CRemaining...)), FMAT(InC));
+	 }
 }

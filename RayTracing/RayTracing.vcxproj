@@ -175,7 +175,10 @@
     <ClCompile Include="OfflineRenderer\Sampler.cpp" />
     <ClCompile Include="OfflineRenderer\Spectrum.cpp" />
     <ClCompile Include="RayTracingTest\Color_Test.cpp" />
+    <ClCompile Include="RayTracingTest\Filter_Test.cpp" />
     <ClCompile Include="RayTracingTest\RayTracing_Test.cpp" />
+    <ClCompile Include="RayTracingTest\Rng_Test.cpp" />
+    <ClCompile Include="RayTracingTest\Spectrum_Test.cpp" />
     <ClCompile Include="RealTimeRenderer\ShaderRead.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\Light.cpp" />
@@ -255,9 +258,12 @@
     <ClInclude Include="V2\Math\Matrix.hpp" />
     <ClInclude Include="V2\Math\MatrixMath.hpp" />
     <ClInclude Include="V2\RGBSpectrum\RGBSpectrum.hpp" />
+    <ClInclude Include="V2\Util\Bits.hpp" />
     <ClInclude Include="V2\Util\Check.h" />
     <ClInclude Include="V2\Util\Color.hpp" />
     <ClInclude Include="V2\Util\ColorSpace.hpp" />
+    <ClInclude Include="V2\Util\float.hpp" />
+    <ClInclude Include="V2\Util\Rng.hpp" />
     <ClInclude Include="V2\Util\Sampling.hpp" />
     <ClInclude Include="V2\Util\Spectrum.hpp" />
   </ItemGroup>

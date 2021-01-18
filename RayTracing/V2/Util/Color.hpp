@@ -2,10 +2,18 @@
 #include "..\V2\Math\Geom.hpp"
 #include "..\V2\Math\Matrix.hpp"
 #include "..\V2\Math\MatrixMath.hpp"
+#include "..\Math\Math.hpp"
 #include "Check.h"
+#include <array>
+#include <algorithm>
 
 namespace BlackWalnut
 {
+	struct PiecewiseLinearSegment {
+		float base, slope;
+	};
+	constexpr int LinearToSRGBPiecewiseSize = 256;
+	extern const PiecewiseLinearSegment LinearToSRGBPiecewise[];
 #undef RGB
 
 	class RGB
@@ -83,7 +91,7 @@ namespace BlackWalnut
 		{
 			return{ X * S, Y * S, Z * S };
 		}
-		RGB operator/(const float &S)
+		RGB operator/(const float &S)  const
 		{
 			return{ X / S, Y / S, Z / S };
 		}
@@ -215,6 +223,39 @@ namespace BlackWalnut
 		}
 		float X, Y, Z;
 	};
+
+	class RGBSigmoidPolynomial
+	{
+	public:
+		RGBSigmoidPolynomial() = default;
+		RGBSigmoidPolynomial(float InC0, float InC1, float InC2):C0(InC0),C1(InC1),C2(InC2) {}
+		float operator()(float Lambd) const
+		{
+			float v = EvaluatePolynomial(Lambd, C2, C1, C0);
+			if (IsInf(v))
+				return v > 0 ? 1 : 0;
+			return s(v);
+		}
+		float MaxValue() const
+		{
+			if (C0 < 0)
+			{
+				float lambda = -C1 / (2 * C0);
+				if (lambda >= 360 && lambda <= 830)
+					return (std::max)({ (*this)(lambda), (*this)(360), (*this)(830) });
+					
+			}
+			return (std::max)((*this)(360), (*this)(830));
+		}
+	private:
+		
+		static float s(float x) { return .5f + x / (2 * std::sqrt(1 + x * x)); };
+
+		float C0;
+		float C1;
+		float C2;
+	};
+
 	class RGBToSpectrumTable
 	{
 	public:
@@ -224,6 +265,47 @@ namespace BlackWalnut
 
 		}
 		static void Init();
+		RGBSigmoidPolynomial operator()(const RGB& Rgb) const 
+		{
+			CHECK(Rgb[0] >= 0.f && Rgb[1] >= 0.f && Rgb[2] >= 0.f && Rgb[0] <= 1.f &&
+				Rgb[1] <= 1.f && Rgb[2] <= 1.f);
+
+			// Find largest RGB component and handle black _rgb_
+			int i = 0;
+			for (int j = 1; j < 3; ++j)
+				if (Rgb[j] >= Rgb[i])
+					i = j;
+			if (Rgb[i] == 0)
+				return{ float(0), float(0), -std::numeric_limits<float>::infinity() };
+
+			// Compute floating-point offsets into polynomial coefficient table
+			float z = Rgb[i], sc = (Res - 1) / z, x = Rgb[(i + 1) % 3] * sc,
+				y = Rgb[(i + 2) % 3] * sc;
+
+			// Compute integer indices and offsets for coefficient interpolation
+			constexpr int nCoeffs = 3;
+			int xi = (std::min)((int)x, Res - 2), yi = (std::min)((int)y, Res - 2),
+				zi = FindInterval(Res, [&](int i) { return Scale[i] < z; }),
+				offset = (((i * Res + zi) * Res + yi) * Res + xi) * nCoeffs, dx = nCoeffs,
+				dy = nCoeffs * Res, dz = nCoeffs * Res * Res;
+			float x1 = x - xi, x0 = 1 - x1, y1 = y - yi, y0 = 1 - y1,
+				z1 = (z - Scale[zi]) / (Scale[zi + 1] - Scale[zi]), z0 = 1 - z1;
+
+			// Bilinearly interpolate sigmoid polynomial coefficients _c_
+			std::array<float, nCoeffs> c;
+
+			for (int j = 0; j < nCoeffs; ++j) {
+				c[j] = ((Data[offset] * x0 + Data[offset + dx] * x1) * y0 +
+					(Data[offset + dy] * x0 + Data[offset + dy + dx] * x1) * y1) *
+					z0 +
+					((Data[offset + dz] * x0 + Data[offset + dz + dx] * x1) * y0 +
+					(Data[offset + dz + dy] * x0 + Data[offset + dz + dy + dx] * x1) * y1) *
+					z1;
+				offset++;
+			}
+
+			return RGBSigmoidPolynomial(c[0], c[1], c[2]);
+		}
 		static const RGBToSpectrumTable *sRGB;
 		static const RGBToSpectrumTable *DCI_P3;
 		static const RGBToSpectrumTable *Rec2020;
@@ -254,5 +336,38 @@ namespace BlackWalnut
 		LMSCorrect[1][1] = DesLMS[1] / SrcLMS[1];
 		LMSCorrect[2][2] = DesLMS[2] / SrcLMS[2];
 		return XYZFromLMS * LMSCorrect * LMSFromXYZ;
+	}
+
+	inline RGB ClampZero(const RGB &Rgb)
+	{
+		return RGB(std::max<float>(0, Rgb.X), std::max<float>(0, Rgb.Y), std::max<float>(0, Rgb.Z));
+	}
+
+	inline float LinearToSRGB(float value) {
+		int index = int(value * LinearToSRGBPiecewiseSize);
+		if (index < 0)
+			return 0;
+		if (index >= LinearToSRGBPiecewiseSize)
+			return 1;
+		return LinearToSRGBPiecewise[index].base + value * LinearToSRGBPiecewise[index].slope;
+	}
+
+	
+	inline float LinearToSRGBFull(float value) {
+		if (value <= 0.0031308f)
+			return 12.92f * value;
+		return 1.055f * std::pow(value, (float)(1.f / 2.4f)) - 0.055f;
+	}
+
+	inline float SRGBToLinear(float value) {
+		if (value <= 0.04045f)
+			return value * (1 / 12.92f);
+		return std::pow((value + 0.055f) * (1 / 1.055f), (float)2.4f);
+	}
+
+	extern const float SRGBToLinearLUT[256];
+	inline float SRGB8ToLinear(uint8_t value)
+	{
+		return SRGBToLinearLUT[value];
 	}
 }

@@ -12,6 +12,7 @@ namespace BlackWalnut
 	public:
 		virtual float Integral() const = 0;
 		virtual Vector2f Radius() const = 0;
+		virtual float Evaluate(const Vector2f &p) const = 0;
 	};
 	// FilterSample Definition
 	struct FilterSample {

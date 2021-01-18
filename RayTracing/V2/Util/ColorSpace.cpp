@@ -27,6 +27,12 @@ BlackWalnut::RGBColorSpace::RGBColorSpace(Vector2f InR, Vector2f InG, Vector2f I
 	RGBFromXYZ = Inverse(XYZFromRGB);
 }
 
+BlackWalnut::RGBSigmoidPolynomial BlackWalnut::RGBColorSpace::ToRGBCoeffs(const RGB &Rgb) const
+{
+	CHECK(Rgb.X >= 0 && Rgb.Y >= 0 && Rgb.Z >= 0);
+	return (*RGBToSpectrumLookTable)(ClampZero(Rgb));
+}
+
 void RGBColorSpace::Init()
 {
 	sRGB = new RGBColorSpace(Vector2f(.64, .33), Vector2f(.3, .6), Vector2f(.15, .06),

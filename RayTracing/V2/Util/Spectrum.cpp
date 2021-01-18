@@ -1,3 +1,4 @@
+#include "ColorSpace.hpp"
 #include "Spectrum.hpp"
 #include <map>
 
@@ -635,6 +636,42 @@ namespace BlackWalnut
 	}
 
 	
+
+	RGBReflectanceSpectrum::RGBReflectanceSpectrum(const RGBColorSpace &CS, const RGB &InRgb) :Rgb(InRgb), RSP(CS.ToRGBCoeffs(InRgb))
+	{
+
+	}
+
+	BlackWalnut::XYZ SampledSpectrum::ToXYZ(const SampledWavelengths &Lambd) const
+	{
+		SampledSpectrum SX = X().Sample(Lambd);
+		SampledSpectrum SY = Y().Sample(Lambd);
+		SampledSpectrum SZ = Z().Sample(Lambd);
+		SampledSpectrum pdf = Lambd.PDF();
+
+		return XYZ(SafeDiv(SX * *this, pdf).Average(), SafeDiv(SY * *this, pdf).Average(),
+			SafeDiv(SZ * *this, pdf).Average()) /
+			CIE_Y_integral;
+	}
+
+	RGB SampledSpectrum::ToRGB(const SampledWavelengths &Lambd, const RGBColorSpace &CS) const
+	{
+		XYZ xyz = ToXYZ(Lambd);
+		return CS.ToRGB(xyz);
+	}
+
+	SampledSpectrum ConstantSpectrum::Sample(const SampledWavelengths &) const
+	{
+		return SampledSpectrum(c);
+	}
+
+	RGBSpectrum::RGBSpectrum(const RGBColorSpace &cs, const RGB &rgb)
+		:BaseSpectrum(), rgb(rgb), illuminant( (DenselySampledSpectrum*)cs.Illuminant) 
+	{
+		float m = std::max({ rgb.X, rgb.Y, rgb.Z });
+		scale = 2 * m;
+		rsp = cs.ToRGBCoeffs(scale ? rgb / scale : RGB(0, 0, 0));
+	}
 
 }
 

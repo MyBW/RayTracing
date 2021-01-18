@@ -8,6 +8,7 @@
 #include <map>
 namespace BlackWalnut
 {
+	class RGBColorSpace;
 	const int NSpectrumSamples = 4;
 	constexpr float Lambda_min = 360, Lambda_max = 830;
 	static constexpr float CIE_Y_integral = 106.856895;
@@ -19,8 +20,9 @@ namespace BlackWalnut
 		const float H = 6.62606957e-34;
 		const float KB = 1.3806488e-23;
 		float L = Lambda * 1e-9f;
-		float Le = (2 * H*C*C) / (Pow(5, 1) * (std::exp(H*C) / (1 * KB*T) - 1));
-		std::isnan(Le);
+		float Le = (2 * H*C*C) / (Pow(L, 5) * (std::exp((H*C) / (L * KB*T)) - 1));
+		//float Le = (2 * h * c * c) / (Pow<5>(l) * (std::exp((h * c) / (l * kb * T)) - 1));
+		CHECK(!std::isnan(Le));
 		return Le;
 	}
 
@@ -28,6 +30,12 @@ namespace BlackWalnut
 	{
 	public:
 		SampledSpectrum() = default;
+		explicit SampledSpectrum(float c) 
+		{ 
+			Values.resize(NSpectrumSamples);
+			for(int i = 0 ; i < NSpectrumSamples; i++)
+				Values[i] = c; 
+		}
 		SampledSpectrum(const std::vector<float>& InValues)
 		{
 			for (int i =  0 ;i < NSpectrumSamples; i++)
@@ -157,6 +165,8 @@ namespace BlackWalnut
 			}
 			return Sum / NSpectrumSamples;
 		}
+		XYZ ToXYZ(const SampledWavelengths &Lambd) const;
+		RGB ToRGB(const SampledWavelengths &Lambd, const RGBColorSpace &CS) const;
 	private:
 		std::vector<float> Values;
 	};
@@ -256,6 +266,7 @@ namespace BlackWalnut
 				Values[Lambda - Lambda_Min] = S(Lambda);
 			}
 		}
+		float MaxValue() const { return *std::max_element(Values.begin(), Values.end()); }
 		SampledSpectrum Sample(const SampledWavelengths &Lambda) const override
 		{
 			SampledSpectrum S;
@@ -347,7 +358,7 @@ namespace BlackWalnut
 		std::vector<float> Lambdas;
 	};
 
-	class BlackbodySpectrum : BaseSpectrum
+	class BlackbodySpectrum : public BaseSpectrum
 	{
 	public:
 		BlackbodySpectrum(float InT) :T(InT)
@@ -373,6 +384,79 @@ namespace BlackWalnut
 		float T;
 		float NormalizationFactor;
 	};
+
+	class RGBReflectanceSpectrum : BaseSpectrum
+	{
+	public:
+		float operator()(float Lambda) const
+		{
+			return Scale * RSP(Lambda);
+		}
+		float MaxValue() const { return Scale * RSP.MaxValue(); }
+		RGBReflectanceSpectrum(const RGBColorSpace &CS, const RGB &InRgb);
+		SampledSpectrum Sample(const SampledWavelengths &Lambda) const
+		{
+			SampledSpectrum s;
+			for (int i = 0; i < NSpectrumSamples; ++i)
+				s[i] = Scale * RSP(Lambda[i]);
+			return s;
+		}
+	private:
+		float Scale = 1.0f;
+		RGB Rgb;
+		RGBSigmoidPolynomial RSP;
+	};
+
+	// Spectrum Definitions
+	class ConstantSpectrum : public BaseSpectrum
+	{
+	public:
+		// ConstantSpectrum Public Methods
+		SampledSpectrum Sample(const SampledWavelengths &) const;
+		float MaxValue() const { return c; }
+
+		ConstantSpectrum(float c) : c(c) {}
+		float operator()(float lambda) const { return c; }
+
+	private:
+		// ConstantSpectrum Private Members
+		float c;
+	};
+
+
+	class RGBSpectrum : public BaseSpectrum
+	{
+	public:
+		// RGBSpectrum Public Methods
+		RGBSpectrum() = default;
+		
+		RGBSpectrum(const RGBColorSpace &cs, const RGB &rgb);
+
+		
+		float operator()(float lambda) const {
+			return scale * rsp(lambda) * (*illuminant)(lambda);
+		}
+		
+		float MaxValue() const { return scale * rsp.MaxValue() * illuminant->MaxValue(); }
+
+		
+		const DenselySampledSpectrum *Illluminant() const { return illuminant; }
+
+		
+		SampledSpectrum Sample(const SampledWavelengths &lambda) const 
+		{
+			SampledSpectrum s;
+			for (int i = 0; i < NSpectrumSamples; ++i)
+				s[i] = scale * rsp(lambda[i]);
+			return s * illuminant->Sample(lambda);
+		}
+	private:
+		// RGBSpectrum Private Members
+		RGB rgb;
+		float scale;
+		RGBSigmoidPolynomial rsp;
+		const DenselySampledSpectrum *illuminant;
+	};
 	const DenselySampledSpectrum &X();
 	const DenselySampledSpectrum &Y();
 	const DenselySampledSpectrum &Z();
@@ -386,6 +470,13 @@ namespace BlackWalnut
 		for (float lambda = Lambda_min; lambda <= Lambda_max; ++lambda)
 			result += a(lambda) * b(lambda);
 		return result / CIE_Y_integral;
+	}
+	inline SampledSpectrum SafeDiv(const SampledSpectrum &s1, const SampledSpectrum &s2) 
+	{
+		SampledSpectrum r;
+		for (int i = 0; i < NSpectrumSamples; ++i)
+			r[i] = (s2[i] != 0) ? s1[i] / s2[i] : 0.;
+		return r;
 	}
 
 	class Spectra

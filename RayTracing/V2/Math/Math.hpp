@@ -1,4 +1,6 @@
 #pragma once
+#include <type_traits>
+#include <xtr1common>
 namespace BlackWalnut
 {
 	//const float PI = 3.1415926;
@@ -63,5 +65,11 @@ namespace BlackWalnut
 	bool IsNaN(T V)
 	{
 		return std::isnan(V);
+	}
+
+	template <typename T>
+	inline typename std::enable_if_t<std::is_floating_point<T>::value, bool> IsInf(T v)
+	{
+		return std::isinf(v);
 	}
 }

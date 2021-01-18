@@ -12,6 +12,7 @@ namespace BlackWalnut
 
 		RGBColorSpace(Vector2f InR, Vector2f InG, Vector2f InB, BaseSpectrum *InIlluminant,
 			const RGBToSpectrumTable *InRGBToSpectrumTable);
+		RGBSigmoidPolynomial ToRGBCoeffs(const RGB &Rgb) const;
 		static void Init();
 		RGB ToRGB(const XYZ& xyz) const
 		{
