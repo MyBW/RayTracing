@@ -95,25 +95,25 @@ namespace BlackWalnut
 	inline int32_t RNG::Uniform<int32_t>() {
 		// https://stackoverflow.com/a/13208789
 		uint32_t v = Uniform<uint32_t>();
-		if (v <= (uint32_t)std::numeric_limits<int32_t>::max())
+		if (v <= (uint32_t)(std::numeric_limits<int32_t>::max)())
 			// Safe to type convert directly.
 			return int32_t(v);
 
-		CHECK(v >= (uint32_t)std::numeric_limits<int32_t>::min());
-		return int32_t(v - std::numeric_limits<int32_t>::min()) +
-			std::numeric_limits<int32_t>::min();
+		CHECK(v >= (uint32_t)(std::numeric_limits<int32_t>::min)());
+		return int32_t(v - (std::numeric_limits<int32_t>::min)()) +
+			(std::numeric_limits<int32_t>::min)();
 	}
 	template <>
 	inline int64_t RNG::Uniform<int64_t>() {
 		// https://stackoverflow.com/a/16408789
 		uint64_t v = Uniform<uint64_t>();
-		if (v <= (uint64_t)std::numeric_limits<int64_t>::max())
+		if (v <= (uint64_t)(std::numeric_limits<int64_t>::max)())
 			// Safe to type convert directly.
 			return int64_t(v);
 
-		CHECK(v >= (uint64_t)std::numeric_limits<int64_t>::min());
-		return int64_t(v - std::numeric_limits<int64_t>::min()) +
-			std::numeric_limits<int64_t>::min();
+		CHECK(v >= (uint64_t)(std::numeric_limits<int64_t>::min)());
+		return int64_t(v - (std::numeric_limits<int64_t>::min)()) +
+			(std::numeric_limits<int64_t>::min)();
 	}
 
 	template <>

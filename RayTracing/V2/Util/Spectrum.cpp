@@ -582,6 +582,7 @@ namespace BlackWalnut
 
 	PiecewiseLinearSpectrum::PiecewiseLinearSpectrum(std::vector<float> &InLambda, std::vector<float> &InValues)
 	{
+
 		Lambdas = InLambda;
 		Values = InValues;
 	}
@@ -666,7 +667,7 @@ namespace BlackWalnut
 	}
 
 	RGBSpectrum::RGBSpectrum(const RGBColorSpace &cs, const RGB &rgb)
-		:BaseSpectrum(), rgb(rgb), illuminant( (DenselySampledSpectrum*)cs.Illuminant) 
+		:BaseSpectrum(), rgb(rgb), illuminant(cs.Illuminant) 
 	{
 		float m = std::max({ rgb.X, rgb.Y, rgb.Z });
 		scale = 2 * m;

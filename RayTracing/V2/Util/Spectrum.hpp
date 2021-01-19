@@ -9,6 +9,7 @@
 namespace BlackWalnut
 {
 	class RGBColorSpace;
+	class SampledWavelengths;
 	const int NSpectrumSamples = 4;
 	constexpr float Lambda_min = 360, Lambda_max = 830;
 	static constexpr float CIE_Y_integral = 106.856895;
@@ -29,7 +30,11 @@ namespace BlackWalnut
 	class SampledSpectrum
 	{
 	public:
-		SampledSpectrum() = default;
+		//SampledSpectrum() = default;
+		SampledSpectrum()
+		{
+			Values.resize(NSpectrumSamples);
+		}
 		explicit SampledSpectrum(float c) 
 		{ 
 			Values.resize(NSpectrumSamples);
@@ -38,6 +43,7 @@ namespace BlackWalnut
 		}
 		SampledSpectrum(const std::vector<float>& InValues)
 		{
+			Values.resize(NSpectrumSamples);
 			for (int i =  0 ;i < NSpectrumSamples; i++)
 			{
 				Values[i] = InValues[i];
@@ -211,7 +217,7 @@ namespace BlackWalnut
 			float Delta = (Lambda_Max - Lambda_Min) / NSpectrumSamples;
 			for (int i = 1; i < NSpectrumSamples; i++)
 			{
-				WaveLength.Lambda[i] = WaveLength.Lambda[i] + Delta;
+				WaveLength.Lambda[i] = WaveLength.Lambda[i - 1] + Delta;
 				if (WaveLength.Lambda[i] > Lambda_Max)
 				{
 					WaveLength.Lambda[i] = Lambda_Min + (WaveLength.Lambda[i] - Lambda_Max);
@@ -219,7 +225,7 @@ namespace BlackWalnut
 			}
 			for (int i = 0; i < NSpectrumSamples; i++)
 			{
-				WaveLength.Pdf[i] = 1.0f / NSpectrumSamples;
+				WaveLength.Pdf[i] = 1.0f / (Lambda_Max - Lambda_Min);
 			}
 			return WaveLength;
 		}

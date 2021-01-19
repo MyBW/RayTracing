@@ -8,9 +8,10 @@ const RGBColorSpace *RGBColorSpace::ACES2065_1 = nullptr;
 
 
 BlackWalnut::RGBColorSpace::RGBColorSpace(Vector2f InR, Vector2f InG, Vector2f InB, BaseSpectrum *InIlluminant, const RGBToSpectrumTable *InRGBToSpectrumTable)
-	:R(InR),G(InG),B(InB),Illuminant(InIlluminant),RGBToSpectrumLookTable(InRGBToSpectrumTable)
+	:R(InR),G(InG),B(InB),RGBToSpectrumLookTable(InRGBToSpectrumTable)
 {
 	CHECK(InIlluminant);
+	Illuminant = new DenselySampledSpectrum(*InIlluminant);
 	XYZ TmpW = SpectrumToXYZ(Illuminant);
 	W = TmpW.xy();
 	XYZ XYZR = XYZ::FromxyY(R);

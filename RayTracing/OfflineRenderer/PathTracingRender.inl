@@ -29,7 +29,7 @@ void PathTracingRenderTask<SceneType>::Run()
 	Sampler *SubSampler = MainSampelr->GetSubSampler(ScreenBounds);
 	int MaxSampleCount = SubSampler->GetMaxSampleCount();
 	std::vector<Sample*> Samples = Render->GetOrigSample()->Duplicate(MaxSampleCount);
-	RNG Rng;
+	::RNG Rng;
 	int SampleNum = 0;
 	while ((SampleNum = SubSampler->GetMoreSamples(Samples, &Rng)) != 0)
 	{

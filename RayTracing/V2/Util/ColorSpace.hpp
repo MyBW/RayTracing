@@ -23,7 +23,7 @@ namespace BlackWalnut
 			return Mul<XYZ, 3, RGB>(XYZFromRGB, rgb);
 		}
 
-		BaseSpectrum *Illuminant;
+		DenselySampledSpectrum *Illuminant;
 		Vector2f R, G, B, W;
 		Matrix3X3f XYZFromRGB;
 		Matrix3X3f RGBFromXYZ;

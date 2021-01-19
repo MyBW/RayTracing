@@ -123,9 +123,6 @@
     <ClCompile Include="OfflineRenderer\PathTracingIntegrator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="V2\Util\Spectrum.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="V2\Util\ColorSpace.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -175,6 +172,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="RayTracingTest\Filter_Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="V2\Util\Spectrum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

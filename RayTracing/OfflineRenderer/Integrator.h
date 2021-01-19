@@ -5,7 +5,7 @@
 #include "RTLightSample.h"
 #include "BSDF.h"
 class Sample;
-class RNG;
+class ::RNG;
 template<typename SceneType>
 class Integrator
 {
@@ -20,7 +20,7 @@ public:
 		}
 	}
 	std::vector<RTLight*>& GetAllLight() { return AllLights; }
-	virtual Spectrum Li(SceneType *InScene, IntersectionInfo *Intersction , Sample &InSample, RNG& Rng) { return Spectrum(); };
+	virtual Spectrum Li(SceneType *InScene, IntersectionInfo *Intersction , Sample &InSample, ::RNG& Rng) { return Spectrum(); };
 	Spectrum EstimateDirect(SceneType *InScene, IntersectionInfo *Intersction, RTLight *CurLight, BSDF &Bsdf, LightSample &LightSampleData, BSDFSample &BSDFSampleData)
 	{
 		//多重重要性采样
@@ -89,7 +89,7 @@ public:
 		}
 		return L;
 	}
-	Spectrum SampleAllLight(SceneType *InScene, IntersectionInfo *Intersction, Sample &InSample, BSDF &Bsdf, RNG& Rng)
+	Spectrum SampleAllLight(SceneType *InScene, IntersectionInfo *Intersction, Sample &InSample, BSDF &Bsdf, ::RNG& Rng)
 	{
 		Spectrum L;
 		for (int i = 0; i < AllLights.size(); i++)

@@ -2,6 +2,7 @@
 #include "..\V2\Util\Spectrum.hpp"
 #include "..\V2\Util\Rng.hpp"
 #include "..\V2\Util\ColorSpace.hpp"
+#include "..\V2\Util\Sampling.hpp"
 using namespace BlackWalnut;
 TEST(Spectrum, Blackbody) {
 	// Relative error.
@@ -136,7 +137,7 @@ TEST(Spectrum, SamplingPdfXYZ) {
 	for (float u : Stratified1D(n)) {
 		{
 			// Uniform
-			float lambda = Lerp(u, Lambda_min, Lambda_max);
+			float lambda = Lerp(Lambda_min, Lambda_max, u);
 			float pdf = 1. / (Lambda_max - Lambda_min);
 			unifSum +=
 				(X()(lambda) + Y()(lambda) + Z()(lambda)) /
