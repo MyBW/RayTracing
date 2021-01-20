@@ -13,7 +13,10 @@ namespace BlackWalnut
 	float Cos(float Data);
 	float Pow(float A, float B);
 	int CeilToInt(float F);
-
+	inline float Radians(float deg) 
+	{
+		return (PI / 180) * deg;
+	}
 	template< class T, class U >
 	 T Lerp(const T& A, const T& B, const U& Alpha)
 	{

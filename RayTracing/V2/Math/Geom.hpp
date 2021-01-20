@@ -92,34 +92,34 @@ namespace BlackWalnut
     };
 
     template<typename T>
-    struct Vector3Type
-    {
-        union 
-        {
-            T Data[3];
-            struct { T X,Y,Z; };
-            struct { T R,G,B; };
-            struct { T U,V,W; };
-            Swizzle<Vector2Type<T>, 0, 1> XY;
-		    Swizzle<Vector2Type<T>, 1, 0> YX;
-		    Swizzle<Vector2Type<T>, 0, 2> XZ;
-		    Swizzle<Vector2Type<T>, 2, 0> ZX;
-		    Swizzle<Vector2Type<T>, 1, 2> YZ;
-		    Swizzle<Vector2Type<T>, 2, 1> ZY;
-		    Swizzle<Vector3Type<T>, 0, 1, 2> XYZ;
-		    Swizzle<Vector3Type<T>, 1, 0, 2> YXZ;
-		    Swizzle<Vector3Type<T>, 0, 2, 1> XZY;
-		    Swizzle<Vector3Type<T>, 2, 0, 1> ZXY;
-		    Swizzle<Vector3Type<T>, 1, 2, 0> YZX;
-		    Swizzle<Vector3Type<T>, 2, 1, 0> ZYX;
-        };
-        Vector3Type<T>() {};
-        Vector3Type<T>(const T& V) : X(V), Y(V), Z(V) {};
-        Vector3Type<T>(const T& x, const T& y, const T& z) : X(x), Y(y), Z(z) {}; 
-        operator T*() { return Data; };
-        void MakeZero(){ memset(Data, 0, sizeof(*this));}
-        operator const T*() const { return static_cast<const T*>(Data); };
-		Vector3Type<T> operator/(float Value) const 
+	struct Vector3Type
+	{
+		union
+		{
+			T Data[3];
+			struct { T X, Y, Z; };
+			struct { T R, G, B; };
+			struct { T U, V, W; };
+			Swizzle<Vector2Type<T>, 0, 1> XY;
+			Swizzle<Vector2Type<T>, 1, 0> YX;
+			Swizzle<Vector2Type<T>, 0, 2> XZ;
+			Swizzle<Vector2Type<T>, 2, 0> ZX;
+			Swizzle<Vector2Type<T>, 1, 2> YZ;
+			Swizzle<Vector2Type<T>, 2, 1> ZY;
+			Swizzle<Vector3Type<T>, 0, 1, 2> XYZ;
+			Swizzle<Vector3Type<T>, 1, 0, 2> YXZ;
+			Swizzle<Vector3Type<T>, 0, 2, 1> XZY;
+			Swizzle<Vector3Type<T>, 2, 0, 1> ZXY;
+			Swizzle<Vector3Type<T>, 1, 2, 0> YZX;
+			Swizzle<Vector3Type<T>, 2, 1, 0> ZYX;
+		};
+		Vector3Type<T>() {};
+		Vector3Type<T>(const T& V) : X(V), Y(V), Z(V) {};
+		Vector3Type<T>(const T& x, const T& y, const T& z) : X(x), Y(y), Z(z) {};
+		operator T*() { return Data; };
+		void MakeZero() { memset(Data, 0, sizeof(*this)); }
+		operator const T*() const { return static_cast<const T*>(Data); };
+		Vector3Type<T> operator/(float Value) const
 		{
 			CHECK(Value);
 			Vector3Type<T> Ret;
@@ -127,6 +127,10 @@ namespace BlackWalnut
 			Ret.Y = Y / Value;
 			Ret.Z = Z / Value;
 			return Ret;
+		}
+		bool IsNaN()
+		{
+			return IsNaN(X) || IsNaN(Y) || IsNaN(Z);
 		}
     };
     
