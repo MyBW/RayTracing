@@ -128,6 +128,14 @@ namespace BlackWalnut
 			Ret.Z = Z / Value;
 			return Ret;
 		}
+		Vector3Type<T> operator-(Vector3Type<T>& V)
+		{
+			Vector3Type<T> Ret;
+			Ret.X = X - V.X;
+			Ret.Y = Y - V.Y;
+			Ret.Z = Z - V.Z;
+			return Ret;
+		}
 		bool IsNaN()
 		{
 			return IsNaN(X) || IsNaN(Y) || IsNaN(Z);

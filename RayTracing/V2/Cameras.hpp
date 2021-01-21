@@ -14,6 +14,26 @@ namespace BlackWalnut
 		RayDifferential Ray;
 		SampledSpectrum Weight = SampledSpectrum(1);
 	};
+	struct CameraRay 
+	{
+		Ray mRay;
+		SampledSpectrum Weight = SampledSpectrum(1);
+	};
+
+	struct CameraWiSample 
+	{
+	public:
+		CameraWiSample() = default;
+		CameraWiSample(const SampledSpectrum &Wi, const Vector3f &wi, float pdf,
+				Vector2f pRaster, const Interaction &pRef, const Interaction &pLens)
+			: Wi(Wi), wi(wi), pdf(pdf), pRaster(pRaster), pRef(pRef), pLens(pLens) {}
+
+		SampledSpectrum Wi;
+		Vector3f wi;
+		Float pdf;
+		Point2f pRaster;
+		Interaction pRef, pLens;
+	};
 	class CameraBase
 	{
 	public:
@@ -31,8 +51,18 @@ namespace BlackWalnut
 		float ShutterOpen, ShutterClose;
 		Vector3f MinPosDifferentialX, MinPosDifferentialY;
 		Vector3f MinDirDifferentialX, MinDirDifferentialY;
-		static CameraRayDifferential GenerateRayDifferential(CameraBase& Camera, const CameraSample& InCameraSample, SampledWavelengths &Lambd);
+		static CameraRayDifferential* GenerateRayDifferential(CameraBase& Camera, const CameraSample& InCameraSample, SampledWavelengths &Lambd) const;
+		virtual CameraRayDifferential* GenerateRayDifferential(const CameraSample& InCameraSample, SampledWavelengths &Lambd) const;
+		virtual CameraRay*  GenerateRay(CameraSample Sample, SampledWavelengths &Lambd) const = 0;
 		void FindMinimumDifferentials(CameraBase& Camera);
+		Vector3f CameraFromRender(const Vector3f& V, float Time) const
+		{
+			
+		}
+		Ray RenderFromCamera(const Ray& InRay) const
+		{
+
+		}
 	};
 
 	class ProjectiveCamera : public CameraBase
@@ -70,6 +100,11 @@ namespace BlackWalnut
 			A = std::abs((pMax.X - pMin.X) * (pMax.Y - pMin.Y));
 			FindMinimumDifferentials(*this);
 		}
+		CameraRay* GenerateRay(CameraSample Sample, SampledWavelengths &Lambd) const;
+		CameraRayDifferential* GenerateRayDifferential(const CameraSample& InCameraSample, SampledWavelengths &Lambd) const;
+		SampledSpectrum We(const Ray &InRay, SampledWavelengths &Lambd, Vector2f *pRaster = nullptr) const;
+		void PDF_We(const Ray& InRay, float *PdfPos, float *PdfDir = nullptr) const;
+		CameraWiSample* SampleWi(const Interaction& Ref, const Vector2f &Sample, SampledWavelengths &Lambd) const;
 	private:
 		Vector3f DxCamera, DyCamera;
 		float CosTotalWidth;

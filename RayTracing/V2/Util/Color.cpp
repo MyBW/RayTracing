@@ -1,5 +1,6 @@
 #include "Color.hpp"
 #include "../RGBSpectrum/RGBSpectrum.hpp"
+#include <map>
 using namespace BlackWalnut;
 extern const int sRGBToSpectrumTable_Res;
 extern const float sRGBToSpectrumTable_Scale[64];
@@ -163,3 +164,80 @@ const BlackWalnut::PiecewiseLinearSegment BlackWalnut::LinearToSRGBPiecewise[] =
 	{ 0.553836, 0.446249 },{ 0.554852, 0.445209 },{ 0.555865, 0.444175 },
 	{ 0.556876, 0.443148 },{ 0.557885, 0.442128 },{ 0.558891, 0.441113 },
 	{ 0.559895, 0.440105 } };
+
+void BlackWalnut::sRGBColorEncoding::ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const
+{
+	for (size_t i = 0; i < vin.size(); ++i)
+		vout[i] = SRGB8ToLinear(vin[i]);
+}
+
+void BlackWalnut::sRGBColorEncoding::FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const
+{
+	for (size_t i = 0; i < vin.size(); ++i)
+		vout[i] = LinearToSRGB8(vin[i]);
+}
+
+float BlackWalnut::sRGBColorEncoding::ToFloatLinear(float v) const
+{
+	return SRGBToLinear(v);
+}
+
+namespace BlackWalnut
+{
+	const ColorEncodingBase* ColorEncodingBase::Linear = new LinearColorEncoding();
+
+	const ColorEncodingBase* ColorEncodingBase::sRGB = new sRGBColorEncoding();
+
+	const BlackWalnut::ColorEncodingBase* ColorEncodingBase::Get(const std::wstring &name, float gamma = 1.0)
+	{
+		if (name == L"linear")
+		{
+			return Linear;
+		}
+		else if (name == L"srgb")
+		{
+			return sRGB;
+		}
+		else
+		{
+			static std::map<float, ColorEncodingBase*> Cache;
+			CHECK(gamma != 0.0f);
+			auto It = Cache.find(gamma);
+			if (It != Cache.end()) return It->second;
+			Cache[gamma] = new  GammaColorEncodeing(gamma);
+			return Cache[gamma];
+		}
+	}
+
+	GammaColorEncodeing::GammaColorEncodeing(float gamma):gamma(gamma)
+	{
+		for (int i = 0; i < 256; ++i) {
+			float v = float(i) / 255.f;
+			applyLUT[i] = std::pow(v, gamma);
+		}
+		for (int i = 0; i < int(inverseLUT.size()); ++i) {
+			float v = float(i) / float(inverseLUT.size() - 1);
+			inverseLUT[i] = Clamp(255.f * std::pow(v, 1.f / gamma) + .5f, 0.0f, 255.0f);
+		}
+	}
+
+	void GammaColorEncodeing::ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const
+	{
+		for (size_t i = 0; i < vin.size(); ++i)
+			vout[i] = applyLUT[vin[i]];
+	}
+
+	void GammaColorEncodeing::FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const
+	{
+		for (size_t i = 0; i < vin.size(); ++i)
+			vout[i] =
+			inverseLUT[Clamp(vin[i] * (inverseLUT.size() - 1), 0.0f, float( inverseLUT.size() - 1))];
+	}
+
+	float GammaColorEncodeing::ToFloatLinear(float v) const
+	{
+		return std::pow(v, gamma);
+	}
+
+}
+

@@ -130,4 +130,68 @@ namespace BlackWalnut
 	typedef Matrix<float, 4, 4> Matrix4X4f;
 	typedef Matrix<float, 3, 3> Matrix3X3f;
 	typedef Matrix<double, 4, 4> Matrix4X4d;
+
+
+	template <typename T>
+	inline void CoordinateSystem(const Vector3Type<T> &v1, Vector3Type<T> *v2,
+		Vector3Type<T> *v3) {
+		float sign = std::copysign(float(1), v1.Z);
+		float a = -1 / (sign + v1.Z);
+		float b = v1.X * v1.Y * a;
+		*v2 = Vector3Type<T>(1 + sign * v1.X * v1.X * a, sign * b, -sign * v1.X);
+		*v3 = Vector3Type<T>(b, sign + v1.Y * v1.Y * a, -v1.Y);
+	}
+
+	class Frame
+	{
+	public:
+		Frame() :X(1.0, 0.0, 0.0), Y(0.0, 1.0, 0.0), Z(0.0, 0.0, 1.0)
+		{
+
+		}
+		Frame(const Vector3f &X, const Vector3f &Y, const Vector3f &Z) :X(X), Y(Y), Z(Z)
+		{
+			CHECK(std::abs(Length(X) * Length(X)) < 1e-4);
+			CHECK(std::abs(Length(Y) * Length(Y)) < 1e-4);
+			CHECK(std::abs(Length(Z) * Length(Z)) < 1e-4);
+			float Ret;
+			DotProduct(Ret, X, Y);
+			CHECK(std::abs(Ret) < 1e-4);
+			DotProduct(Ret, X, Z);
+			CHECK(std::abs(Ret) < 1e-4);
+			DotProduct(Ret, Y, Z);
+			CHECK(std::abs(Ret) < 1e-4);
+		}
+		static Frame FromXY(const Vector3f &X, const Vector3f &Y)
+		{
+			Vector3f Ret;
+			CrossProduct(Ret, X, Y);
+			return Frame(X, Y, Ret);
+		}
+		static Frame FromXZ(const Vector3f &X, const Vector3f &Z)
+		{
+			Vector3f Ret;
+			CrossProduct(Ret, X, Z);
+			return Frame(X, Ret, Z);
+		}
+		static Frame FromZ(const Vector3f &Z)
+		{
+			Vector3f X, Y;
+			CoordinateSystem<float>(Z, &X, &Y);
+			return Frame(X, Y, Z);
+		}
+		Vector3f ToLocal(const Vector3f &V)
+		{
+			float RetX;
+			DotProduct(RetX, V, X);
+			float RetY;
+			DotProduct(RetY, V, Y);
+			float RetZ;
+			DotProduct(RetZ, V, Z);
+			return Vector3f(RetX, RetY, RetZ);
+		}
+
+	private:
+		Vector3f X, Y, Z;
+	};
 }

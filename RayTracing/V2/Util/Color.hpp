@@ -6,6 +6,7 @@
 #include "Check.h"
 #include <array>
 #include <algorithm>
+#include <vector>
 
 namespace BlackWalnut
 {
@@ -14,6 +15,125 @@ namespace BlackWalnut
 	};
 	constexpr int LinearToSRGBPiecewiseSize = 256;
 	extern const PiecewiseLinearSegment LinearToSRGBPiecewise[];
+	extern const float SRGBToLinearLUT[256];
+
+	// White Balance Definitions
+	// clang-format off
+	// These are the Bradford transformation matrices.
+	const Matrix3X3f LMSFromXYZ = { 0.8951, 0.2664, -0.1614,
+		-0.7502, 1.7135, 0.0367,
+		0.0389, -0.0685, 1.0296 };
+	const Matrix3X3f XYZFromLMS = { 0.986993, -0.147054, 0.159963,
+		0.432305, 0.51836, 0.0492912,
+		-0.00852866, 0.0400428, 0.968487 };
+	inline Matrix3X3f WhiteBalance(Vector2f SrcWhite, Vector2f DesWhite)
+	{
+		XYZ SrcXYZ = XYZ::FromxyY(SrcWhite);
+		XYZ DesXYZ = XYZ::FromxyY(DesWhite);
+		auto SrcLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, SrcXYZ);
+		auto DesLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, DesXYZ);
+		Matrix3X3f LMSCorrect;
+		LMSCorrect.MakeZero();
+		LMSCorrect[0][0] = DesLMS[0] / SrcLMS[0];
+		LMSCorrect[1][1] = DesLMS[1] / SrcLMS[1];
+		LMSCorrect[2][2] = DesLMS[2] / SrcLMS[2];
+		return XYZFromLMS * LMSCorrect * LMSFromXYZ;
+	}
+
+	inline RGB ClampZero(const RGB &Rgb)
+	{
+		return RGB(std::max<float>(0, Rgb.X), std::max<float>(0, Rgb.Y), std::max<float>(0, Rgb.Z));
+	}
+
+	inline float LinearToSRGB(float value) {
+		int index = int(value * LinearToSRGBPiecewiseSize);
+		if (index < 0)
+			return 0;
+		if (index >= LinearToSRGBPiecewiseSize)
+			return 1;
+		return LinearToSRGBPiecewise[index].base + value * LinearToSRGBPiecewise[index].slope;
+	}
+
+
+	inline float LinearToSRGBFull(float value) {
+		if (value <= 0.0031308f)
+			return 12.92f * value;
+		return 1.055f * std::pow(value, (float)(1.f / 2.4f)) - 0.055f;
+	}
+
+	inline float SRGBToLinear(float value) {
+		if (value <= 0.04045f)
+			return value * (1 / 12.92f);
+		return std::pow((value + 0.055f) * (1 / 1.055f), (float)2.4f);
+	}
+
+	inline float SRGBToLinear(float value) {
+		if (value <= 0.04045f)
+			return value * (1 / 12.92f);
+		return std::pow((value + 0.055f) * (1 / 1.055f), (float)2.4f);
+	}
+	
+	inline float SRGB8ToLinear(uint8_t value)
+	{
+		return SRGBToLinearLUT[value];
+	}
+	inline uint8_t LinearToSRGB8(float value, float dither = 0) {
+		if (value <= 0)
+			return 0;
+		if (value >= 1)
+			return 255;
+		return Clamp(255.f * LinearToSRGB(value) + dither, 0.0f, 255.0f);
+	}
+
+	class ColorEncodingBase
+	{
+	public:
+		virtual void ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const = 0;
+
+		virtual inline float ToFloatLinear(float v) const =  0;
+
+		virtual void FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const = 0;
+
+
+		static const ColorEncodingBase* Linear;
+		static const ColorEncodingBase* sRGB;
+
+		static const ColorEncodingBase* Get(const std::wstring &name, float gamma = 1.0);
+	};
+	class LinearColorEncoding : public ColorEncodingBase
+	{
+	public:
+		void ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const override
+		{
+			for (size_t i = 0; i < vin.size(); ++i)
+				vout[i] = vin[i] / 255.f;
+		}
+		void FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const override
+		{
+			for (size_t i = 0; i < vin.size(); ++i)
+				vout[i] = uint8_t(Clamp(vin[i] * 255.f + 0.5f, 0.f, 255.f));
+		}
+		float ToFloatLinear(float v) const override { return v; }
+	};
+	class sRGBColorEncoding : public ColorEncodingBase
+	{
+	public:
+		void ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const override;
+		void FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const override;
+		float ToFloatLinear(float v) const override;
+	};
+	class GammaColorEncodeing : public ColorEncodingBase
+	{
+	public:
+		GammaColorEncodeing(float gamma);
+		void ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const override;
+		void FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const override;
+		float ToFloatLinear(float v) const override;
+	private:
+		float gamma;
+		std::array<float, 256> applyLUT;
+		std::array<float, 1024> inverseLUT;
+	};
 #undef RGB
 
 	class RGB
@@ -315,59 +435,5 @@ namespace BlackWalnut
 		const float *Scale;
 		const float *Data;
 	};
-	// White Balance Definitions
-	// clang-format off
-	// These are the Bradford transformation matrices.
-	const Matrix3X3f LMSFromXYZ = { 0.8951, 0.2664, -0.1614,
-		-0.7502, 1.7135, 0.0367,
-		0.0389, -0.0685, 1.0296 };
-	const Matrix3X3f XYZFromLMS = { 0.986993, -0.147054, 0.159963,
-		0.432305, 0.51836, 0.0492912,
-		-0.00852866, 0.0400428, 0.968487 };
-	inline Matrix3X3f WhiteBalance(Vector2f SrcWhite, Vector2f DesWhite)
-	{
-		XYZ SrcXYZ = XYZ::FromxyY(SrcWhite);
-		XYZ DesXYZ = XYZ::FromxyY(DesWhite);
-		auto SrcLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, SrcXYZ);
-		auto DesLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, DesXYZ);
-		Matrix3X3f LMSCorrect;
-		LMSCorrect.MakeZero();
-		LMSCorrect[0][0] = DesLMS[0] / SrcLMS[0];
-		LMSCorrect[1][1] = DesLMS[1] / SrcLMS[1];
-		LMSCorrect[2][2] = DesLMS[2] / SrcLMS[2];
-		return XYZFromLMS * LMSCorrect * LMSFromXYZ;
-	}
-
-	inline RGB ClampZero(const RGB &Rgb)
-	{
-		return RGB(std::max<float>(0, Rgb.X), std::max<float>(0, Rgb.Y), std::max<float>(0, Rgb.Z));
-	}
-
-	inline float LinearToSRGB(float value) {
-		int index = int(value * LinearToSRGBPiecewiseSize);
-		if (index < 0)
-			return 0;
-		if (index >= LinearToSRGBPiecewiseSize)
-			return 1;
-		return LinearToSRGBPiecewise[index].base + value * LinearToSRGBPiecewise[index].slope;
-	}
-
 	
-	inline float LinearToSRGBFull(float value) {
-		if (value <= 0.0031308f)
-			return 12.92f * value;
-		return 1.055f * std::pow(value, (float)(1.f / 2.4f)) - 0.055f;
-	}
-
-	inline float SRGBToLinear(float value) {
-		if (value <= 0.04045f)
-			return value * (1 / 12.92f);
-		return std::pow((value + 0.055f) * (1 / 1.055f), (float)2.4f);
-	}
-
-	extern const float SRGBToLinearLUT[256];
-	inline float SRGB8ToLinear(uint8_t value)
-	{
-		return SRGBToLinearLUT[value];
-	}
 }
