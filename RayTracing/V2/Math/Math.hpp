@@ -2,6 +2,7 @@
 #include <type_traits>
 #include <xtr1common>
 #include <stdint.h>
+#include <vector>
 namespace BlackWalnut
 {
 	//const float PI = 3.1415926;
@@ -16,7 +17,7 @@ namespace BlackWalnut
 	int CeilToInt(float F);
 	inline float Radians(float deg) 
 	{
-		return (PI / 180) * deg;
+		return (3.14159265358979323846f / 180) * deg;
 	}
 	template< class T, class U >
 	 T Lerp(const T& A, const T& B, const U& Alpha)
@@ -107,4 +108,16 @@ namespace BlackWalnut
 		} while (i >= l);
 		return (i + p) % l;
 	}
+
+	template <typename T>
+	inline T Mod(T a, T b) {
+		T result = a - (a / b) * b;
+		return (T)((result < 0) ? result + b : result);
+	}
+
+	inline float Bilerp(std::vector<float> p, std::vector<float> v) {
+		return ((1 - p[0]) * (1 - p[1]) * v[0] + p[0] * (1 - p[1]) * v[1] +
+			(1 - p[0]) * p[1] * v[2] + p[0] * p[1] * v[3]);
+	}
+
 }

@@ -247,14 +247,12 @@ namespace BlackWalnut
 		std::vector<float> Pdf;
 	};
 
-
 	class BaseSpectrum
 	{
 	public:
 		virtual SampledSpectrum Sample(const SampledWavelengths &Lambda) const = 0;
 		virtual float operator()(float) const = 0;
 	};
-
 	class DenselySampledSpectrum : public BaseSpectrum
 	{
 	public:

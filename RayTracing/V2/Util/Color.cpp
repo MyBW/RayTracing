@@ -165,13 +165,13 @@ const BlackWalnut::PiecewiseLinearSegment BlackWalnut::LinearToSRGBPiecewise[] =
 	{ 0.556876, 0.443148 },{ 0.557885, 0.442128 },{ 0.558891, 0.441113 },
 	{ 0.559895, 0.440105 } };
 
-void BlackWalnut::sRGBColorEncoding::ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const
+void BlackWalnut::sRGBColorEncoding::ToLinear(std::vector<uint8_t> vin, std::vector<float>& vout) const
 {
 	for (size_t i = 0; i < vin.size(); ++i)
 		vout[i] = SRGB8ToLinear(vin[i]);
 }
 
-void BlackWalnut::sRGBColorEncoding::FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const
+void BlackWalnut::sRGBColorEncoding::FromLinear(std::vector<float> vin, std::vector<uint8_t>& vout) const
 {
 	for (size_t i = 0; i < vin.size(); ++i)
 		vout[i] = LinearToSRGB8(vin[i]);
@@ -188,7 +188,7 @@ namespace BlackWalnut
 
 	const ColorEncodingBase* ColorEncodingBase::sRGB = new sRGBColorEncoding();
 
-	const BlackWalnut::ColorEncodingBase* ColorEncodingBase::Get(const std::wstring &name, float gamma = 1.0)
+	const BlackWalnut::ColorEncodingBase* ColorEncodingBase::Get(const std::wstring &name, float gamma)
 	{
 		if (name == L"linear")
 		{
@@ -221,13 +221,13 @@ namespace BlackWalnut
 		}
 	}
 
-	void GammaColorEncodeing::ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const
+	void GammaColorEncodeing::ToLinear(std::vector<uint8_t> vin, std::vector<float>& vout) const
 	{
 		for (size_t i = 0; i < vin.size(); ++i)
 			vout[i] = applyLUT[vin[i]];
 	}
 
-	void GammaColorEncodeing::FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const
+	void GammaColorEncodeing::FromLinear(std::vector<float> vin, std::vector<uint8_t>& vout) const
 	{
 		for (size_t i = 0; i < vin.size(); ++i)
 			vout[i] =

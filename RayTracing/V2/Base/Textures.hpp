@@ -1,7 +1,6 @@
 #pragma once
 namespace BlackWalnut
 {
-	enum class WrapMode { Repeat, Black, Clamp, OctahedralSphere };
 	struct TextureEvalContext {
 		TextureEvalContext() = default;
 		/*TextureEvalContext(const SurfaceInteraction &si)

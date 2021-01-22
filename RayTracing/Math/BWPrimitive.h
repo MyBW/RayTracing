@@ -5,7 +5,6 @@
 #include <vector>
 #include <algorithm>
 
-
 typedef BWEle2DD BWPoint2DD;
 typedef BWPoint2DD * BWPPoint2DD;
 
@@ -677,7 +676,7 @@ public:
 	}
 	Bounds(std::vector<T> &P):Min(P),Max(P){ }
 	Bounds(std::vector<T> &InMin, std::vector<T> &InMax):Min(InMin),Max(InMax){ }
-	T Area()
+	T Area() const
 	{
 		T FinalArea = 1;
 		for (size_t i = 0; i < D; i++)
@@ -809,8 +808,35 @@ public:
 		}
 		return Offsets;
 	}
+	std::vector<T> Lerp(std::vector<T>& A) const
+	{
+
+		auto LerpLambd = [](float A, float V1, float V2)
+		{
+			return (1.0f - A) * V1 + A * V2;
+		};
+		return{ LerpLambd(A[0], Min[0], Max[0]), LerpLambd(A[1], Min[1], Max[1])};
+	}
+	bool operator==(const Bounds<D, T>& Bound) const
+	{
+		for (int i = 0;i < Max.size() ; i++)
+		{
+			if (Max[i] != Bound.Max[i] || Min[i] != Bound.Min[i]) return false;
+		}
+		return true;
+	}
+	template<typename C>
+	void Itorator(C CallBack)
+	{
+		for (int i = Min[1]; i < Max[1]; i++)
+		{
+			for (int j = Min[0]; j < Max[0]; j++)
+			{
+				CallBack(j, i);
+			}
+		}
+	}
 	static const int Dime = D; 
-private:
 	bool Check(int Index) const 
 	{
 		return -1 < Index && Index < D;

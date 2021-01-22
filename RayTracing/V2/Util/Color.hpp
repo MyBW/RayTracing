@@ -26,24 +26,7 @@ namespace BlackWalnut
 	const Matrix3X3f XYZFromLMS = { 0.986993, -0.147054, 0.159963,
 		0.432305, 0.51836, 0.0492912,
 		-0.00852866, 0.0400428, 0.968487 };
-	inline Matrix3X3f WhiteBalance(Vector2f SrcWhite, Vector2f DesWhite)
-	{
-		XYZ SrcXYZ = XYZ::FromxyY(SrcWhite);
-		XYZ DesXYZ = XYZ::FromxyY(DesWhite);
-		auto SrcLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, SrcXYZ);
-		auto DesLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, DesXYZ);
-		Matrix3X3f LMSCorrect;
-		LMSCorrect.MakeZero();
-		LMSCorrect[0][0] = DesLMS[0] / SrcLMS[0];
-		LMSCorrect[1][1] = DesLMS[1] / SrcLMS[1];
-		LMSCorrect[2][2] = DesLMS[2] / SrcLMS[2];
-		return XYZFromLMS * LMSCorrect * LMSFromXYZ;
-	}
-
-	inline RGB ClampZero(const RGB &Rgb)
-	{
-		return RGB(std::max<float>(0, Rgb.X), std::max<float>(0, Rgb.Y), std::max<float>(0, Rgb.Z));
-	}
+	
 
 	inline float LinearToSRGB(float value) {
 		int index = int(value * LinearToSRGBPiecewiseSize);
@@ -67,11 +50,6 @@ namespace BlackWalnut
 		return std::pow((value + 0.055f) * (1 / 1.055f), (float)2.4f);
 	}
 
-	inline float SRGBToLinear(float value) {
-		if (value <= 0.04045f)
-			return value * (1 / 12.92f);
-		return std::pow((value + 0.055f) * (1 / 1.055f), (float)2.4f);
-	}
 	
 	inline float SRGB8ToLinear(uint8_t value)
 	{
@@ -88,11 +66,11 @@ namespace BlackWalnut
 	class ColorEncodingBase
 	{
 	public:
-		virtual void ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const = 0;
+		virtual void ToLinear(std::vector<uint8_t> vin, std::vector<float>& vout) const = 0;
 
 		virtual inline float ToFloatLinear(float v) const =  0;
 
-		virtual void FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const = 0;
+		virtual void FromLinear(std::vector<float> vin, std::vector<uint8_t>& vout) const = 0;
 
 
 		static const ColorEncodingBase* Linear;
@@ -103,12 +81,12 @@ namespace BlackWalnut
 	class LinearColorEncoding : public ColorEncodingBase
 	{
 	public:
-		void ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const override
+		void ToLinear(std::vector<uint8_t> vin, std::vector<float>& vout) const override
 		{
 			for (size_t i = 0; i < vin.size(); ++i)
 				vout[i] = vin[i] / 255.f;
 		}
-		void FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const override
+		void FromLinear(std::vector<float> vin, std::vector<uint8_t>& vout) const override
 		{
 			for (size_t i = 0; i < vin.size(); ++i)
 				vout[i] = uint8_t(Clamp(vin[i] * 255.f + 0.5f, 0.f, 255.f));
@@ -118,16 +96,16 @@ namespace BlackWalnut
 	class sRGBColorEncoding : public ColorEncodingBase
 	{
 	public:
-		void ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const override;
-		void FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const override;
+		void ToLinear(std::vector<uint8_t> vin, std::vector<float>& vout) const override;
+		void FromLinear(std::vector<float> vin, std::vector<uint8_t>& vout) const override;
 		float ToFloatLinear(float v) const override;
 	};
 	class GammaColorEncodeing : public ColorEncodingBase
 	{
 	public:
 		GammaColorEncodeing(float gamma);
-		void ToLinear(std::vector<const uint8_t> vin, std::vector<float> vout) const override;
-		void FromLinear(std::vector<float> vin, std::vector<uint8_t> vout) const override;
+		void ToLinear(std::vector<uint8_t> vin, std::vector<float>& vout) const override;
+		void FromLinear(std::vector<float> vin, std::vector<uint8_t>& vout) const override;
 		float ToFloatLinear(float v) const override;
 	private:
 		float gamma;
@@ -435,5 +413,23 @@ namespace BlackWalnut
 		const float *Scale;
 		const float *Data;
 	};
-	
+	inline Matrix3X3f WhiteBalance(Vector2f SrcWhite, Vector2f DesWhite)
+	{
+		XYZ SrcXYZ = XYZ::FromxyY(SrcWhite);
+		XYZ DesXYZ = XYZ::FromxyY(DesWhite);
+		auto SrcLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, SrcXYZ);
+		auto DesLMS = Mul<XYZ, 3, XYZ>(LMSFromXYZ, DesXYZ);
+		Matrix3X3f LMSCorrect;
+		LMSCorrect.MakeZero();
+		LMSCorrect[0][0] = DesLMS[0] / SrcLMS[0];
+		LMSCorrect[1][1] = DesLMS[1] / SrcLMS[1];
+		LMSCorrect[2][2] = DesLMS[2] / SrcLMS[2];
+		return XYZFromLMS * LMSCorrect * LMSFromXYZ;
+	}
+
+	inline RGB ClampZero(const RGB &Rgb)
+	{
+		return RGB(std::max<float>(0, Rgb.X), std::max<float>(0, Rgb.Y), std::max<float>(0, Rgb.Z));
+	}
+
 }

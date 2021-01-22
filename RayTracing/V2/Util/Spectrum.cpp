@@ -635,9 +635,6 @@ namespace BlackWalnut
 			return iter->second;
 		return nullptr;
 	}
-
-	
-
 	RGBReflectanceSpectrum::RGBReflectanceSpectrum(const RGBColorSpace &CS, const RGB &InRgb) :Rgb(InRgb), RSP(CS.ToRGBCoeffs(InRgb))
 	{
 

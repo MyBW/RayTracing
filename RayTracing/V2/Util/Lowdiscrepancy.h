@@ -1,5 +1,11 @@
 #pragma once
-
+#include <stdint.h>
+#include "Check.h"
+#include "Bits.hpp"
+#include "..\V2\Math\Math.hpp"
+#include "Primes.hpp"
+#include "float.hpp"
+#include <algorithm>
 namespace BlackWalnut
 {
 	class DigitPermutation
@@ -85,7 +91,7 @@ namespace BlackWalnut
 	}
 
 	// Low Discrepancy Function Definitions
-	std::vector<DigitPermutation> *ComputeRadicalInversePermutations(uint32_t seed) 
+	inline std::vector<DigitPermutation> *ComputeRadicalInversePermutations(uint32_t seed) 
 	{
 		std::vector<DigitPermutation> *perms = new std::vector<DigitPermutation>();
 		perms->resize(PrimeTableSize);

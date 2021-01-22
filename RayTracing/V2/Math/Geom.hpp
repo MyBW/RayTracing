@@ -89,6 +89,11 @@ namespace BlackWalnut
         void MakeZero(){ memset(Data, 0, sizeof(*this));}
         operator T*() { return Data; };
         operator const T*() const { return static_cast<const T*>(Data); };
+
+		bool operator==(const Vector2Type &Other) const
+		{
+			return Data[0] == Other.Data[0] && Data[1] == Other.Data[1];
+		}
     };
 
     template<typename T>
@@ -274,7 +279,7 @@ namespace BlackWalnut
 		return Result;
 	}
     template<template<typename> class TT, typename T>
-    T Length(TT<T> &Result)
+    T Length(const TT<T> &Result)
     {
         T Result2 = (T)0;
         for(size_t i = 0 ;i < CountOf(Result.Data); i++)

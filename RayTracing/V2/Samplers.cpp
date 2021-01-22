@@ -3,7 +3,7 @@
 namespace BlackWalnut
 {
 
-	HaltonSampler::HaltonSampler(int32_t samplesPerPixel, const Point2i &fullResolution, int32_t seed /*= 0*/)
+	HaltonSampler::HaltonSampler(int32_t samplesPerPixel, const Vector2i &fullResolution,   int32_t seed /*= 0*/)
 		: samplesPerPixel(samplesPerPixel) 
 	{
 		digitPermutations = ComputeRadicalInversePermutations(seed);
@@ -11,7 +11,7 @@ namespace BlackWalnut
 		for (int i = 0; i < 2; ++i) {
 			int base = (i == 0) ? 2 : 3;
 			int scale = 1, exp = 0;
-			while (scale < std::min(fullRes[i], MaxHaltonResolution)) {
+			while (scale < std::min(fullResolution[i], MaxHaltonResolution)) {
 				scale *= base;
 				++exp;
 			}

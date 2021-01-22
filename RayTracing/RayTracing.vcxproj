@@ -87,9 +87,9 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>Dependence\OpenGL\GLHead;Dependence\fbx\include;Dependence\jsoncpp\include;Core;Math;RayTracingTest\gtest\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Dependence\OpenGL\GLHead;Dependence\fbx\include;Dependence\jsoncpp\include;Core;Math;RayTracingTest\gtest\include;spdlog\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -156,6 +156,7 @@
   <ItemGroup>
     <ClCompile Include="App\App.cpp" />
     <ClCompile Include="Core\RNG.cpp" />
+    <ClCompile Include="lodepng\lodepng.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\BWElement.cpp" />
     <ClCompile Include="Math\BWPrimitive.cpp" />
@@ -176,8 +177,10 @@
     <ClCompile Include="OfflineRenderer\Spectrum.cpp" />
     <ClCompile Include="RayTracingTest\Color_Test.cpp" />
     <ClCompile Include="RayTracingTest\Filter_Test.cpp" />
+    <ClCompile Include="RayTracingTest\Image_Test.cpp" />
     <ClCompile Include="RayTracingTest\RayTracing_Test.cpp" />
     <ClCompile Include="RayTracingTest\Rng_Test.cpp" />
+    <ClCompile Include="RayTracingTest\Sampler_Test.cpp" />
     <ClCompile Include="RayTracingTest\Spectrum_Test.cpp" />
     <ClCompile Include="RealTimeRenderer\ShaderRead.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
@@ -196,8 +199,14 @@
     <ClCompile Include="V2\RGBSpectrum\rgbspectrum_dci_p3.cpp" />
     <ClCompile Include="V2\RGBSpectrum\rgbspectrum_rec2020.cpp" />
     <ClCompile Include="V2\RGBSpectrum\rgbspectrum_srgb.cpp" />
+    <ClCompile Include="V2\Samplers.cpp" />
+    <ClCompile Include="V2\Util\BlueNoise.cpp" />
     <ClCompile Include="V2\Util\Color.cpp" />
     <ClCompile Include="V2\Util\ColorSpace.cpp" />
+    <ClCompile Include="V2\Util\File.cpp" />
+    <ClCompile Include="V2\Util\Image.cpp" />
+    <ClCompile Include="V2\Util\Lowdiscrepancy.cpp" />
+    <ClCompile Include="V2\Util\Primes.cpp" />
     <ClCompile Include="V2\Util\Sampling.cpp" />
     <ClCompile Include="V2\Util\Spectrum.cpp" />
   </ItemGroup>
@@ -205,6 +214,7 @@
     <ClInclude Include="App\App.h" />
     <ClInclude Include="Core\Error.h" />
     <ClInclude Include="Core\RNG.h" />
+    <ClInclude Include="lodepng\lodepng.h" />
     <ClInclude Include="Math\BWElement.h" />
     <ClInclude Include="Math\BWPrimitive.h" />
     <ClInclude Include="Math\RTMath.h" />
@@ -258,11 +268,17 @@
     <ClInclude Include="V2\Math\Matrix.hpp" />
     <ClInclude Include="V2\Math\MatrixMath.hpp" />
     <ClInclude Include="V2\RGBSpectrum\RGBSpectrum.hpp" />
+    <ClInclude Include="V2\Samplers.hpp" />
     <ClInclude Include="V2\Util\Bits.hpp" />
+    <ClInclude Include="V2\Util\BlueNoise.hpp" />
     <ClInclude Include="V2\Util\Check.h" />
     <ClInclude Include="V2\Util\Color.hpp" />
     <ClInclude Include="V2\Util\ColorSpace.hpp" />
+    <ClInclude Include="V2\Util\File.hpp" />
     <ClInclude Include="V2\Util\float.hpp" />
+    <ClInclude Include="V2\Util\Image.hpp" />
+    <ClInclude Include="V2\Util\Lowdiscrepancy.h" />
+    <ClInclude Include="V2\Util\Primes.hpp" />
     <ClInclude Include="V2\Util\Rng.hpp" />
     <ClInclude Include="V2\Util\Sampling.hpp" />
     <ClInclude Include="V2\Util\Spectrum.hpp" />

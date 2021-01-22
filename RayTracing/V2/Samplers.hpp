@@ -1,16 +1,23 @@
 #pragma once
+#include <stdint.h>
+#include "Math\Geom.hpp"
+#include <vector>
+#include "Util\Lowdiscrepancy.h"
 
 namespace BlackWalnut
 {
 	class SamplerBase
 	{
 	public:
-
+		virtual void StartPixelSample(const Vector2i &p, int32_t sampleIndex, int32_t dim = 0) = 0;
+		virtual float Get1D() = 0;
+		virtual Vector2f Get2D() = 0;
 	};
 	class HaltonSampler  : public SamplerBase
 	{
 	public:
-		HaltonSampler(int32_t samplesPerPixel, const Point2i &fullResolution, int32_t seed = 0);
+		HaltonSampler() = default;
+		HaltonSampler(int32_t samplesPerPixel, const Vector2i &fullResolution,  int32_t seed = 0);
 
 		
 		static constexpr const char *Name() { return "HaltonSampler"; }
@@ -21,7 +28,7 @@ namespace BlackWalnut
 		int32_t SamplesPerPixel() const { return samplesPerPixel; }
 
 		
-		void StartPixelSample(const Vector2i &p, int32_t sampleIndex, int32_t dim)
+		void StartPixelSample(const Vector2i &p, int32_t sampleIndex, int32_t dim) override
 		{
 			haltonIndex = 0;
 			int sampleStride = baseScales[0] * baseScales[1];
@@ -73,7 +80,7 @@ namespace BlackWalnut
 			}
 		}
 
-		std::vector<SamplerBase*> Clone(int n, Allocator alloc);
+		std::vector<SamplerBase*> Clone(int n);
 
 	private:
 		// HaltonSampler Private Methods

@@ -177,6 +177,33 @@
     <ClCompile Include="V2\Util\Spectrum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="RayTracingTest\Image_Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="V2\Util\Image.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="V2\Util\File.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="V2\Util\BlueNoise.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="lodepng\lodepng.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="V2\Samplers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="V2\Util\Lowdiscrepancy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="V2\Util\Primes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RayTracingTest\Sampler_Test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">
@@ -363,6 +390,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="V2\Util\Bits.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="V2\Util\Image.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="V2\Util\File.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="V2\Util\BlueNoise.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lodepng\lodepng.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="V2\Samplers.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="V2\Util\Lowdiscrepancy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="V2\Util\Primes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
