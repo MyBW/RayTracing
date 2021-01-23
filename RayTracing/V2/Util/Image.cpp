@@ -10,8 +10,8 @@ namespace BlackWalnut
 	template <typename F>
 	void ForExtent(const Bounds2i &extent, WrapMode2D wrapMode, Image &image, F op) 
 	{
-		CHECK(extent.GetMin(0), extent.GetMax(0));
-		CHECK(extent.GetMin(1), extent.GetMax(1));
+		CHECK_LT(extent.GetMin(0), extent.GetMax(0));
+		CHECK_LT(extent.GetMin(1), extent.GetMax(1));
 
 		int nx = extent.Max[0] - extent.Min[0];
 		int nc = image.NChannels();
@@ -77,7 +77,7 @@ namespace BlackWalnut
 			CHECK(0);
 	}
 
-	BlackWalnut::ImageAndMetadata Image::Read(const std::string &filename, ColorEncodingBase* encoding /*= nullptr*/)
+	BlackWalnut::ImageAndMetadata Image::Read(const std::string &filename,const ColorEncodingBase* encoding /*= nullptr*/)
 	{
 		//Only Support PNG
 		return ReadPNG(filename, encoding);
@@ -419,7 +419,250 @@ namespace BlackWalnut
 		return dist;
 	}
 
-	static ImageAndMetadata ReadPNG(const std::string &name, const ColorEncodingBase *encoding)
+	BlackWalnut::ImageChannelValues Image::Bilerp(Vector2f p, WrapMode2D wrapMode /*= WrapMode::Clamp*/) const
+	{
+		ImageChannelValues cv(NChannels(), float(0));
+		for (int c = 0; c < NChannels(); ++c)
+			cv[c] = BilerpChannel(p, c, wrapMode);
+		return cv;
+	}
+
+	Image Image::FloatResize(Vector2i NewResolution, WrapMode2D Wrap)
+	{
+		CHECK_GE(NewResolution.X, Resolution.X);
+		CHECK_GE(NewResolution.Y, Resolution.Y);
+
+		std::vector<ResampleWeight> xWeights = resampleWeights(Resolution[0], NewResolution[0]);
+		std::vector<ResampleWeight> yWeights = resampleWeights(Resolution[1], NewResolution[1]);
+		Image resampledImage(PixelFormat::Float, NewResolution, ChannelNames);
+
+		// Note: these aren't freed until the corresponding worker thread
+		// exits, but that's probably ok...
+		std::vector<float> inBuf, xBuf, outBuf;
+		Bounds2i NewBounds = Bounds2i(std::vector<int>{ 0, 0 }, std::vector<int>{NewResolution.X, NewResolution.Y});
+		std::vector<Bounds2i> AllSubBuounds;
+		NewBounds.SplitBounds(8, AllSubBuounds);
+		for (Bounds2i SubBounds : AllSubBuounds)
+		{
+			Bounds2i inExtent(
+				std::vector<int>{ xWeights[SubBounds[0][0]].firstTexel, yWeights[SubBounds[0][1]].firstTexel },
+				std::vector<int>{ xWeights[SubBounds[1][0] - 1].firstTexel + 4, yWeights[SubBounds[1][1] - 1].firstTexel + 4 }
+			);
+
+			if (inBuf.size() < NChannels() * inExtent.Area())
+				inBuf.resize(NChannels() * inExtent.Area());
+
+			// Copy the tile of the input image into inBuf. (The
+			// main motivation for this copy is to convert it
+			// into floats all at once, rather than repeatedly
+			// and pixel-by-pixel during the first resampling
+			// step.)
+			// FIXME CAST
+			((Image*)this)->CopyRectOut(inExtent, inBuf, Wrap);
+
+			// Zoom in x. We need to do this across all scanlines
+			// in inExtent's y dimension so we have the border
+			// pixels available for the zoom in y.
+			int nxOut = SubBounds[1][0] - SubBounds[0][0];
+			int nyOut = SubBounds[1][1] - SubBounds[0][1];
+			int nxIn = inExtent[1][0] - inExtent[0][0];
+			int nyIn = inExtent[1][1] - inExtent[0][1];
+
+			if (xBuf.size() < NChannels() * nyIn * nxOut)
+				xBuf.resize(NChannels() * nyIn * nxOut);
+
+			int xBufOffset = 0;
+			for (int y = 0; y < nyIn; ++y) {
+				for (int x = 0; x < nxOut; ++x) {
+					int xOut = x + SubBounds[0][0];
+					CHECK(xOut >= 0 && xOut < xWeights.size());
+					const ResampleWeight& rsw = xWeights[xOut];
+
+					// w.r.t. inBuf
+					int xIn = rsw.firstTexel - inExtent[0][0];
+					CHECK_GE(xIn, 0);
+					CHECK_LT(xIn + 3, nxIn);
+
+					int inOffset = NChannels() * (xIn + y * nxIn);
+					CHECK_GE(inOffset, 0);
+					CHECK_LT(inOffset + 3 * NChannels(), inBuf.size());
+					for (int c = 0; c < NChannels(); ++c, ++xBufOffset, ++inOffset) {
+						xBuf[xBufOffset] =
+							(rsw.weight[0] * inBuf[inOffset] +
+								rsw.weight[1] * inBuf[inOffset + NChannels()] +
+								rsw.weight[2] * inBuf[inOffset + 2 * NChannels()] +
+								rsw.weight[3] * inBuf[inOffset + 3 * NChannels()]);
+					}
+				}
+			}
+
+			if (outBuf.size() < NChannels() * nxOut * nyOut)
+				outBuf.resize(NChannels() * nxOut * nyOut);
+
+			// Zoom in y from xBuf to outBuf
+			for (int x = 0; x < nxOut; ++x) {
+				for (int y = 0; y < nyOut; ++y) {
+					int yOut = y + SubBounds[0][1];
+					CHECK(yOut >= 0 && yOut < yWeights.size());
+					const ResampleWeight& rsw = yWeights[yOut];
+
+					CHECK_GE(rsw.firstTexel - inExtent[0][1], 0);
+					int xBufOffset =
+						NChannels() * (x + nxOut * (rsw.firstTexel - inExtent[0][1]));
+					CHECK_GE(xBufOffset, 0);
+					int step = NChannels() * nxOut;
+					CHECK_LT(xBufOffset + 3 * step, xBuf.size());
+
+					int outOffset = NChannels() * (x + y * nxOut);
+					for (int c = 0; c < NChannels(); ++c, ++outOffset, ++xBufOffset)
+						outBuf[outOffset] =
+						std::max<float>(0, (rsw.weight[0] * xBuf[xBufOffset] +
+							rsw.weight[1] * xBuf[xBufOffset + step] +
+							rsw.weight[2] * xBuf[xBufOffset + 2 * step] +
+							rsw.weight[3] * xBuf[xBufOffset + 3 * step]));
+				}
+			}
+			// Copy out...
+			resampledImage.CopyRectIn(SubBounds, outBuf);
+		}
+		return resampledImage;
+	}
+
+	std::vector<Image> Image::GenerateMIPMap(Image InImage, WrapMode2D WrapMode)
+	{
+		PixelFormat Format = InImage.Format;
+		int nChannels = InImage.NChannels();
+		const ColorEncodingBase* OrignalEncoding = InImage.ColorEncoding;
+
+		if (!IsPowerOf2(InImage.Resolution[0]) || !IsPowerOf2(InImage.Resolution[1])) {
+			// Resample image to power-of-two resolution
+			InImage = InImage.FloatResize(
+				{ RoundUpPow2(InImage.Resolution[0]), RoundUpPow2(InImage.Resolution[1]) },
+				WrapMode);
+		}
+		else if (!InImage.Is32Bit())
+			InImage = InImage.ConvertToFormat(PixelFormat::Float);
+		CHECK(InImage.Is32Bit());
+
+		// Initialize levels of MIPMap from image
+		int nLevels = 1 + Log2Int(std::max(InImage.Resolution[0], InImage.Resolution[1]));
+		std::vector<Image> pyramid;
+		pyramid.reserve(nLevels);
+
+		Vector2i levelResolution = InImage.Resolution;
+		for (int i = 0; i < nLevels - 1; ++i) 
+		{
+			// Initialize $i+1$st MIPMap level from $i$th level and also convert
+			// i'th level to the internal format
+			pyramid.push_back(
+				Image(Format, levelResolution, InImage.ChannelNames, OrignalEncoding));
+
+			Vector2i nextResolution(std::max(1, levelResolution[0] / 2), std::max(1, levelResolution[1] / 2));
+			Image nextImage(InImage.Format, nextResolution, InImage.ChannelNames, OrignalEncoding);
+
+			// Offsets from the base pixel to the four neighbors that we'll
+			// downfilter.
+			int srcDeltas[4] = { 0, nChannels, nChannels * levelResolution[0],
+								nChannels * levelResolution[0] + nChannels };
+			// Clamp offsets once a dimension has a single texel.
+			if (levelResolution[0] == 1) {
+				srcDeltas[1] = 0;
+				srcDeltas[3] -= nChannels;
+			}
+			if (levelResolution[1] == 1) {
+				srcDeltas[2] = 0;
+				srcDeltas[3] -= nChannels * levelResolution[0];
+			}
+
+			for (int y = 0; y < nextResolution[1]; ++y) {
+				// Downfilter with a box filter for the next MIP level
+				int srcOffset = InImage.PixelOffset({ 0, 2 * y });
+				int nextOffset = nextImage.PixelOffset({ 0, y });
+				for (int x = 0; x < nextResolution[0]; ++x) {
+					for (int c = 0; c < nChannels; ++c) {
+						nextImage.p32[nextOffset] =
+							.25f *
+							(InImage.p32[srcOffset] + InImage.p32[srcOffset + srcDeltas[1]] +
+								InImage.p32[srcOffset + srcDeltas[2]] +
+								InImage.p32[srcOffset + srcDeltas[3]]);
+						++srcOffset;
+						++nextOffset;
+					}
+					srcOffset += nChannels;
+				}
+
+				// Copy the current level out to the current pyramid level
+				int yStart = 2 * y;
+				int yEnd = std::min(2 * y + 2, levelResolution[1]);
+				int offset = InImage.PixelOffset({ 0, yStart });
+				size_t count = (yEnd - yStart) * nChannels * levelResolution[0];
+				std::vector<float> Out(count);
+				for (int i = 0; i < count; i++)
+				{
+					Out[i] = InImage.p32[offset + i];
+				}
+				pyramid[i].CopyRectIn(Bounds2i(std::vector<int>{ 0, yStart }, std::vector<int>{ levelResolution[0], yEnd }),Out);
+				
+			}
+
+			InImage = std::move(nextImage);
+			levelResolution = nextResolution;
+		}
+
+		// Top level
+		CHECK(levelResolution[0] == 1 && levelResolution[1] == 1);
+		pyramid.push_back(
+			Image(Format, levelResolution, InImage.ChannelNames, OrignalEncoding));
+		{
+			std::vector<float> Out(nChannels);
+			for (int i = 0;i < nChannels; i++)
+			{
+				Out[i] = InImage.p32[i];
+			}
+			pyramid[nLevels - 1].CopyRectIn(Bounds2i(std::vector<int>{ 0, 0 }, std::vector<int>{ 1, 1 }), Out);
+		}
+		
+
+		return pyramid;
+	}
+
+	Image Image::ConvertToFormat(PixelFormat format, const ColorEncodingBase* encoding /*= nullptr*/)
+	{
+		if (format == Format)
+			return *this;
+
+		Image newImage(format, Resolution, ChannelNames, encoding);
+		for (int y = 0; y < Resolution.Y; ++y)
+			for (int x = 0; x < Resolution.X; ++x)
+				for (int c = 0; c < NChannels(); ++c)
+					newImage.SetChannel({ x, y }, c, GetChannel({ x, y }, c));
+		return newImage;
+	}
+
+	std::vector<BlackWalnut::ResampleWeight> Image::resampleWeights(int oldRes, int newRes)
+	{
+		CHECK_GE(newRes, oldRes);
+		std::vector<ResampleWeight> wt(newRes);
+		float filterwidth = 2.f;
+		for (int i = 0; i < newRes; ++i) {
+			// Compute image resampling weights for _i_th texel
+			float center = (i + .5f) * oldRes / newRes;
+			wt[i].firstTexel = std::floor((center - filterwidth) + 0.5f);
+			for (int j = 0; j < 4; ++j) {
+				float pos = wt[i].firstTexel + j + .5f;
+				wt[i].weight[j] = WindowedSinc(pos - center, filterwidth, 2.f);
+			}
+
+			// Normalize filter weights for texel resampling
+			float invSumWts =
+				1 / (wt[i].weight[0] + wt[i].weight[1] + wt[i].weight[2] + wt[i].weight[3]);
+			for (int j = 0; j < 4; ++j)
+				wt[i].weight[j] *= invSumWts;
+		}
+		return wt;
+	}
+
+	static ImageAndMetadata ReadPNG(const std::string& name, const ColorEncodingBase* encoding)
 	{
 		std::string contents = ReadFileContents(name);
 

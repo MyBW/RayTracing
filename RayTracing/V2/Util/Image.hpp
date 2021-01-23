@@ -20,6 +20,11 @@ namespace BlackWalnut
 		}
 		std::vector<WrapMode> Wrap;
 	};
+	// ResampleWeight Definition
+	struct ResampleWeight {
+		int firstTexel;
+		float weight[4];
+	};
 	// ImageMetadata Definition
 	struct ImageMetadata {
 		// These may or may not be present in the metadata of an Image.
@@ -148,7 +153,7 @@ namespace BlackWalnut
 		Image(std::vector<Half> p16, Vector2i Resolution, std::vector<std::string>& Channels, const ColorEncodingBase* Encoding);
 		Image(std::vector<float> p32, Vector2i Resolution, std::vector<std::string>& Channels, const ColorEncodingBase* Encoding = nullptr);
 		
-		static ImageAndMetadata Read(const std::string &filename, ColorEncodingBase* encoding = nullptr);
+		static ImageAndMetadata Read(const std::string &filename, const ColorEncodingBase* encoding = nullptr);
 
 		uint32_t NChannels() const { return ChannelNames.size(); }
 		bool Is16Bit() const { return Format == PixelFormat::Half; }
@@ -250,9 +255,14 @@ namespace BlackWalnut
 				GetChannel({ xi + 1, yi }, c, wrapMode),
 				GetChannel({ xi, yi + 1 }, c, wrapMode),
 				GetChannel({ xi + 1, yi + 1 }, c, wrapMode) };
-			return Bilerp({ dx, dy }, v);
+			return BlackWalnut::Bilerp({ dx, dy }, v);
 		}
+		ImageChannelValues Bilerp(Vector2f p, WrapMode2D wrapMode = WrapMode::Clamp) const;
+		Image FloatResize(Vector2i NewResolution, WrapMode2D Wrap);
+		static std::vector<Image> GenerateMIPMap(Image InImage, WrapMode2D WrapMode);
+		Image ConvertToFormat(PixelFormat format, const ColorEncodingBase* encoding = nullptr);
 	public:
+		static std::vector<ResampleWeight> resampleWeights(int oldRes, int newRes);
 		PixelFormat Format;
 		Vector2i Resolution;
 		const ColorEncodingBase* ColorEncoding = nullptr;

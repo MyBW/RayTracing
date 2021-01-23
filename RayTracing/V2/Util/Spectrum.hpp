@@ -177,6 +177,8 @@ namespace BlackWalnut
 		std::vector<float> Values;
 	};
 
+
+
 	class SampledWavelengths
 	{
 	public:

@@ -182,6 +182,7 @@
     <ClCompile Include="RayTracingTest\Rng_Test.cpp" />
     <ClCompile Include="RayTracingTest\Sampler_Test.cpp" />
     <ClCompile Include="RayTracingTest\Spectrum_Test.cpp" />
+    <ClCompile Include="RayTracingTest\Texture_Test.cpp" />
     <ClCompile Include="RealTimeRenderer\ShaderRead.cpp" />
     <ClCompile Include="Scene\Camera.cpp" />
     <ClCompile Include="Scene\Light.cpp" />
@@ -190,6 +191,7 @@
     <ClCompile Include="Test\AppTest.cpp" />
     <ClCompile Include="Test\TestFBXDrawObj.cpp" />
     <ClCompile Include="Test\TestFBXLoad.cpp" />
+    <ClCompile Include="V2\Base\Textures.cpp" />
     <ClCompile Include="V2\Film.cpp" />
     <ClCompile Include="V2\Filter.cpp" />
     <ClCompile Include="V2\InitResource.cpp" />
@@ -206,6 +208,7 @@
     <ClCompile Include="V2\Util\File.cpp" />
     <ClCompile Include="V2\Util\Image.cpp" />
     <ClCompile Include="V2\Util\Lowdiscrepancy.cpp" />
+    <ClCompile Include="V2\Util\Mipmap.cpp" />
     <ClCompile Include="V2\Util\Primes.cpp" />
     <ClCompile Include="V2\Util\Sampling.cpp" />
     <ClCompile Include="V2\Util\Spectrum.cpp" />
@@ -260,6 +263,7 @@
     <ClInclude Include="Test\TestOfflineRenderer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="V2\Base\Textures.hpp" />
     <ClInclude Include="V2\Film.hpp" />
     <ClInclude Include="V2\Filter.hpp" />
     <ClInclude Include="V2\InitResource.hpp" />
@@ -278,6 +282,7 @@
     <ClInclude Include="V2\Util\float.hpp" />
     <ClInclude Include="V2\Util\Image.hpp" />
     <ClInclude Include="V2\Util\Lowdiscrepancy.h" />
+    <ClInclude Include="V2\Util\Mipmap.hpp" />
     <ClInclude Include="V2\Util\Primes.hpp" />
     <ClInclude Include="V2\Util\Rng.hpp" />
     <ClInclude Include="V2\Util\Sampling.hpp" />

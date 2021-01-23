@@ -695,6 +695,11 @@ public:
 		}
 		return Extent;
 	}
+	std::vector<T>& operator[](int i)
+	{
+		CHECK(Check(i));
+		return i == 0 ? Min : Max;
+	}
 	void SetMax(int Index, T Data)
 	{
 		if (!Check(Index)) return;

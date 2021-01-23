@@ -11,6 +11,7 @@ namespace BlackWalnut
 	float Exp(float Data);
 	float Sqrt(float Data);
 	float Loge(float Data);
+	
 	float Sin(float Data);
 	float Cos(float Data);
 	float Pow(float A, float B);
@@ -22,7 +23,7 @@ namespace BlackWalnut
 	template< class T, class U >
 	 T Lerp(const T& A, const T& B, const U& Alpha)
 	{
-		return (T)(A + Alpha * (B - A));
+		return (T)(A +  (B - A) * Alpha);
 	}
 	template<typename  T>
 	T Square(T Data)
@@ -77,6 +78,39 @@ namespace BlackWalnut
 	{
 		return std::isinf(v);
 	}
+	template <typename T>
+	inline constexpr bool IsPowerOf2(T v) {
+		return v && !(v & (v - 1));
+	}
+
+	// http://www.plunk.org/~hatch/rightway.php
+	inline float SinXOverX(float x)
+	{
+		if (1 + x * x == 1)
+			return 1;
+		return std::sin(x) / x;
+	}
+
+	inline float Sinc(float x) {
+		return SinXOverX(3.14159265358979323846f * x);
+	}
+
+	inline float WindowedSinc(float x, float radius, float tau) {
+		if (std::abs(x) > radius)
+			return 0;
+		return Sinc(x) * Sinc(x / tau);
+	}
+	
+	inline int32_t RoundUpPow2(int32_t v) 
+	{
+		v--;
+		v |= v >> 1;
+		v |= v >> 2;
+		v |= v >> 4;
+		v |= v >> 8;
+		v |= v >> 16;
+		return v + 1;
+	}
 
 	inline int PermutationElement(uint32_t i, uint32_t l, uint32_t p) 
 	{
@@ -115,9 +149,100 @@ namespace BlackWalnut
 		return (T)((result < 0) ? result + b : result);
 	}
 
-	inline float Bilerp(std::vector<float> p, std::vector<float> v) {
+	inline float Bilerp(std::vector<float> p, std::vector<float> v) 
+	{
 		return ((1 - p[0]) * (1 - p[1]) * v[0] + p[0] * (1 - p[1]) * v[1] +
 			(1 - p[0]) * p[1] * v[2] + p[0] * p[1] * v[3]);
 	}
 
+	template<typename T>
+	inline T Log2Int(T a)
+	{
+		return std::log(a) / std::log(2);
+	}
+	inline float Log2(float Data)
+	{
+		return std::log(Data) / std::log(2);
+	}
+//	inline uint32_t FloatToBits(float f) 
+//	{
+//		return std::bit_cast<uint32_t>(f);
+//	}
+//	inline int Exponent(float v) 
+//	{
+//		return (FloatToBits(v) >> 23) - 127;
+//	}
+//	
+//	inline int Log2Int(float v) {
+//		CHECK_GT(v, 0);
+//		if (v < 1)
+//			return -Log2Int(1 / v);
+//		// https://graphics.stanford.edu/~seander/bithacks.html#IntegerLog
+//		// (With an additional check of the significant to get round-to-nearest
+//		// rather than round down.)
+//		// midsignif = Significand(std::pow(2., 1.5))
+//		// i.e. grab the significand of a value halfway between two exponents,
+//		// in log space.
+//		const uint32_t midsignif = 0b00000000001101010000010011110011;
+//		return Exponent(v) + ((Significand(v) >= midsignif) ? 1 : 0);
+//	}
+//
+//	PBRT_CPU_GPU
+//		inline int Log2Int(double v) {
+//		DCHECK_GT(v, 0);
+//		if (v < 1)
+//			return -Log2Int(1 / v);
+//		// https://graphics.stanford.edu/~seander/bithacks.html#IntegerLog
+//		// (With an additional check of the significant to get round-to-nearest
+//		// rather than round down.)
+//		// midsignif = Significand(std::pow(2., 1.5))
+//		// i.e. grab the significand of a value halfway between two exponents,
+//		// in log space.
+//		const uint64_t midsignif = 0b110101000001001111001100110011111110011101111001101;
+//		return Exponent(v) + ((Significand(v) >= midsignif) ? 1 : 0);
+//	}
+//
+//	PBRT_CPU_GPU
+//		inline int Log2Int(uint32_t v) {
+//#ifdef PBRT_IS_GPU_CODE
+//		return 31 - __clz(v);
+//#elif defined(PBRT_HAS_INTRIN_H)
+//		unsigned long lz = 0;
+//		if (_BitScanReverse(&lz, v))
+//			return lz;
+//		return 0;
+//#else
+//		return 31 - __builtin_clz(v);
+//#endif
+//	}
+//
+//	PBRT_CPU_GPU
+//		inline int Log2Int(int32_t v) {
+//		return Log2Int((uint32_t)v);
+//	}
+//
+//	PBRT_CPU_GPU
+//		inline int Log2Int(uint64_t v) {
+//#ifdef PBRT_IS_GPU_CODE
+//		return 64 - __clzll(v);
+//#elif defined(PBRT_HAS_INTRIN_H)
+//		unsigned long lz = 0;
+//#if defined(_WIN64)
+//		_BitScanReverse64(&lz, v);
+//#else
+//		if (_BitScanReverse(&lz, v >> 32))
+//			lz += 32;
+//		else
+//			_BitScanReverse(&lz, v & 0xffffffff);
+//#endif  // _WIN64
+//		return lz;
+//#else   // PBRT_HAS_INTRIN_H
+//		return 63 - __builtin_clzll(v);
+//#endif
+//	}
+//
+//	PBRT_CPU_GPU
+//		inline int Log2Int(int64_t v) {
+//		return Log2Int((uint64_t)v);
+//	}
 }

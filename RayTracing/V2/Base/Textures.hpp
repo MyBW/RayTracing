@@ -1,4 +1,7 @@
 #pragma once
+#include "..\V2\Math\Geom.hpp"
+#include "..\V2\Util\Spectrum.hpp"
+#include "..\V2\Util\Mipmap.hpp"
 namespace BlackWalnut
 {
 	struct TextureEvalContext {
@@ -14,7 +17,7 @@ namespace BlackWalnut
 			dvdy(si.dvdy),
 			faceIndex(si.faceIndex) {}*/
 		TextureEvalContext(const Vector3f &p, const Vector3f &dpdx, const Vector3f &dpdy,
-				const Point2f &uv, float dudx, float dudy, float dvdx, float dvdy,
+				const Vector2f &uv, float dudx, float dudy, float dvdx, float dvdy,
 				int faceIndex)
 			: p(p),
 			dpdx(dpdx),
@@ -37,7 +40,7 @@ namespace BlackWalnut
 	public:
 		virtual Vector2f Map(TextureEvalContext ctx, Vector2f *dstdx, Vector2f *dstdy) const = 0;
 	};
-	class UVMapping2D 
+	class UVMapping2D : public TextureMapping2D
 	{
 	public:
 		// UVMapping2D Public Methods
@@ -52,7 +55,7 @@ namespace BlackWalnut
 		}
 
 	private:
-		Float su, sv, du, dv;
+		float su, sv, du, dv;
 	};
 
 	class SpectrumTextureBase
@@ -60,23 +63,45 @@ namespace BlackWalnut
 	public:
 		virtual SampledSpectrum Evaluate(TextureEvalContext ctx, SampledWavelengths lambda) const = 0;
 	};
+
+
+	// TexInfo Declarations
+	struct TexInfo {
+		TexInfo(const std::string& f, const std::string& filt, float ma, WrapMode wm,
+			const ColorEncodingBase* encoding)
+			: filename(f), filter(filt), maxAniso(ma), wrapMode(wm), encoding(encoding) {}
+		std::string filename;
+		std::string filter;
+		float maxAniso;
+		WrapMode wrapMode;
+		const ColorEncodingBase* encoding;
+		bool operator<(const TexInfo& t2) const {
+			return std::tie(filename, filter, maxAniso, encoding, wrapMode) <
+				std::tie(t2.filename, t2.filter, t2.maxAniso, t2.encoding, t2.wrapMode);
+		}
+	};
 	class ImageTextureBase : public SpectrumTextureBase
 	{
 	public:
-		ImageTextureBase(TextureMapping2D* M, const std::wstring &FileName, const std::wstring &Filter,
-			float MaxAniso, WrapMode WM, float Scale, ColorEncodingBase* Encoding);
+		ImageTextureBase(TextureMapping2D* M, const std::string &FileName, const std::string &Filter,
+			float MaxAniso, WrapMode WM, float Scale, const ColorEncodingBase* Encoding);
 		static void ClearCache() { }
+
 		TextureMapping2D* Mapping;
 		float Scale;
-		MIPmap *mipmap;
+		MIPMap *mipmap;
 	private:
-		
+		static MIPMap* GetTexture(const std::string& filename, const std::string& filter,
+			float maxAniso, WrapMode wm, const ColorEncodingBase* encoding);
+
+		// ImageTextureBase Private Data
+		static std::map<TexInfo, std::unique_ptr<MIPMap>> textureCache;
 	};
 	class SpectrumImageTexture : public ImageTextureBase {
 	public:
-		SpectrumImageTexture(TextureMapping2D* m, const std::wstring &filename,
-			const std::wstring &filter, float maxAniso, WrapMode wm,
-			float scale, ColorEncodingBase* encoding)
+		SpectrumImageTexture(TextureMapping2D* m, const std::string &filename,
+			const std::string &filter, float maxAniso, WrapMode wm,
+			float scale, const ColorEncodingBase* encoding)
 			: ImageTextureBase(m, filename, filter, maxAniso, wm, scale, encoding) {}
 
 		SampledSpectrum Evaluate(TextureEvalContext ctx, SampledWavelengths lambda) const;
@@ -86,7 +111,7 @@ namespace BlackWalnut
 	{
 	public:
 		FloatConstantTexture(float V):Value(V) {}
-		float Evaluate(TextureEvalContext Ctx, SampledWavelengths lambda) const { return Value; }
+		//float Evaluate(TextureEvalContext Ctx, SampledWavelengths lambda) const { return Value; }
 	private:
 		float Value;
 	};
