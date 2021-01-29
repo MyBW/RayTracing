@@ -7,6 +7,8 @@
 #define PI 3.14159265358979323846f
 #endif
 #include "..\V2\Util\Check.h"
+#include <algorithm>
+#include "Math.hpp"
 
 #ifndef TWO_PI
 #define TWO_PI 3.14159265358979323846f * 2.0f
@@ -133,6 +135,15 @@ namespace BlackWalnut
 			Ret.Z = Z / Value;
 			return Ret;
 		}
+		Vector3Type<T> operator*(float Value) const
+		{
+			CHECK(Value);
+			Vector3Type<T> Ret;
+			Ret.X = X * Value;
+			Ret.Y = Y * Value;
+			Ret.Z = Z * Value;
+			return Ret;
+		}
 		Vector3Type<T> operator-(Vector3Type<T>& V)
 		{
 			Vector3Type<T> Ret;
@@ -141,8 +152,9 @@ namespace BlackWalnut
 			Ret.Z = Z - V.Z;
 			return Ret;
 		}
-		bool IsNaN()
+		bool IsNaN() const
 		{
+			using BlackWalnut::IsNaN;
 			return IsNaN(X) || IsNaN(Y) || IsNaN(Z);
 		}
     };
@@ -249,6 +261,26 @@ namespace BlackWalnut
             Result += Vector1.Data[i] * Vector2.Data[i];
         }
 	}
+	template<template<typename> class TT, typename T>
+	T Dot(const TT<T>& Vector1, const TT<T>& Vector2)
+	{
+		T Result = (T)0;
+		for (size_t i = 0; i < CountOf(Vector1.Data); i++)
+		{
+			Result += Vector1.Data[i] * Vector2.Data[i];
+		}
+		return Result;
+	}
+	template<template<typename> class TT, typename T>
+	T AbsDot(const TT<T>& Vector1, const TT<T>& Vector2)
+	{
+		T Result = (T)0;
+		for (size_t i = 0; i < CountOf(Vector1.Data); i++)
+		{
+			Result += Vector1.Data[i] * Vector2.Data[i];
+		}
+		return std::abs(Result);
+	}
 	/*template<template<typename> class TT, typename T>
 	TT<T> operator*(const TT<T>& Vector1, const T Value)
 	{
@@ -317,11 +349,79 @@ namespace BlackWalnut
 		}
 		return Result;
 	}
+	template<typename T1, typename T>
+	inline Vector3Type<T> operator*(T1 a, Vector3Type<T> Vec3)
+	{
+		Vector3Type<T> Res;
+		for (size_t i = 0; i < CountOf(Res.Data); i++)
+		{
+			Res.Data[i] = Vec3.Data[i] * a;
+		}
+		return Res;
+	}
+
 	typedef Vector2Type<float> Vector2f;
 	typedef Vector3Type<float> Vector3f;
 	typedef Vector4Type<float> Vector4f;
 	typedef Vector4Type<double> Vector4d;
     typedef Vector4Type<uint8_t> R8G8B8Unorm;
 	typedef Vector2Type<int32_t> Vector2i;
+
+	inline float AbsCosTheta(const Vector3f &w) {
+		return std::abs(w.Z);
+	}
+	inline bool SameHemisphere(const Vector3f &Wi, const Vector3f &Wo)
+	{
+		return Wi.Z * Wo.Z > 0.0f;
+	}
+	
+	inline float Cos2Theta(const Vector3f &w) 
+	{
+		return w.Z * w.Z;
+	}
+	inline float Sin2Theta(const Vector3f &w) {
+		return std::max<float>(0, 1 - Cos2Theta(w));
+	}
+	inline float SinTheta(const Vector3f &w) {
+		return std::sqrt(Sin2Theta(w));
+	}
+	inline float CosDPhi(const Vector3f &wa, const Vector3f &wb) {
+		float waxy = wa.X * wa.X + wa.Y * wa.Y;
+		float wbxy = wb.X * wb.X + wb.Y * wb.Y;
+		if (waxy == 0 || wbxy == 0)
+			return 1;
+		return Clamp((wa.X * wb.X + wa.Y * wb.Y) / std::sqrt(waxy * wbxy), -1.0f, 1.0f);
+	}
+
+	inline float CosPhi(const Vector3f &w) 
+	{
+		float sinTheta = SinTheta(w);
+		return (sinTheta == 0) ? 1 : Clamp(w.X / sinTheta, -1.0f, 1.0f);
+	}
+
+	inline float SinPhi(const Vector3f &w) 
+	{
+		float sinTheta = SinTheta(w);
+		return (sinTheta == 0) ? 0 : Clamp(w.Y / sinTheta, -1.0f, 1.0f);
+	}
+
+
+	inline float Tan2Theta(const Vector3f &w) 
+	{
+		return Sin2Theta(w) / Cos2Theta(w);
+	}
+	inline float Cos2Phi(const Vector3f &w) 
+	{
+		return CosPhi(w) * CosPhi(w);
+	}
+	inline float Sin2Phi(const Vector3f &w) 
+	{
+		return SinPhi(w) * SinPhi(w);
+	}
+
+	inline Vector3f FaceForward(const Vector3f &v, const Vector3f &v2) 
+	{
+		return (Dot(v, v2) < 0.f) ? v * -1.0f : v;
+	}
 }
 

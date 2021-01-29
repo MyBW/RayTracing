@@ -181,7 +181,7 @@ namespace BlackWalnut
 			CoordinateSystem<float>(Z, &X, &Y);
 			return Frame(X, Y, Z);
 		}
-		Vector3f ToLocal(const Vector3f &V)
+		Vector3f ToLocal(const Vector3f &V) const 
 		{
 			float RetX;
 			DotProduct(RetX, V, X);
@@ -191,7 +191,10 @@ namespace BlackWalnut
 			DotProduct(RetZ, V, Z);
 			return Vector3f(RetX, RetY, RetZ);
 		}
-
+		Vector3f FromLocal(const Vector3f &V) const
+		{
+			return X * V.X + Y * V.Y + Z * V.Z;
+		}
 	private:
 		Vector3f X, Y, Z;
 	};

@@ -7,18 +7,20 @@
 namespace BlackWalnut
 {
 
+	// FilterSample Definition
+	struct FilterSample {
+		Vector2f P;
+		float Weight;
+	};
 	class FilterBase
 	{
 	public:
 		virtual float Integral() const = 0;
 		virtual Vector2f Radius() const = 0;
 		virtual float Evaluate(const Vector2f &p) const = 0;
+		virtual FilterSample Sample(const Vector2f &u) const = 0;
 	};
-	// FilterSample Definition
-	struct FilterSample {
-		Vector2f P;
-		float Weight;
-	};
+	
 
 	//class FilterSampler 
 	//{

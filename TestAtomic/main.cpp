@@ -13,8 +13,34 @@ struct TestStruct
 };
 std::vector<std::vector<TestStruct>> Test2D;
 
+
+class A
+{
+public:
+	template<typename T>
+	virtual void Test(T a) = 0;
+};
+class B
+{
+public:
+	template<typename T>
+	void Test(T a) override
+	{
+		std::cout << a;
+	}
+private:
+
+};
+
+
 void main()
 {
+	{
+		A* a = new B();
+	}
+	
+
+
 	std::atomic<double> test = 10;
 	std::atomic<double> &test1 = test;
 	test1 = test1 + 10;

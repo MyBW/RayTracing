@@ -21,24 +21,24 @@ void moueMoveFunction(int button, int state, int x, int y)
 {
 	AppForTest.MouseStateChange(button, state, x, y);
 }
-//int main(int argc, char **argv)
-//{
-//
-//	InitResource();
-//
-//	int Width, Height;
-//	Width = 800;
-//	Height = 400;
-//	glutInit(&argc, argv);
-//	glutInitWindowSize(Width, Height);
-//	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-//	glutCreateWindow("RayTracing");
-//	AppForTest.Init(Width, Height);
-//	glutKeyboardFunc(&ProcessKeyboard);
-//	glutMotionFunc(mouse);
-//	glutMouseFunc(moueMoveFunction);
-//	glutDisplayFunc(display);
-//	glutMainLoop();
-//	
-//	return 0;
-//}
+int main(int argc, char **argv)
+{
+
+	InitResource();
+
+	int Width, Height;
+	Width = 800;
+	Height = 400;
+	glutInit(&argc, argv);
+	glutInitWindowSize(Width, Height);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+	glutCreateWindow("RayTracing");
+	AppForTest.Init(Width, Height);
+	glutKeyboardFunc(&ProcessKeyboard);
+	glutMotionFunc(mouse);
+	glutMouseFunc(moueMoveFunction);
+	glutDisplayFunc(display);
+	glutMainLoop();
+	
+	return 0;
+}

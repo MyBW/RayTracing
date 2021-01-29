@@ -340,7 +340,7 @@ namespace BlackWalnut
 			{
 				float lambda = -C1 / (2 * C0);
 				if (lambda >= 360 && lambda <= 830)
-					return (std::max)({ (*this)(lambda), (*this)(360), (*this)(830) });
+					return (std::max)({(*this)(lambda), (*this)(360), (*this)(830)});
 					
 			}
 			return (std::max)((*this)(360), (*this)(830));

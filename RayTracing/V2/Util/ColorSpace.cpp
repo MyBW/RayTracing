@@ -18,14 +18,14 @@ BlackWalnut::RGBColorSpace::RGBColorSpace(Vector2f InR, Vector2f InG, Vector2f I
 	XYZ XYZG = XYZ::FromxyY(G);
 	XYZ XYZB = XYZ::FromxyY(B);
 	Matrix3X3f rgb = { XYZR.X, XYZG.X, XYZB.X, XYZR.Y, XYZG.Y, XYZB.Y, XYZR.Z, XYZG.Z, XYZB.Z };
-	XYZ C = Mul<XYZ, 3, XYZ>(Inverse(rgb),TmpW) ;
+	XYZ C = Mul<XYZ, 3, XYZ>(Inverse3x3f(rgb), TmpW);
 	Matrix3X3f Tmp;
 	Tmp.MakeZero();
 	Tmp[0][0] = C[0];
 	Tmp[1][1] = C[1];
 	Tmp[2][2] = C[2];
 	XYZFromRGB = rgb * Tmp;
-	RGBFromXYZ = Inverse(XYZFromRGB);
+	RGBFromXYZ = Inverse3x3f(XYZFromRGB);
 }
 
 BlackWalnut::RGBSigmoidPolynomial BlackWalnut::RGBColorSpace::ToRGBCoeffs(const RGB &Rgb) const

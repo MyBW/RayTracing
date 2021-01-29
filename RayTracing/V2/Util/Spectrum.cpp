@@ -1,6 +1,7 @@
 #include "ColorSpace.hpp"
 #include "Spectrum.hpp"
 #include <map>
+#include "File.hpp"
 
 
 // CIE Illuminant D S basis functions
@@ -501,6 +502,45 @@ const float ACES_Illum_D60[] = {
 	825, 62.2491,  830, 63.7793,
 };
 
+const float Cu_eta[] = {
+	298.757050, 1.400313,   302.400421, 1.380000,   306.133759, 1.358438,   309.960449,
+	1.340000,   313.884003, 1.329063,   317.908142, 1.325000,   322.036835, 1.332500,
+	326.274139, 1.340000,   330.624481, 1.334375,   335.092377, 1.325000,   339.682678,
+	1.317812,   344.400482, 1.310000,   349.251221, 1.300313,   354.240509, 1.290000,
+	359.374420, 1.281563,   364.659332, 1.270000,   370.102020, 1.249062,   375.709625,
+	1.225000,   381.489777, 1.200000,   387.450562, 1.180000,   393.600555, 1.174375,
+	399.948975, 1.175000,   406.505493, 1.177500,   413.280579, 1.180000,   420.285339,
+	1.178125,   427.531647, 1.175000,   435.032196, 1.172812,   442.800629, 1.170000,
+	450.851562, 1.165312,   459.200653, 1.160000,   467.864838, 1.155312,   476.862213,
+	1.150000,   486.212463, 1.142812,   495.936707, 1.135000,   506.057861, 1.131562,
+	516.600769, 1.120000,   527.592224, 1.092437,   539.061646, 1.040000,   551.040771,
+	0.950375,   563.564453, 0.826000,   576.670593, 0.645875,   590.400818, 0.468000,
+	604.800842, 0.351250,   619.920898, 0.272000,   635.816284, 0.230813,   652.548279,
+	0.214000,   670.184753, 0.209250,   688.800964, 0.213000,   708.481018, 0.216250,
+	729.318665, 0.223000,   751.419250, 0.236500,   774.901123, 0.250000,   799.897949,
+	0.254188,   826.561157, 0.260000,   855.063293, 0.280000,   885.601257, 0.300000,
+};
+
+const float Cu_k[] = {
+	298.757050, 1.662125,   302.400421, 1.687000,   306.133759, 1.703313,   309.960449,
+	1.720000,   313.884003, 1.744563,   317.908142, 1.770000,   322.036835, 1.791625,
+	326.274139, 1.810000,   330.624481, 1.822125,   335.092377, 1.834000,   339.682678,
+	1.851750,   344.400482, 1.872000,   349.251221, 1.894250,   354.240509, 1.916000,
+	359.374420, 1.931688,   364.659332, 1.950000,   370.102020, 1.972438,   375.709625,
+	2.015000,   381.489777, 2.121562,   387.450562, 2.210000,   393.600555, 2.177188,
+	399.948975, 2.130000,   406.505493, 2.160063,   413.280579, 2.210000,   420.285339,
+	2.249938,   427.531647, 2.289000,   435.032196, 2.326000,   442.800629, 2.362000,
+	450.851562, 2.397625,   459.200653, 2.433000,   467.864838, 2.469187,   476.862213,
+	2.504000,   486.212463, 2.535875,   495.936707, 2.564000,   506.057861, 2.589625,
+	516.600769, 2.605000,   527.592224, 2.595562,   539.061646, 2.583000,   551.040771,
+	2.576500,   563.564453, 2.599000,   576.670593, 2.678062,   590.400818, 2.809000,
+	604.800842, 3.010750,   619.920898, 3.240000,   635.816284, 3.458187,   652.548279,
+	3.670000,   670.184753, 3.863125,   688.800964, 4.050000,   708.481018, 4.239563,
+	729.318665, 4.430000,   751.419250, 4.619563,   774.901123, 4.817000,   799.897949,
+	5.034125,   826.561157, 5.260000,   855.063293, 5.485625,   885.601257, 5.717000,
+};
+
+
 BlackWalnut::XYZ BlackWalnut::SpectrumToXYZ(BlackWalnut::BaseSpectrum* S)
 {
 	return XYZ(InnerProduct(X(), *S), InnerProduct(Y(), *S), InnerProduct(Z(), *S));
@@ -546,6 +586,26 @@ namespace BlackWalnut
 
 	DenselySampledSpectrum *x, *y, *z;
 
+	float SpectrumToPhotometric(BaseSpectrum *s)
+	{
+		// We have to handle RGBSpectrum separately here as it's composed of an
+		// illuminant spectrum and an RGB multiplier. We only want to consider the
+		// illuminant for the sake of this calculation, and we should consider the
+		// RGB separately for the purposes of target power/illuminance computation
+		// in the lights themselves (but we currently don't)
+		if (dynamic_cast<RGBSpectrum*>(s))
+		{
+			const BaseSpectrum *temp = dynamic_cast<RGBSpectrum*>(s)->Illluminant();
+			s = const_cast<BaseSpectrum*>(temp);
+		}
+
+		float y = 0;
+		for (float lambda = Lambda_min; lambda <= Lambda_max; ++lambda)
+			y += Y()(lambda) * (*s)(lambda);
+
+		return y * K_m;
+	}
+
 	const DenselySampledSpectrum& X()
 	{
 		extern DenselySampledSpectrum *x;
@@ -586,9 +646,22 @@ namespace BlackWalnut
 		Lambdas = InLambda;
 		Values = InValues;
 	}
-
-	
-
+	PiecewiseLinearSpectrum* PiecewiseLinearSpectrum::Read(std::string FileName)
+	{
+		std::vector<float> Values = ReadFloatFile(FileName);
+		CHECK(Values.size() != 0);
+		CHECK(Values.size() % 2 == 0);
+		std::vector<float> lambda, v;
+		for (size_t i = 0; i < Values.size() / 2; ++i) {
+			if (i > 0 && Values[2 * i] <= lambda.back()) 
+			{
+				CHECK(0);
+			}
+			lambda.push_back(Values[2 * i]);
+			v.push_back(Values[2 * i + 1]);
+		}
+		return new PiecewiseLinearSpectrum(lambda, v);
+	}
 
 	std::map<std::string, BaseSpectrum*> Spectra::NamedSpectra;
 
@@ -614,18 +687,30 @@ namespace BlackWalnut
 		z = new DenselySampledSpectrum(zpls);
 
 
-#define ToSpectrum(Data) PiecewiseLinearSpectrum::FromInterleaved(ToVector(Data, sizeof(Data) / sizeof(float)), true)
+#define ToSpectrum(Data, IsNormal) PiecewiseLinearSpectrum::FromInterleaved(ToVector(Data, sizeof(Data) / sizeof(float)), IsNormal)
 
-		BaseSpectrum* illumd50 = ToSpectrum(CIE_Illum_D5000);
-		BaseSpectrum* illumd65 = ToSpectrum(CIE_Illum_D6500);
-		BaseSpectrum* illumacesd60 = ToSpectrum(ACES_Illum_D60);
+		BaseSpectrum* illumd50 = ToSpectrum(CIE_Illum_D5000, true);
+		BaseSpectrum* illumd65 = ToSpectrum(CIE_Illum_D6500, true);
+		BaseSpectrum* illumacesd60 = ToSpectrum(ACES_Illum_D60, true);
+
+		BaseSpectrum *cueta = ToSpectrum(Cu_eta, false);
+		BaseSpectrum *cuk = ToSpectrum(Cu_k, false);
 		NamedSpectra = 
 		{
+			{ "metal-Cu-eta", cueta },
+			{ "metal-Cu-k", cuk },
+
 			{ "stdillum-D50", illumd50 },
 			{ "stdillum-D65", illumd65 },
 			{"illum-acesD60",illumacesd60 }
 		};
+
+		
+
 #undef ToSpectrum
+
+
+		
 	}
 
 	BaseSpectrum* GetNamedSpectrum(const std::string Name)
@@ -658,6 +743,12 @@ namespace BlackWalnut
 		return CS.ToRGB(xyz);
 	}
 
+	float SampledSpectrum::y(const SampledWavelengths &Lambda) const
+	{
+		SampledSpectrum Ys = Y().Sample(Lambda);
+		SampledSpectrum pdf = Lambda.PDF();
+		return SafeDiv(Ys * *this, pdf).Average() / CIE_Y_integral;
+	}
 	SampledSpectrum ConstantSpectrum::Sample(const SampledWavelengths &) const
 	{
 		return SampledSpectrum(c);

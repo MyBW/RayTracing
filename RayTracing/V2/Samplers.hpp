@@ -3,16 +3,11 @@
 #include "Math\Geom.hpp"
 #include <vector>
 #include "Util\Lowdiscrepancy.h"
+#include "Base\Sampler.hpp"
 
 namespace BlackWalnut
 {
-	class SamplerBase
-	{
-	public:
-		virtual void StartPixelSample(const Vector2i &p, int32_t sampleIndex, int32_t dim = 0) = 0;
-		virtual float Get1D() = 0;
-		virtual Vector2f Get2D() = 0;
-	};
+	class FilterBase;
 	class HaltonSampler  : public SamplerBase
 	{
 	public:
@@ -25,7 +20,7 @@ namespace BlackWalnut
 			const Point2i &fullResolution, const FileLoc *loc,
 			Allocator alloc);*/
 
-		int32_t SamplesPerPixel() const { return samplesPerPixel; }
+		uint32_t SamplesPerPixel() const override { return samplesPerPixel; }
 
 		
 		void StartPixelSample(const Vector2i &p, int32_t sampleIndex, int32_t dim) override
@@ -80,7 +75,7 @@ namespace BlackWalnut
 			}
 		}
 
-		std::vector<SamplerBase*> Clone(int n);
+		std::vector<SamplerBase*> Clone(int32_t n) override;
 
 	private:
 		// HaltonSampler Private Methods
@@ -111,4 +106,22 @@ namespace BlackWalnut
 		int64_t haltonIndex = 0;
 		int32_t dimension = 0;
 	};
+
+
+	template <typename Sampler>
+	inline CameraSample GetCameraSample(Sampler& sampler, const Vector2i &pPixel,
+		FilterBase* filter) {
+		FilterSample fs = filter->Sample(sampler.Get2D());
+		/*if (GetOptions().disablePixelJitter) {
+			fs.p = Point2f(0, 0);
+			fs.weight = 1;
+		}*/
+
+		CameraSample cs;
+		cs.pFilm = Vector2f(pPixel.X, pPixel.Y)  + fs.P + Vector2f(0.5, 0.5);
+		cs.time = sampler.Get1D();
+		cs.pLens = sampler.Get2D();
+		cs.weight = fs.Weight;
+		return cs;
+	}
 }

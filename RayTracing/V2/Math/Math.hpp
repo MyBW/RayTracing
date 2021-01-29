@@ -3,10 +3,19 @@
 #include <xtr1common>
 #include <stdint.h>
 #include <vector>
+#include "..\V2\Util\Check.h"
+#include <algorithm>
 namespace BlackWalnut
 {
 	//const float PI = 3.1415926;
+	const float Pi = 3.14159265358979323846f;
+	const float Inv2Pi = 0.15915494309189533577;
+	constexpr float Inv4Pi = 0.07957747154594766788;
+	const float InvPi = 0.31830988618379067154;
 	
+	const float PiOver2 = 1.57079632679489661923;
+	const float PiOver4 = 0.78539816339744830961;
+	constexpr float ShadowEpsilon = 0.0001f;
 	int DivideAndRoundUp(int Dividend, int Divisor);
 	float Exp(float Data);
 	float Sqrt(float Data);
@@ -30,8 +39,8 @@ namespace BlackWalnut
 	{
 		return Data * Data;
 	}
-	template<typename  T>
-	T Clamp(T Data, T MinL, T MaxL)
+	template<typename  T, typename T1, typename T2>
+	T Clamp(T Data, T1 MinL, T2 MaxL)
 	{
 		return Data < MaxL ? (Data < MinL ?  MinL: Data)  : MaxL;
 	}
@@ -163,6 +172,17 @@ namespace BlackWalnut
 	inline float Log2(float Data)
 	{
 		return std::log(Data) / std::log(2);
+	}
+
+	inline float SafeSqrt(float x) {
+		CHECK_GE(x, -1e-3f);  // not too negative
+		return std::sqrt((std::max)(0.f, x));
+	}
+
+	
+	inline double SafeSqrt(double x) {
+		CHECK_GE(x, -1e-3);  // not too negative
+		return std::sqrt((std::max)(0., x));
 	}
 //	inline uint32_t FloatToBits(float f) 
 //	{

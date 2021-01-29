@@ -24,7 +24,7 @@ namespace BlackWalnut
 		multInverse[1] = multiplicativeInverse(baseScales[0], baseScales[1]);
 	}
 
-	std::vector<SamplerBase*> HaltonSampler::Clone(int n)
+	std::vector<SamplerBase*> HaltonSampler::Clone(int32_t n)
 	{
 		std::vector<SamplerBase*> samplers(n);
 		HaltonSampler *samplerMem = new HaltonSampler[n];

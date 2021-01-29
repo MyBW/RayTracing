@@ -5,6 +5,8 @@
 class AreaLight : public Light
 {
 public:
+	AreaLight() = default;
+	~AreaLight() { }
 	typedef Object AreaLightShapeType;
 	void SetEmitColor(const Spectrum &InEmitColor)
 	{

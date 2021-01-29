@@ -13,6 +13,7 @@ namespace BlackWalnut
 	const int NSpectrumSamples = 4;
 	constexpr float Lambda_min = 360, Lambda_max = 830;
 	static constexpr float CIE_Y_integral = 106.856895;
+	static constexpr float K_m = 683.0f;
 	inline float Blackbody(float Lambda, float T)
 	{
 		if (T <= 0)
@@ -26,7 +27,8 @@ namespace BlackWalnut
 		CHECK(!std::isnan(Le));
 		return Le;
 	}
-
+	
+	
 	class SampledSpectrum
 	{
 	public:
@@ -74,11 +76,23 @@ namespace BlackWalnut
 			}
 			return Ret;
 		}
+		SampledSpectrum operator/(const float Value) const
+		{
+			CHECK(!HasNaNs());
+			SampledSpectrum Ret = *this;
+			for (int i = 0; i < NSpectrumSamples; i++)
+			{
+				Ret.Values[i] /= Value;
+			}
+			return Ret;
+		}
+
 		SampledSpectrum operator/(const SampledSpectrum &S) const
 		{
 			SampledSpectrum Ret = *this;
 			return Ret /= S;
 		}
+
 		SampledSpectrum& operator+=(const SampledSpectrum &S) 
 		{
 			for (int i = 0; i < NSpectrumSamples; i++)
@@ -136,6 +150,14 @@ namespace BlackWalnut
 		{
 			return Values[i];
 		}
+		operator bool() const
+		{
+			for (int i = 0; i < NSpectrumSamples; i++)
+			{
+				if (Values[i] != 0) return true;
+			}
+			return false;
+		}
 		bool HasNaNs() const
 		{
 			for (int i = 0; i < NSpectrumSamples; i++)
@@ -173,6 +195,7 @@ namespace BlackWalnut
 		}
 		XYZ ToXYZ(const SampledWavelengths &Lambd) const;
 		RGB ToRGB(const SampledWavelengths &Lambd, const RGBColorSpace &CS) const;
+		float y(const SampledWavelengths &Lambda) const;
 	private:
 		std::vector<float> Values;
 	};
@@ -359,6 +382,7 @@ namespace BlackWalnut
 			float T = (Lambda - Lambdas[Offset]) / (Lambdas[Offset + 1] - Lambdas[Offset]);
 			return Lerp(Values[Offset], Values[Offset + 1], T);
 		}
+		static PiecewiseLinearSpectrum* Read(std::string FileName);
 	private:
 		std::vector<float> Values;
 		std::vector<float> Lambdas;
@@ -463,6 +487,10 @@ namespace BlackWalnut
 		RGBSigmoidPolynomial rsp;
 		const DenselySampledSpectrum *illuminant;
 	};
+	
+
+	float SpectrumToPhotometric(BaseSpectrum *s);
+
 	const DenselySampledSpectrum &X();
 	const DenselySampledSpectrum &Y();
 	const DenselySampledSpectrum &Z();
@@ -493,5 +521,29 @@ namespace BlackWalnut
 	};
 	BaseSpectrum* GetNamedSpectrum(const std::string Name);
 
-	
+	inline SampledSpectrum Sqrt(const SampledSpectrum &s) {
+		SampledSpectrum ret;
+		for (int i = 0; i < NSpectrumSamples; ++i)
+			ret[i] = std::sqrt(s[i]);
+		CHECK(!ret.HasNaNs());
+		return ret;
+	}
+	inline SampledSpectrum SafeSqrt(const SampledSpectrum &s) 
+	{
+		SampledSpectrum ret;
+		for (int i = 0; i < NSpectrumSamples; ++i)
+			ret[i] = SafeSqrt(s[i]);
+		CHECK(!ret.HasNaNs());
+		return ret;
+	}
+
+
+	template <typename U, typename V>
+	inline SampledSpectrum ClampSampledSpectrum(const SampledSpectrum &s, U low, V high) {
+		SampledSpectrum ret;
+		for (int i = 0; i < NSpectrumSamples; ++i)
+			ret[i] = BlackWalnut::Clamp(s[i], low, high);
+		CHECK(!ret.HasNaNs());
+		return ret;
+	}
 }

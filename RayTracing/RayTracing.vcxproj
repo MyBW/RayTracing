@@ -178,6 +178,7 @@
     <ClCompile Include="RayTracingTest\Color_Test.cpp" />
     <ClCompile Include="RayTracingTest\Filter_Test.cpp" />
     <ClCompile Include="RayTracingTest\Image_Test.cpp" />
+    <ClCompile Include="RayTracingTest\LightSample_Test.cpp" />
     <ClCompile Include="RayTracingTest\RayTracing_Test.cpp" />
     <ClCompile Include="RayTracingTest\Rng_Test.cpp" />
     <ClCompile Include="RayTracingTest\Sampler_Test.cpp" />
@@ -191,12 +192,22 @@
     <ClCompile Include="Test\AppTest.cpp" />
     <ClCompile Include="Test\TestFBXDrawObj.cpp" />
     <ClCompile Include="Test\TestFBXLoad.cpp" />
+    <ClCompile Include="V2\Base\BxDF.cpp" />
+    <ClCompile Include="V2\Base\Light.cpp" />
+    <ClCompile Include="V2\Base\Sampler.cpp" />
     <ClCompile Include="V2\Base\Textures.cpp" />
+    <ClCompile Include="V2\BxDFs.cpp" />
+    <ClCompile Include="V2\Cameras.cpp" />
     <ClCompile Include="V2\Film.cpp" />
     <ClCompile Include="V2\Filter.cpp" />
     <ClCompile Include="V2\InitResource.cpp" />
+    <ClCompile Include="V2\Integrators.cpp" />
+    <ClCompile Include="V2\Interaction.cpp" />
+    <ClCompile Include="V2\Lights.cpp" />
+    <ClCompile Include="V2\Materials.cpp" />
     <ClCompile Include="V2\Math\Math.cpp" />
     <ClCompile Include="V2\Math\MatrixMath.cpp" />
+    <ClCompile Include="V2\Ray.cpp" />
     <ClCompile Include="V2\RGBSpectrum\rgbspectrum_aces.cpp" />
     <ClCompile Include="V2\RGBSpectrum\rgbspectrum_dci_p3.cpp" />
     <ClCompile Include="V2\RGBSpectrum\rgbspectrum_rec2020.cpp" />
@@ -263,14 +274,28 @@
     <ClInclude Include="Test\TestOfflineRenderer.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="V2\Base\BSDF.hpp" />
+    <ClInclude Include="V2\Base\BxDF.hpp" />
+    <ClInclude Include="V2\Base\Light.hpp" />
+    <ClInclude Include="V2\Base\LightSampler.hpp" />
+    <ClInclude Include="V2\Base\Material.hpp" />
+    <ClInclude Include="V2\Base\Sampler.hpp" />
     <ClInclude Include="V2\Base\Textures.hpp" />
+    <ClInclude Include="V2\BxDFs.hpp" />
+    <ClInclude Include="V2\Cameras.hpp" />
     <ClInclude Include="V2\Film.hpp" />
     <ClInclude Include="V2\Filter.hpp" />
     <ClInclude Include="V2\InitResource.hpp" />
+    <ClInclude Include="V2\Integrators.hpp" />
+    <ClInclude Include="V2\Interaction.hpp" />
+    <ClInclude Include="V2\LightSamplers.hpp" />
+    <ClInclude Include="V2\Lights.hpp" />
+    <ClInclude Include="V2\Materials.hpp" />
     <ClInclude Include="V2\Math\Geom.hpp" />
     <ClInclude Include="V2\Math\Math.hpp" />
     <ClInclude Include="V2\Math\Matrix.hpp" />
     <ClInclude Include="V2\Math\MatrixMath.hpp" />
+    <ClInclude Include="V2\Ray.hpp" />
     <ClInclude Include="V2\RGBSpectrum\RGBSpectrum.hpp" />
     <ClInclude Include="V2\Samplers.hpp" />
     <ClInclude Include="V2\Util\Bits.hpp" />
@@ -286,6 +311,7 @@
     <ClInclude Include="V2\Util\Primes.hpp" />
     <ClInclude Include="V2\Util\Rng.hpp" />
     <ClInclude Include="V2\Util\Sampling.hpp" />
+    <ClInclude Include="V2\Util\Scattering.hpp" />
     <ClInclude Include="V2\Util\Spectrum.hpp" />
   </ItemGroup>
   <ItemGroup>

@@ -2,14 +2,13 @@
 #include <string>
 #include "Image.hpp"
 #include <memory>
-
+#include "..\V2\Math\Geom.hpp"
 namespace BlackWalnut
 {
-	
-
 	enum class FilterFunction { Point, Bilinear, Trilinear, EWA };
 
-	inline FilterFunction ParseFilter(const std::string& f) {
+	inline FilterFunction ParseFilter(const std::string& f) 
+	{
 		if (f == "ewa" || f == "EWA")
 			return FilterFunction::EWA;
 		else if (f == "trilinear")
@@ -30,8 +29,7 @@ namespace BlackWalnut
 	{
 	public:
 		MIPMap(Image InImage, const RGBColorSpace* ColorSpace, WrapMode InWrapMode, const MIPMapFilterOptions& Option);
-		static std::unique_ptr<MIPMap> CreateFromFile(const std::string& FileName, const MIPMapFilterOptions& Option, WrapMode InWrapMode,
-			const ColorEncodingBase* ColorEncoding);
+		static std::unique_ptr<MIPMap> CreateFromFile(const std::string& FileName, const MIPMapFilterOptions& Option, WrapMode InWrapMode, const ColorEncodingBase* ColorEncoding);
 		template<typename T>
 		T Lookup(const Vector2f& st, float Width = 0.f) const
 		{
@@ -67,9 +65,9 @@ namespace BlackWalnut
 		template <typename T>
 		T Lookup(const Vector2f& st, Vector2f dst0, Vector2f dst1) const
 		{
-			if (Options.Filter != FilterFunction::EWA) {
-				float width = std::max(
-					{ std::abs(dst0[0]), std::abs(dst0[1]), std::abs(dst1[0]), std::abs(dst1[1]) });
+			if (Options.Filter!=FilterFunction::EWA) 
+			{
+				float width = (std::max)({std::abs(dst0[0]), std::abs(dst0[1]), std::abs(dst1[0]), std::abs(dst1[1])});
 				return Lookup<T>(st, 2 * width);
 			}
 			// Compute ellipse minor and major axes
@@ -93,12 +91,16 @@ namespace BlackWalnut
 			// TODO: just do return EWA<T>(ilog, st, dst0, dst1);
 			// TODO: also, when scaling camera ray differentials, just do e.g.
 			// 1 / std::min(sqrtSamplesPerPixel, 8);
-			return (EWA<T>(ilod, st, dst0, dst1) * (1 - (lod - ilod)) +
-				EWA<T>(ilod + 1, st, dst0, dst1) * (lod - ilod));
+			return (EWA<T>(ilod, st, dst0, dst1) * (1 - (lod - ilod)) + EWA<T>(ilod + 1, st, dst0, dst1) * (lod - ilod));
 		}
-		uint32_t Levels() const { return uint32_t(Pyramid.size()); }
 
-		Vector2i LevelResolution(int level) const {
+		uint32_t Levels() const 
+		{ 
+			return uint32_t(Pyramid.size()); 
+		}
+
+		Vector2i LevelResolution(int level) const 
+		{
 			CHECK(level >= 0 && level < Pyramid.size());
 			return Pyramid[level].Resolution;
 		}
@@ -125,13 +127,9 @@ namespace BlackWalnut
 		static const float weightLut[WeightLUTSize];
 	};
 
-
-
-
-	
-	
 	template <typename T>
-	T MIPMap::EWA(int level, Vector2f st, Vector2f dst0, Vector2f dst1) const {
+	T MIPMap::EWA(int level, Vector2f st, Vector2f dst0, Vector2f dst1) const
+	{
 		if (level >= Levels())
 			return Texel<T>(Levels() - 1, { 0, 0 });
 
@@ -174,13 +172,11 @@ namespace BlackWalnut
 				if (r2 < 1) {
 					int index = std::min<int>(r2 * WeightLUTSize, WeightLUTSize - 1);
 					float weight = weightLut[index];
-					sum +=  Texel<T>(level, Vector2i(is, it)) * weight;
+					sum += Texel<T>(level, Vector2i(is, it)) * weight;
 					sumWts += weight;
 				}
 			}
 		}
 		return sum / sumWts;
 	}
-
-
 }

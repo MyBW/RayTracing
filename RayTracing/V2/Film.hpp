@@ -6,6 +6,8 @@
 #include "../Math/BWPrimitive.h"
 #include "Filter.hpp"
 #include <atomic>
+#include "Util\Image.hpp"
+#include "Interaction.hpp"
 namespace BlackWalnut
 {
 	class PixelSensor
@@ -70,19 +72,17 @@ namespace BlackWalnut
 	class VisibleSurface
 	{
 	public:
-		/*VisibleSurface(const SurfaceInteraction& SI, const CamneraTransform &InCameraTransform, const SampledSpectrum &InAlbedo, const SampledWavelengths &Lambda)
-			:Albedo(InAlbedo)
-		{
-			Set = true;
-
-		}
+		VisibleSurface(const SurfaceInteraction& SI, const Matrix4X4f &InCameraTransform, const SampledSpectrum &InAlbedo, const SampledWavelengths &Lambda);
+		VisibleSurface() = default;
 		operator bool() const { return Set; }
+
 		bool Set = false;
 		Vector3f P;
 		Vector3f Normal;
+		Vector3f ShadingNoraml;
 		float Time = 0;
-		float DzDx = 0, DxDy = 0;
-		SampledSpectrum Albedo;*/
+		float DzDx = 0, DzDy = 0;
+		SampledSpectrum Albedo;
 	};
 
 	struct FilmBaseParameters
@@ -112,6 +112,10 @@ namespace BlackWalnut
 		FilterBase* GetFilterBase() { return Filter; }
 		const PixelSensor* GetPixelSensor() { return Sensor; }
 		std::string GetFileName() { return FileName; }
+		virtual void WriteImage(ImageMetadata &Metadata, float SplatScale) = 0;
+		virtual bool UsesVisibleSurface() const { return false; }
+		virtual SampledWavelengths SampleWavelengths(float u) const = 0;
+		virtual void AddSample(const Vector2i &FilmPos, SampledSpectrum L, const SampledWavelengths &Lambda, const VisibleSurface* Surface, float Weight) = 0;
 	protected:
 
 		Vector2i FullResolution;
@@ -142,12 +146,16 @@ namespace BlackWalnut
 			//double SplatRGB[3];
 		};
 	public:
+		void SetFileName(std::string &InFileName)
+		{
+			FileName = InFileName;
+		}
 		bool UseVisibleSurface() const { return false; }
 		void AddSample(const Vector2i &FilmPos, SampledSpectrum L, const SampledWavelengths &Lambda, const VisibleSurface* Surface, float Weight)
 		{
 			SampledSpectrum H = L * Sensor->GetImageRatio();
 			RGB SensorRGB = Sensor->ToSensorRGB(H, Lambda);
-			float M = std::max({ SensorRGB.X,SensorRGB.Y ,SensorRGB.Z });
+			float M = (std::max)({SensorRGB.X,SensorRGB.Y ,SensorRGB.Z});
 			if (M > MaxComponentValue)
 			{
 				H *= MaxComponentValue / M;
@@ -189,7 +197,7 @@ namespace BlackWalnut
 			
 			OutputRGBFromSensorRGB = ColorSpace->RGBFromXYZ * Sensor->XYZFromSceneRGB;
 		}
-		SampledWavelengths SampleWavelengths(float u) const
+		SampledWavelengths SampleWavelengths(float u) const override
 		{
 			return SampledWavelengths::SampleXYZ(u);
 		}
@@ -198,7 +206,7 @@ namespace BlackWalnut
 			CHECK(!L.HasNaNs());
 			SampledSpectrum H = L * Sensor->GetImageRatio();
 			RGB SensorRGB = Sensor->ToSensorRGB(H, Lambda);
-			float M = std::max({ SensorRGB.X,SensorRGB.Y ,SensorRGB.Z });
+			float M = (std::max)({ SensorRGB.X,SensorRGB.Y ,SensorRGB.Z });
 			if (M > MaxComponentValue)
 			{
 				H *= MaxComponentValue / M;
@@ -228,6 +236,8 @@ namespace BlackWalnut
 			RGB SensorRGB = Sensor->ToSensorRGB(L * Sensor->GetImageRatio(), Lambda);
 			return Mul<RGB, 3, RGB>(OutputRGBFromSensorRGB, SensorRGB);
 		}
+		void WriteImage(ImageMetadata &Metadata, float SplatScale);
+		Image GetImage(ImageMetadata &MetaData, float SplatScale);
 	private:
 		float MaxComponentValue;
 		typedef std::vector<std::vector<Pixel>> Pixel2D;
@@ -235,7 +245,7 @@ namespace BlackWalnut
 		Matrix3X3f OutputRGBFromSensorRGB;
 		float FilterIntegral;
 		const RGBColorSpace* ColorSpace;
-		float InMaxComponentValue;
 		float WriteFP16;
+		std::string FileName;
 	};
 }

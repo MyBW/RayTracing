@@ -1,6 +1,8 @@
+
 template<typename SceneType>
 void PathTracingRender<SceneType>::RenderScene(SceneType* Scene)
 {
+	TestV2();
 	if (!Camera)  return;
 
 	this->Scene = Scene;

@@ -2,12 +2,14 @@
 #include "..\V2\Math\Geom.hpp"
 #include "..\V2\Util\Spectrum.hpp"
 #include "..\V2\Util\Mipmap.hpp"
+#include "..\V2\Interaction.hpp"
 namespace BlackWalnut
 {
-	struct TextureEvalContext {
+	struct TextureEvalContext 
+	{
 		TextureEvalContext() = default;
-		/*TextureEvalContext(const SurfaceInteraction &si)
-			: p(si.p()),
+		TextureEvalContext(const SurfaceInteraction &si)
+			: p(si.pi),
 			dpdx(si.dpdx),
 			dpdy(si.dpdy),
 			uv(si.uv),
@@ -15,7 +17,7 @@ namespace BlackWalnut
 			dudy(si.dudy),
 			dvdx(si.dvdx),
 			dvdy(si.dvdy),
-			faceIndex(si.faceIndex) {}*/
+			faceIndex(si.faceIndex) {}
 		TextureEvalContext(const Vector3f &p, const Vector3f &dpdx, const Vector3f &dpdy,
 				const Vector2f &uv, float dudx, float dudy, float dvdx, float dvdy,
 				int faceIndex)
@@ -107,12 +109,69 @@ namespace BlackWalnut
 		SampledSpectrum Evaluate(TextureEvalContext ctx, SampledWavelengths lambda) const;
 	};
 
-	class FloatConstantTexture : public SpectrumTextureBase
+	class FloatTextureBase
+	{
+	public:
+		virtual float Evaluate(TextureEvalContext ctx) const = 0;
+	};
+	class FloatConstantTexture : public FloatTextureBase
 	{
 	public:
 		FloatConstantTexture(float V):Value(V) {}
-		//float Evaluate(TextureEvalContext Ctx, SampledWavelengths lambda) const { return Value; }
+		float Evaluate(TextureEvalContext ctx) const { return Value; }
 	private:
 		float Value;
+	};
+
+	class SpectrumConstantTexture : public SpectrumTextureBase
+	{
+	public:
+		SpectrumConstantTexture(BaseSpectrum* Value) :Value(Value)
+		{
+
+		}
+		SampledSpectrum Evaluate(TextureEvalContext ctx, SampledWavelengths lambda) const 
+		{
+			return Value->Sample(lambda);
+		}
+	private:
+		BaseSpectrum *Value;
+	};
+
+	class RGBReflectanceConstantTexture : public SpectrumTextureBase
+	{
+	public:
+		RGBReflectanceConstantTexture(const RGBColorSpace &cs, const RGB &rgb)
+			: value(cs,rgb) {}
+
+		
+		SampledSpectrum Evaluate(TextureEvalContext ctx, SampledWavelengths lambda) const 
+		{
+			return value.Sample(lambda);
+		}
+	private:
+		RGBReflectanceSpectrum value;
+	};
+
+
+	class UniversalTextureEvaluator {
+	public:
+
+		bool CanEvaluate(std::initializer_list<FloatTextureBase*>,
+			std::initializer_list<SpectrumTextureBase*>) const {
+			return true;
+		}
+
+		float operator()(FloatTextureBase* tex, TextureEvalContext ctx)
+		{
+			return tex->Evaluate(ctx);
+		}
+
+
+		SampledSpectrum operator()(SpectrumTextureBase* tex, TextureEvalContext ctx,
+			SampledWavelengths lambda)
+		{
+			return tex->Evaluate(ctx, lambda);
+		}
 	};
 }
