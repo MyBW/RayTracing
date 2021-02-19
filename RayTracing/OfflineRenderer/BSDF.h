@@ -124,6 +124,7 @@ public:
 class BSDF
 {
 public:
+	int Indxe = 0;
 	~BSDF()
 	{
 		for (int i = 0; i < BXDFs.size(); i++)

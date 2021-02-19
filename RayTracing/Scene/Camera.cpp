@@ -57,7 +57,14 @@ BWVector3D& Camera::GetPosition()
 {
 	return CameraPosition;
 }
-
+std::vector<float> Camera::GetPosition_ForV2()
+{
+	std::vector<float> A;
+	A.push_back(CameraPosition.x);
+	A.push_back(CameraPosition.y);
+	A.push_back(CameraPosition.z);
+	return A;
+}
 void Camera::Init(int Width, int Height)
 {
 	ViewMatrix = BWMatrix4::IDENTITY;
@@ -80,6 +87,14 @@ BWVector3D Camera::GetViewportPositionInCameraSpace(float X, float Y)
 	float Left, Right, Bottom, Top;
 	CalcProjectionParameters(Left, Right, Bottom, Top);
 	return BWVector3D((Right - Left) * X + Left , (Top - Bottom) * Y + Bottom, -NearDist);
+}
+
+std::vector<float> Camera::GetViewportPositionInWorldSpace(float X, float Y, float Z)
+{
+	float Left, Right, Bottom, Top;
+	CalcProjectionParameters(Left, Right, Bottom, Top);
+	BWVector3D Tmp =  GetViewMatrix().inverse() * BWVector3D((Right - Left) * X + Left, (Top - Bottom) * Y + Bottom, -NearDist);
+	return{ Tmp.x, Tmp.y, Tmp.z };
 }
 
 BWVector3D Camera::GetViewportPositionInWorldSpace(float X, float Y)

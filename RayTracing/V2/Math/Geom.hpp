@@ -137,7 +137,6 @@ namespace BlackWalnut
 		}
 		Vector3Type<T> operator*(float Value) const
 		{
-			CHECK(Value);
 			Vector3Type<T> Ret;
 			Ret.X = X * Value;
 			Ret.Y = Y * Value;
@@ -150,6 +149,14 @@ namespace BlackWalnut
 			Ret.X = X - V.X;
 			Ret.Y = Y - V.Y;
 			Ret.Z = Z - V.Z;
+			return Ret;
+		}
+		Vector3Type<T> operator-()
+		{
+			Vector3Type<T> Ret;
+			Ret.X = -X;
+			Ret.Y = -Y;
+			Ret.Z = -Z;
 			return Ret;
 		}
 		bool IsNaN() const
@@ -256,6 +263,7 @@ namespace BlackWalnut
     template<template<typename> class TT, typename T>
     void DotProduct(T& Result, const TT<T>& Vector1, const TT<T>& Vector2)
     {
+		Result = 0;
         for(size_t i = 0 ;i < CountOf(Vector1.Data); i++)
         {
             Result += Vector1.Data[i] * Vector2.Data[i];
@@ -372,7 +380,7 @@ namespace BlackWalnut
 	}
 	inline bool SameHemisphere(const Vector3f &Wi, const Vector3f &Wo)
 	{
-		return Wi.Z * Wo.Z > 0.0f;
+		return Wi.Y * Wo.Y > 0.0f;
 	}
 	
 	inline float Cos2Theta(const Vector3f &w) 
@@ -422,6 +430,10 @@ namespace BlackWalnut
 	inline Vector3f FaceForward(const Vector3f &v, const Vector3f &v2) 
 	{
 		return (Dot(v, v2) < 0.f) ? v * -1.0f : v;
+	}
+	inline float DistanceSquared(const Vector3f& P1, const Vector3f &P2)
+	{
+		return Length(P1 - P2) * Length(P1 - P2);
 	}
 }
 

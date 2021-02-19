@@ -130,6 +130,11 @@ namespace BlackWalnut
 			*this = *this * Value;
 			return *this;
 		}
+		SampledSpectrum& operator/=(const  float Value)
+		{
+			*this = *this / Value;
+			return *this;
+		}
 		bool operator==(const SampledSpectrum& S) const
 		{
 			for (int i = 0; i < NSpectrumSamples; i++)
@@ -278,6 +283,7 @@ namespace BlackWalnut
 		virtual SampledSpectrum Sample(const SampledWavelengths &Lambda) const = 0;
 		virtual float operator()(float) const = 0;
 	};
+
 	class DenselySampledSpectrum : public BaseSpectrum
 	{
 	public:
@@ -290,12 +296,27 @@ namespace BlackWalnut
 			:Lambda_Min(InLambda_Min), Lambda_Max(InLambda_Max)
 		{
 			Values.resize(Lambda_Max - Lambda_Min + 1);
-			for (int Lambda = Lambda_Min; Lambda < Lambda_Max; Lambda++)
+			for (int Lambda = Lambda_Min; Lambda <= Lambda_Max; Lambda++)
 			{
 				Values[Lambda - Lambda_Min] = S(Lambda);
 			}
 		}
+
 		float MaxValue() const { return *std::max_element(Values.begin(), Values.end()); }
+		int MaxValueWavelengths() const 
+		{ 
+			float MaxValue = Values[0];
+			int MaxValueIndex = 0;
+			for (int32_t i = 1; i < Values.size(); i++)
+			{
+				if (MaxValue < Values[i])
+				{
+					MaxValue = Values[i];
+					MaxValueIndex = i;
+				}
+			}
+			return MaxValueIndex + Lambda_Min;
+		}
 		SampledSpectrum Sample(const SampledWavelengths &Lambda) const override
 		{
 			SampledSpectrum S;
@@ -309,6 +330,8 @@ namespace BlackWalnut
 			}
 			return S;
 		}
+
+
 		template<typename F>
 		static DenselySampledSpectrum SampleFunction(F Func, int Lambda_Min = Lambda_min, int Lambda_Max = Lambda_max)
 		{

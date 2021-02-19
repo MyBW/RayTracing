@@ -152,9 +152,9 @@ namespace BlackWalnut
 		}
 		Frame(const Vector3f &X, const Vector3f &Y, const Vector3f &Z) :X(X), Y(Y), Z(Z)
 		{
-			CHECK(std::abs(Length(X) * Length(X)) < 1e-4);
-			CHECK(std::abs(Length(Y) * Length(Y)) < 1e-4);
-			CHECK(std::abs(Length(Z) * Length(Z)) < 1e-4);
+			CHECK(std::abs(Length(X) * Length(X) - 1.0f) < 1e-4);
+			CHECK(std::abs(Length(Y) * Length(Y) - 1.0f) < 1e-4);
+			CHECK(std::abs(Length(Z) * Length(Z) - 1.0f) < 1e-4);
 			float Ret;
 			DotProduct(Ret, X, Y);
 			CHECK(std::abs(Ret) < 1e-4);

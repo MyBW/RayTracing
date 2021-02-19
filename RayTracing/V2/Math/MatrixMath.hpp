@@ -363,7 +363,11 @@ namespace BlackWalnut
 
 	 
 	 float FMA(float a, float b, float c);
-
+	 template<typename T >
+	 Vector3Type<T> FMA(float a, const Vector3Type<T>&b, const Vector3Type<T> &c)
+	 {
+		 return Vector3Type<T>(FMA(a, b.X, c.X), FMA(a, b.Y, c.Y), FMA(a, b.Z, c.Z));
+	 }
 	 template <typename Ta, typename Tb, typename Tc, typename Td>
 	 inline auto DifferenceOfProducts(Ta a, Tb b, Tc c, Td d) {
 		 auto cd = c * d;

@@ -261,6 +261,7 @@ namespace BlackWalnut
 		Image FloatResize(Vector2i NewResolution, WrapMode2D Wrap);
 		static std::vector<Image> GenerateMIPMap(Image InImage, WrapMode2D WrapMode);
 		Image ConvertToFormat(PixelFormat format, const ColorEncodingBase* encoding = nullptr);
+		operator bool() const { return Resolution.X > 0 && Resolution.Y > 0; }
 	public:
 		static std::vector<ResampleWeight> resampleWeights(int oldRes, int newRes);
 		PixelFormat Format;

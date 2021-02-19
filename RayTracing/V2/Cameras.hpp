@@ -13,6 +13,8 @@ namespace BlackWalnut
 	};
 	struct CameraRayDifferential 
 	{
+		CameraRayDifferential() = default;
+		CameraRayDifferential(RayDifferential Ray, SampledSpectrum Weight):Ray(Ray),Weight(Weight) {}
 		RayDifferential Ray;
 		SampledSpectrum Weight = SampledSpectrum(1);
 	};
@@ -45,7 +47,7 @@ namespace BlackWalnut
 		}
 		FilmBase* GetFilm() { return Film; }
 		const Matrix4X4f& GetCameraTransform() { return CameraTransform; }
-		float SampleTime(float U) { return Lerp(ShutterOpen, ShutterClose, U); }
+		float SampleTime(float U) const { return Lerp(ShutterOpen, ShutterClose, U); }
 		void ApproximatedPdxy(const SurfaceInteraction& Interaction) const
 		{
 
@@ -54,7 +56,7 @@ namespace BlackWalnut
 		{
 
 		}
-		virtual CameraRayDifferential* GenerateRayDifferential(const CameraSample& InCameraSample, SampledWavelengths &Lambd) const = 0;
+		virtual CameraRayDifferential* GenerateRayDifferential(const CameraSample& InCameraSample, SampledWavelengths &Lambd) = 0;
 	protected:
 		FilmBase* Film;
 		Matrix4X4f CameraTransform;
@@ -74,7 +76,7 @@ namespace BlackWalnut
 			return Ray();
 		}
 	};
-
+	template<typename CameraType>
 	class ProjectiveCamera : public CameraBase
 	{
 	public:
@@ -82,13 +84,33 @@ namespace BlackWalnut
 		ProjectiveCamera(const CameraBaseParameters& Param, const Matrix4X4f &ScreenFromCamera, const Bounds2f& ScreenWindows, float LensRadius, float FocalDistance)
 			:CameraBase(Param), ScreenFromCamera(ScreenFromCamera), LensRadius(LensRadius), FocalDistance(FocalDistance)
 		{
-			
+
 		}
+		CameraRayDifferential* GenerateRayDifferential(const CameraSample& InCameraSample, SampledWavelengths &Lambd) override;
 		Matrix4X4f ScreenFromCamera, CameraFromRaster;
 		Matrix4X4f RasterFromScreen, ScreenFromRaster;
 		float LensRadius;
 		float FocalDistance;
+		Vector3f DxCamera;
+		Vector3f DyCamera;
+
+		//Temp
+		CameraType* OutCamera;
+		void UpdateDxDy()
+		{
+			std::vector<float> Temp = OutCamera->GetViewportPositionInWorldSpace(0, 0, 0);
+			std::vector<float> TempX = OutCamera->GetViewportPositionInWorldSpace(1.0f/ GetFilm()->GetFullResolution().X, 0, 0);
+			std::vector<float> TempY = OutCamera->GetViewportPositionInWorldSpace(0, 1.0f/ GetFilm()->GetFullResolution().Y, 0);
+			DxCamera = { TempX[0] - Temp[0], TempX[1] - Temp[1] , TempX[2] - Temp[2] };
+			DyCamera = { TempY[0] - Temp[0], TempY[1] - Temp[1] , TempY[2] - Temp[2] };
+		}
+		//End Temp
+	protected:
+		virtual CameraRay*  GenerateRay(CameraSample Sample, SampledWavelengths &Lambd) const { return nullptr; }
 	};
+
+	
+
 	//class PerspectiveCamera : public ProjectiveCamera
 	//{
 	//public:
@@ -120,4 +142,85 @@ namespace BlackWalnut
 	//	float CosTotalWidth;
 	//	float A;
 	//};
+
+	template<typename CameraType>
+	BlackWalnut::CameraRayDifferential* ProjectiveCamera<CameraType>::GenerateRayDifferential(const CameraSample& InCameraSample, SampledWavelengths &Lambd)
+	{
+		RayDifferential ray(Vector3f(0, 0, 0), Vector3f(0, 0, 0), SampleTime(InCameraSample.time));
+		std::vector<float> Pos= OutCamera->GetPosition_ForV2();
+		ray.O = { Pos[0],Pos[1], Pos[2] };
+		std::vector<float> Temp = OutCamera->GetViewportPositionInWorldSpace(InCameraSample.pFilm.X / GetFilm()->GetFullResolution().X, InCameraSample.pFilm.Y/ GetFilm()->GetFullResolution().Y, 0);
+		Vector3f VP = { Temp[0],Temp[1], Temp[2] };
+		ray.D = VP - ray.O;
+		Normalize(ray.D);
+
+
+		
+		ray.RxOrigin = ray.RyOrigin = ray.O;
+		ray.RxDirection = VP + DxCamera;
+		Normalize(ray.RxDirection);
+		ray.RyDirection = VP + DyCamera;
+		Normalize(ray.RyDirection);
+		ray.HasDifferentials = true;
+		return new CameraRayDifferential{ray,SampledSpectrum(1) };
+
+		//// Compute raster and camera sample positions
+		//Vector3f pFilm = Vector3f(InCameraSample.pFilm.X, InCameraSample.pFilm.Y, 0);
+		//Vector3f pCamera = cameraFromRaster(pFilm);
+		//Vector3f dir = pCamera;
+		//Normalize(dir);
+		//RayDifferential ray(Vector3f(0, 0, 0), dir, SampleTime(InCameraSample.time));
+		//// Modify ray for depth of field
+		//if (LensRadius > 0) {
+		//	// Sample point on lens
+		//	Vector2f pLens = SampleUniformDiskConcentric(InCameraSample.pLens) *  LensRadius;
+
+		//	// Compute point on plane of focus
+		//	float ft = FocalDistance / ray.D.Z;
+		//	Vector3f pFocus = ray(ft);
+
+		//	// Update ray for effect of lens
+		//	ray.O = Vector3f(pLens.X, pLens.Y, 0);
+		//	ray.D = pFocus - ray.O;
+		//	Normalize(ray.D);
+		//}
+
+		//// Compute offset rays for \use{PerspectiveCamera} ray differentials
+		//if (LensRadius > 0) {
+		//	// Compute \use{PerspectiveCamera} ray differentials accounting for lens
+		//	// Sample point on lens
+		//	Vector2f pLens = SampleUniformDiskConcentric(InCameraSample.pLens) * LensRadius;
+
+		//	// Compute $x$ ray differential for _PerspectiveCamera_ with lens
+
+		//	Vector3f dx = Vector3f(pCamera + DxCamera);
+		//	Normalize(dx);
+		//	float ft = FocalDistance / dx.Z;
+		//	Vector3f pFocus = Vector3f(0, 0, 0) + (ft * dx);
+		//	ray.RxOrigin = Vector3f(pLens.X, pLens.Y, 0);
+		//	ray.RxDirection = pFocus - ray.RxOrigin;
+		//	Normalize(ray.RxDirection);
+
+		//	// Compute $y$ ray differential for _PerspectiveCamera_ with lens
+		//	Vector3f dy = pCamera + DyCamera;
+		//	Normalize(dy);
+		//	ft = FocalDistance / dy.Z;
+		//	pFocus = Vector3f(0, 0, 0) + (ft * dy);
+		//	ray.RyOrigin = Vector3f(pLens.X, pLens.Y, 0);
+		//	ray.RyDirection = pFocus - ray.RyOrigin;
+		//	Normalize(ray.RyDirection);
+
+		//}
+		//else {
+		//	ray.RxOrigin = ray.RyOrigin = ray.O;
+		//	ray.RxDirection = Vector3f(pCamera) + DxCamera;
+		//	Normalize(ray.RxDirection);
+		//	ray.RyDirection = Vector3f(pCamera) + DyCamera;
+		//	Normalize(ray.RyDirection);
+		//}
+
+		//ray.HasDifferentials = true;
+		//return new CameraRayDifferential{ RenderFromCamera(ray),SampledSpectrum(1) };
+	}
+
 }

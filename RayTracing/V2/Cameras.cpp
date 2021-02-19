@@ -4,7 +4,44 @@ namespace BlackWalnut
 
 	CameraRayDifferential* CameraBase::GenerateRayDifferential(CameraBase& Camera, const CameraSample& InCameraSample, SampledWavelengths &Lambd)
 	{
-		return nullptr;
+		CameraRay *CR = Camera.GenerateRay(InCameraSample, Lambd);
+		if (!CR) return nullptr;
+		RayDifferential RD(CR->mRay);
+		// Find camera ray after shifting one pixel in the $x$ direction
+		CameraRay *RX = nullptr;
+		for (float eps : {.05f, -.05f}) {
+			CameraSample sshift = InCameraSample;
+			sshift.pFilm.X += eps;
+			// Try to generate ray with _sshift_ and compute $x$ differential
+			RX = Camera.GenerateRay(sshift, Lambd);
+			if (RX) 
+			{
+				RD.RxOrigin = RD.O + (RX->mRay.O - RD.O) / eps;
+				RD.RxDirection = RD.D + (RX->mRay.D - RD.D) / eps;
+				break;
+			}
+		}
+
+		// Find camera ray after shifting one pixel in the $y$ direction
+		CameraRay *RY = nullptr;
+		for (float eps : {.05f, -.05f}) {
+			CameraSample sshift = InCameraSample;
+			sshift.pFilm.Y += eps;
+			RY = Camera.GenerateRay(sshift, Lambd);
+			if ( RY) {
+				RD.RyOrigin = RD.O + (RY->mRay.O - RD.O) / eps;
+				RD.RyDirection = RD.D + (RY->mRay.D - RD.D) / eps;
+				break;
+			}
+		}
+
+		// Return approximate ray differential and weight
+		RD.HasDifferentials = RX && RY;
+		CameraRayDifferential* Res = new CameraRayDifferential(RD, CR->Weight);
+		delete RX;
+		delete RY;
+		delete CR;
+		return Res;
 	}
 
 	void CameraBase::FindMinimumDifferentials(CameraBase& Camera)
@@ -144,7 +181,7 @@ namespace BlackWalnut
 	//{
 
 	//}
-
+	
 }
 
 

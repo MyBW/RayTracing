@@ -24,6 +24,9 @@ namespace BlackWalnut
 		MediumHandle medium = nullptr;*/
 
 		Interaction(Vector3f& p, float time):pi(p),time(time){}
+		Interaction(Vector3f& p, Vector3f& n, float time = 0):pi(p),n(n),time(time),uv(0.0){}
+		Interaction(const Vector3f& p, const Vector3f &Normal, const Vector2f& UV, const Vector3f& Wo, float Time):
+			pi(p),n(Normal),uv(UV),wo(Wo),time(Time) { }
 		Vector3f P() const { return pi; }
 		bool IsSurfaceInteraction() const { return n != Vector3f(0.0, 0.0, 0.0); }
 
@@ -51,6 +54,22 @@ namespace BlackWalnut
 	{
 	public:
 		// SurfaceInteraction Public Members
+		SurfaceInteraction() = default;
+		SurfaceInteraction(const Vector3f &pi, const Vector2f &uv, const Vector3f &wo,
+			const Vector3f &dpdu, const Vector3f &dpdv, const Vector3f &dndu,
+			const Vector3f &dndv, float time) :dpdu(dpdu),
+			dpdv(dpdv),
+			dndu(dndu),
+			dndv(dndv)
+		{
+			this->pi = pi;
+			CrossProduct(this->n, dpdu, dpdv);
+			Normalize(this->n);
+			this->uv = uv;
+			this->wo = wo;
+			Normalize(this->wo);
+			this->time = time;
+		}
 		Vector3f dpdu, dpdv;
 		Vector3f dndu, dndv;
 		struct {

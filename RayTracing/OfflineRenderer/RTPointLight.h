@@ -7,6 +7,8 @@ class RTPointLight :public RTLight
 public:
 	RTPointLight() :LightSource(nullptr) { }
 
+
+
 	void SetIndtensity(const Spectrum& Intensity) { Lo = Intensity; }
 	PointLightType* GetLightSource() { return LightSource; }
 	void SetLightSource(PointLightType *InLightSource) { LightSource = InLightSource; }

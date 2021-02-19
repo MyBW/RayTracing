@@ -41,6 +41,27 @@ struct BWEle2DD
 		tmp.y = y - ele.y;
 		return tmp;
 	}
+	const BWEle2DD operator-(const BWEle2DD& ele) const
+	{
+		BWEle2DD tmp;
+		tmp.x = x - ele.x;
+		tmp.y = y - ele.y;
+		return tmp;
+	}
+	BWEle2DD operator*(const float ele) const
+	{
+		BWEle2DD tmp;
+		tmp.x = x * ele;
+		tmp.y = y * ele;
+		return tmp;
+	}
+	const BWEle2DD operator+(const BWEle2DD& ele) const
+	{
+		BWEle2DD tmp;
+		tmp.x = x + ele.x;
+		tmp.y = y + ele.y;
+		return tmp;
+	}
 };
 
 struct BWEle2I

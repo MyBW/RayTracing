@@ -2,14 +2,11 @@
 
 Light::Light()
 {
-	
-}
 
+}
 Light::~Light()
 {
-
 }
-
 void Light::SetPosition(BWVector3D &Pos)
 {
 	Position = Pos;

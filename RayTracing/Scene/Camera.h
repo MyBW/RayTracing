@@ -8,6 +8,7 @@ public:
 
 	BWVector3D GetViewportPositionInCameraSpace(float X, float Y);
 	BWVector3D GetViewportPositionInWorldSpace(float X, float Y) ;
+	std::vector<float> GetViewportPositionInWorldSpace(float X, float Y, float Z);
 	BWVector3D GetDirection() const;
 	BWVector3D GetUp() const;
 	BWVector3D GetRight() const;
@@ -25,6 +26,7 @@ public:
 	BWMatrix4& GetViewMatrix();
 	BWMatrix4& GetProjectMatrix();
 	BWVector3D& GetPosition();
+	std::vector<float> GetPosition_ForV2();
 private:
 	BWMatrix4 ProjectMatrix;
 	BWMatrix4 ViewMatrix;

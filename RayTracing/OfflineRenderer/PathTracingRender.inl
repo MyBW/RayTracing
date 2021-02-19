@@ -2,13 +2,17 @@
 template<typename SceneType>
 void PathTracingRender<SceneType>::RenderScene(SceneType* Scene)
 {
-	TestV2();
+	
 	if (!Camera)  return;
 
 	this->Scene = Scene;
 	this->Scene->UpdateSceneInfo();
 	RendererIntegrator->Init(this->Scene);
 	RendererIntegrator->RequestSample(*OrigSample);
+
+	TestV2(Scene);
+
+
 	ParallelProcess([&](std::vector<Task*> &Tasks)
 	{
 		const int SplitScreenWidth = 64;

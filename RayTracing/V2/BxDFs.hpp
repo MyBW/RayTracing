@@ -13,6 +13,7 @@ namespace BlackWalnut
 		IdealDiffuseBxDF(SampledSpectrum InR) :R(InR) {}
 		SampledSpectrum f(Vector3f wo, Vector3f wi, TransportMode mode) const override
 		{
+
 			if (!SameHemisphere(wo, wi))
 				return SampledSpectrum(0.f);
 			return R * InvPi;
@@ -102,16 +103,16 @@ namespace BlackWalnut
 			if (SampleDiscrete({ PR, PT }, UC, &CPDF) == 0)
 			{
 				Vector3f Wi = SampleCosineHemisphere(W);
-				if (Wo.Z < 0)
-					Wi.Z = Wi.Z * -1;
+				if (Wo.Y < 0)
+					Wi.Y = Wi.Y * -1;
 				float Pdf = AbsCosTheta(Wi) * InvPi * CPDF;
 				return BSDFSample(f(Wo, Wi, Mode), Wi, Pdf, BxDFFlags::DiffuseReflection);
 			}
 			else
 			{
 				Vector3f Wi = SampleCosineHemisphere(W);
-				if (Wo.Z > 0)
-					Wi.Z = Wi.Z * -1;
+				if (Wo.Y > 0)
+					Wi.Y = Wi.Y * -1;
 				float Pdf = AbsCosTheta(Wi) * InvPi * CPDF;
 				return BSDFSample(f(Wo, Wi, Mode), Wi, Pdf, BxDFFlags::DiffuseTransmission);
 			}

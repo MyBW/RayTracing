@@ -246,6 +246,9 @@
     <ClCompile Include="V2\Base\BxDF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="V2\Shape\Shape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Math\BWElement.h">
@@ -504,6 +507,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="V2\Lights.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="V2\Shape\Shape.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

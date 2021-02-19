@@ -21,7 +21,7 @@ namespace BlackWalnut
 		
 		virtual bool CanEvaluateTexture(UniversalTextureEvaluator TexEval) const = 0;
 		
-		virtual BSDF GetBSDF(UniversalTextureEvaluator TexEval, MaterialEvalContext Ctx, SampledWavelengths &Lambd, BxDFBase *InBxDF) const = 0;
+		virtual BSDF GetBSDF(UniversalTextureEvaluator TexEval, MaterialEvalContext Ctx, SampledWavelengths &Lambd, BxDFBase *&InBxDF) const = 0;
 
 		/*template<typename TextureEvaluator>
 		virtual BSDF GetBSSRDF(TextureEvaluator TexEval, MaterialEvalContext Ctx, SampledWavelengths &Lambd, BxDFBase *InBxDF) const = 0;*/

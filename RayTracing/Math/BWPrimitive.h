@@ -723,7 +723,7 @@ public:
 	template<typename V>
 	bool IsInTheBound(const V& P)
 	{
-		std::vector<float> Vec;
+		std::vector<T> Vec;
 		for (int i = 0; i < D; i++)
 		{
 			Vec.push_back(P[i]);

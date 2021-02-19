@@ -583,7 +583,6 @@ BlackWalnut::DenselySampledSpectrum BlackWalnut::D(float Temperature)
 
 namespace BlackWalnut
 {
-
 	DenselySampledSpectrum *x, *y, *z;
 
 	float SpectrumToPhotometric(BaseSpectrum *s)
@@ -605,7 +604,6 @@ namespace BlackWalnut
 
 		return y * K_m;
 	}
-
 	const DenselySampledSpectrum& X()
 	{
 		extern DenselySampledSpectrum *x;
@@ -616,6 +614,7 @@ namespace BlackWalnut
 		extern DenselySampledSpectrum *y;
 		return *y;
 	}
+
 	const DenselySampledSpectrum& Z()
 	{
 		extern DenselySampledSpectrum *z;
@@ -646,6 +645,8 @@ namespace BlackWalnut
 		Lambdas = InLambda;
 		Values = InValues;
 	}
+
+
 	PiecewiseLinearSpectrum* PiecewiseLinearSpectrum::Read(std::string FileName)
 	{
 		std::vector<float> Values = ReadFloatFile(FileName);

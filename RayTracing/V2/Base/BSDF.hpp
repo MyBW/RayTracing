@@ -7,11 +7,14 @@ namespace BlackWalnut
 	public:
 		BSDF() = default;
 		BSDF(const Vector3f &Wo, const Vector3f &Normal, const Vector3f &Ns, const Vector3f &DpDus, BxDFBase* InBxDF, float Eta = 1)
-			:Eta(Dot(Wo, Normal) < 0 ? 1 / Eta : Eta), BxDF(InBxDF), Ng(Normal)
+			:Eta(Dot(Wo, Normal) < 0 ? 1 / Eta : Eta), BxDF(InBxDF), Ng(Normal),Ns(Ns)
 		{
 			Vector3f Tmp = DpDus;
 			Normalize(Tmp);
-			ShadingFrame = Frame::FromXY(Tmp, Vector3f(Ns));
+			ShadingFrame = Frame::FromXY(Tmp, Vector3f(Ns)); 
+		}
+		~BSDF()
+		{
 		}
 		operator bool()const { return (bool)BxDF; }
 		Vector3f RenderToLocal(const Vector3f &V) const { return ShadingFrame.ToLocal(V);}
@@ -27,9 +30,14 @@ namespace BlackWalnut
 
 		SampledSpectrum f(Vector3f woRender, Vector3f wiRender, TransportMode mode = TransportMode::Radiance) const
 		{
-			Vector3f Wi = RenderToLocal(wiRender);
+
 			Vector3f Wo = RenderToLocal(woRender);
-			if (Wo.Z == 0) return{};
+			Vector3f Wi = RenderToLocal(wiRender);
+			Normalize(Wi);
+			Normalize(Wo);
+			if (Wo.Y == 0) return{};
+			/*Vector3f Wi = wiRender;
+			Vector3f Wo = woRender;*/
 			return BxDF->f(Wo, Wi, mode) * GBump(Wo, Wi, mode);
 		}
 		template<typename SpecificBxDF>
@@ -120,5 +128,6 @@ namespace BlackWalnut
 		BxDFBase* BxDF;
 		Frame ShadingFrame;
 		Vector3f Ng;
+		Vector3f Ns;
 	};
 }

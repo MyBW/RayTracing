@@ -8,6 +8,7 @@
 class LambertianAndMicrofaceMateial : public RTMaterial
 {
 public:
+	int Index = 0;
 	LambertianAndMicrofaceMateial(Spectrum &InBaseColor) :BaseColor(InBaseColor){ }
 	void CreateBSDF(const IntersectionInfo& Intersection, BSDF &Bsdf) const override
 	{
@@ -28,6 +29,7 @@ public:
 		Color.SetValue(2, 0.1);
 		Lamber->SetColor(BaseColor);
 		Bsdf.AddBXDF(Lamber);
+		Bsdf.Indxe = Index;
 	}
 private:
 	Spectrum BaseColor;

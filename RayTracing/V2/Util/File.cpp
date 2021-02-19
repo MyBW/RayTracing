@@ -60,7 +60,6 @@ namespace BlackWalnut
 		//return result;
 		return std::string();
 	}
-
 	std::string ReadFileContents(const std::string &filename)
 	{
 		std::ifstream ifs(filename, std::ios::binary);
@@ -70,7 +69,6 @@ namespace BlackWalnut
 		return std::string((std::istreambuf_iterator<char>(ifs)),
 			(std::istreambuf_iterator<char>()));
 	}
-
 	std::vector<float> ReadFloatFile(const std::string &filename)
 	{
 		FILE *f = fopen(filename.c_str(), "r");

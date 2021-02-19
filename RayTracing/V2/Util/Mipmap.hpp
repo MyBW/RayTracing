@@ -36,7 +36,7 @@ namespace BlackWalnut
 			// Compute MIPMap level
 			int nLevels = Levels();
 			float level = nLevels - 1 + Log2(std::max<float>(Width, 1e-8));
-
+			level = 1.0;
 			if (level >= Levels() - 1)
 				return Texel<T>(Levels() - 1, { 0, 0 });
 

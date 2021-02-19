@@ -31,6 +31,7 @@ namespace BlackWalnut
 		Image OutImage = GetImage(Metadata, SplatScale);
 		OutImage.Write(FileName,Metadata);
 	}
+
 	Image RGBFilm::GetImage(ImageMetadata &MetaData, float SplatScale)
 	{
 		PixelFormat format = WriteFP16 ? PixelFormat::Half : PixelFormat::Float;

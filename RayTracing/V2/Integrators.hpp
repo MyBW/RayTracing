@@ -30,6 +30,10 @@ namespace BlackWalnut
 		SampledSpectrum Tr(const Interaction &P0, const Interaction &P1, const SampledWavelengths &Lambd, RNG &Rng) const;
 		std::vector<LightBase*> Lights;
 		std::vector<LightBase*> InfiniteLights;
+		//Temp
+		std::function<ShapeIntersection(const Ray &InRay, float TMax)> IntersectFun;
+		std::function<bool(const Ray &InRay, float TMax)> IntersectPFun;
+		//Temp End
 	protected:
 		Integrator(std::vector<LightBase*> AllLights):Lights(AllLights)
 		{
@@ -83,10 +87,12 @@ namespace BlackWalnut
 		CameraBase* Camera;
 		SamplerBase* SamplerProtoType;
 	};
+
+
 	class ImageTileIntegratorTask : public Task
 	{
 	public:
-		ImageTileIntegratorTask(ImageTileIntegrator* InTileIntegrator, Bounds2i InBound, SamplerBase* Sample, uint32_t WaveStart, uint32_t WaveEnd) 
+		ImageTileIntegratorTask(ImageTileIntegrator* InTileIntegrator, Bounds2i InBound, SamplerBase* Sampler, uint32_t WaveStart, uint32_t WaveEnd) 
 			:TileIntegrator(InTileIntegrator), Bound(InBound),Sampler(Sampler),WaveStart(WaveStart),WaveEnd(WaveEnd)
 		{
 

@@ -31,7 +31,8 @@ namespace BlackWalnut
 		BxDFBase* scratchBuffer = nullptr;
 		BSDF bsdf =
 			material->GetBSDF(UniversalTextureEvaluator(), *this, Lambda, scratchBuffer);
-		if (bsdf) {
+		bool ForceDiffuse = false;
+		if (bsdf && ForceDiffuse) {
 			SampledSpectrum r = bsdf.RHO(wo, { Sampler->Get1D() }, { Sampler->Get2D() });
 			bsdf = BSDF(wo, n, shading.n, shading.dpdu,
 				new IdealDiffuseBxDF(r), bsdf.Eta);

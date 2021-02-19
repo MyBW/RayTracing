@@ -74,6 +74,11 @@ inline BWPoint3DD LinearInterpolation(const BWPoint3DD& start, const BWPoint3DD&
 {
 	return (end - start) * k + start;
 }
+inline BWPoint2DD LinearInterpolation(const BWPoint2DD& start, const BWPoint2DD& end, double k)
+{
+	return (end - start) * k + start;
+}
+
 bool AABBIntersctRay(const BWRay& Ray, const BWVector3D &Min, const BWVector3D &Max);
 //注意 在opengl中使用矩阵调用gl内置函数时，其输入方式是列主序的 
 //得到的最终矩阵和右手系（OpenGL）矩阵时转置的关系

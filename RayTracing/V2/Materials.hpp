@@ -100,12 +100,12 @@ namespace BlackWalnut
 		{
 			return TexEval.CanEvaluate({ Sigma }, { Reflectance });
 		}
-		BSDF GetBSDF(UniversalTextureEvaluator TexEval, MaterialEvalContext Ctx, SampledWavelengths &Lambd, BxDFBase *InBxDF) const override
+		BSDF GetBSDF(UniversalTextureEvaluator TexEval, MaterialEvalContext Ctx, SampledWavelengths &Lambd, BxDFBase *&InBxDF) const override
 		{
 			// Evaluate textures for _DiffuseMaterial_ and allocate BSDF
 			SampledSpectrum r = ClampSampledSpectrum(TexEval(Reflectance, Ctx, Lambd), 0.0f, 1.0);
 			float sig = Clamp(TexEval(Sigma, Ctx), 0, 90);
-			*dynamic_cast<DiffuseBxDF*>(InBxDF) = DiffuseBxDF(r, SampledSpectrum(0), sig);
+			InBxDF = new DiffuseBxDF(r, SampledSpectrum(0), sig);
 			return BSDF(Ctx.Wo, Ctx.N, Ctx.NS, Ctx.DpDus, InBxDF);
 		}
 	private:
@@ -121,7 +121,7 @@ namespace BlackWalnut
 		{
 			return TexEval.CanEvaluate({ uRoughness, vRoughness }, { eta, k });
 		}
-		BSDF GetBSDF(UniversalTextureEvaluator TexEval, MaterialEvalContext Ctx, SampledWavelengths &Lambda, BxDFBase *InBxDF) const override
+		BSDF GetBSDF(UniversalTextureEvaluator TexEval, MaterialEvalContext Ctx, SampledWavelengths &Lambda, BxDFBase *&InBxDF) const override
 		{
 			
 			float uRough = TexEval(uRoughness, Ctx), vRough = TexEval(vRoughness, Ctx);
@@ -133,7 +133,7 @@ namespace BlackWalnut
 			SampledSpectrum ks = TexEval(k, Ctx, Lambda);
 
 			TrowbridgeReitzDistribution distrib(uRough, vRough);
-			*(dynamic_cast<ConductorBxDF*>(InBxDF)) = ConductorBxDF(distrib, etas, ks);
+			InBxDF = new ConductorBxDF(distrib, etas, ks);
 			return BSDF(Ctx.Wo, Ctx.N, Ctx.NS, Ctx.DpDus, InBxDF);
 		}
 

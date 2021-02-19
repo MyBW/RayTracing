@@ -46,8 +46,10 @@ void AppTest::Init(int Width, int Height)
 		BaseColor.SetValue(0, 196.0 / 255 * 0.7);
 		BaseColor.SetValue(1, 165.0 / 255 * 0.7);
 		BaseColor.SetValue(2, 97.0 / 255 * 0.7);
-
-		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		LambertianAndMicrofaceMateial* Test = new LambertianAndMicrofaceMateial(BaseColor);
+		//Test->Index = 1;
+		TestObj->Material = Test;
+		
 		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj1"));
 	}
 	//Back
@@ -75,7 +77,9 @@ void AppTest::Init(int Width, int Height)
 		BaseColor.SetValue(0, 166.0 / 255 * 0.7);
 		BaseColor.SetValue(1, 23.0 / 255 * 0.7);
 		BaseColor.SetValue(2, 14.0 / 255 * 0.7);
-		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		LambertianAndMicrofaceMateial* Test = new LambertianAndMicrofaceMateial(BaseColor);
+		Test->Index = 2;
+		TestObj->Material = Test;
 		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj3"));
 	}
 	//Up
@@ -143,7 +147,10 @@ void AppTest::Init(int Width, int Height)
 		TestObj->SetScale(2, 2, 2);
 		TestObj->SetRoataion(BWVector3D(0.0, 1.0, 0.0), Radian(3.15 / 4));
 		TestObj->SetRoataion(BWVector3D(1.0, 0.0, 0.0), Radian(3.15 / 4));
-		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+
+		LambertianAndMicrofaceMateial* Test = new LambertianAndMicrofaceMateial(BaseColor);
+		Test->Index = 1;
+		TestObj->Material = Test;
 		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj7"));
 	}
 	
@@ -156,7 +163,9 @@ void AppTest::Init(int Width, int Height)
 		Object* TestObj = Sceen.GetObjectByName("obj8");
 		TestObj->SetPosition(-3, 2, 0);
 		TestObj->SetScale(1, 1, 1);
-		TestObj->Material = new LambertianAndMicrofaceMateial(BaseColor);
+		LambertianAndMicrofaceMateial* Test = new LambertianAndMicrofaceMateial(BaseColor);
+		Test->Index = 1;
+		TestObj->Material = Test;
 		RTRenderer.AddDrawable(Sceen.GetObjectByName("obj8"));
 	}*/
 

@@ -25,6 +25,7 @@ namespace BlackWalnut
 		PixelSensor(const RGBColorSpace *OutputColorSpace, float WebTmp, float InImageRatio)
 			:R_Bar(X()),G_Bar(Y()),B_Bar(Z()),ImageRatio(InImageRatio)
 		{
+			MatrixIdentity(XYZFromSceneRGB);
 			if (WebTmp != 0)
 			{
 				auto WhiteIlluminant = D(WebTmp);
@@ -150,6 +151,8 @@ namespace BlackWalnut
 		{
 			FileName = InFileName;
 		}
+
+
 		bool UseVisibleSurface() const { return false; }
 		void AddSample(const Vector2i &FilmPos, SampledSpectrum L, const SampledWavelengths &Lambda, const VisibleSurface* Surface, float Weight)
 		{
@@ -246,6 +249,5 @@ namespace BlackWalnut
 		float FilterIntegral;
 		const RGBColorSpace* ColorSpace;
 		float WriteFP16;
-		std::string FileName;
 	};
 }

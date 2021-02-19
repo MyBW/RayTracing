@@ -293,6 +293,8 @@ namespace BlackWalnut
 			WARN("nOutOfGamut");
 
 		if (error != 0) {
+			const char *p = lodepng_error_text(error);
+			std::cout << p << std::endl;
 			//spdlog::error("Error writing PNG [0] : [1].", name, lodepng_error_text(error));
 			CHECK(0);
 			return false;

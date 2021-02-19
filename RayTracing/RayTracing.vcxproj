@@ -213,6 +213,7 @@
     <ClCompile Include="V2\RGBSpectrum\rgbspectrum_rec2020.cpp" />
     <ClCompile Include="V2\RGBSpectrum\rgbspectrum_srgb.cpp" />
     <ClCompile Include="V2\Samplers.cpp" />
+    <ClCompile Include="V2\Shape\Shape.cpp" />
     <ClCompile Include="V2\Util\BlueNoise.cpp" />
     <ClCompile Include="V2\Util\Color.cpp" />
     <ClCompile Include="V2\Util\ColorSpace.cpp" />
@@ -298,6 +299,7 @@
     <ClInclude Include="V2\Ray.hpp" />
     <ClInclude Include="V2\RGBSpectrum\RGBSpectrum.hpp" />
     <ClInclude Include="V2\Samplers.hpp" />
+    <ClInclude Include="V2\Shape\Shape.hpp" />
     <ClInclude Include="V2\Util\Bits.hpp" />
     <ClInclude Include="V2\Util\BlueNoise.hpp" />
     <ClInclude Include="V2\Util\Check.h" />
